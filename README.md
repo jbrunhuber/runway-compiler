@@ -1,10 +1,12 @@
 # runway-compiler
 A compiler frontend for the runway language.
 
-Read the wiki page to learn more about this project.
+# Welcome to Runway!
 
-##See what I'm working on
-Visit my issue tracker: https://bitbucket.org/jbrunhuber/runway-compiler/issues?status=new&status=open
+I want to instroduce you the basic concepts of the runway language. The compiler is at a really (really) early state of development so there may come some changes :)
 
-##Do you have any improvements?
-Report it here: https://bitbucket.org/jbrunhuber/runway-compiler/issues/new
+## Goals
+Runway is going to be a modern and easy to use programming language with oop design. With a C-like syntax I provide a fimilar environment with lots of improvements. The language should be easy to use so you don't have to do memory management but benefit from cool things like operator overloading.
+
+## Everything out of the box
+A build system, dependency management, a unit-testing framework, everything should work out of the box! So no further applications and configurations are needed for using these tools. 
