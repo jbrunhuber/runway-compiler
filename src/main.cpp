@@ -20,9 +20,7 @@ std::string getSourceCode(std::string path);
 /**
  * for testing
  */
-const char *PATH_WIN_HOME = "C:/Users/josh/Desktop/";
-const char *PATH_WIN_WORK = "C:/Users/p08758/Desktop/";
-const char *PATH_OSX_HOME = "/users/josh/Desktop/";
+const char *DEFAULT_DEBUG_PATH = "/users/josh/Desktop/";
 
 /**
  *
@@ -34,7 +32,7 @@ int main(int argc, char **argv) {
   DebugManager::debug = true; //prints debug messages
 
   //read the source code
-  std::string runway_source_path = PATH_OSX_HOME;
+  std::string runway_source_path = DEFAULT_DEBUG_PATH;
   std::string runway_source_code = getSourceCode(runway_source_path + "Runway.rw");
 
   //create instances
