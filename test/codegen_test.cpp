@@ -25,8 +25,8 @@ TEST(CODEGEN, BASE) {
 TEST(CODEGEN, PRIMARY_EXPR_NUM) {
 
   //create my compare strings
-  const char * expected_ir = "double 1.330000e+01";
-  const char * result_ir;
+  const char *expected_ir = "double 1.330000e+01";
+  const char *result_ir;
 
   //create my instances
   std::unique_ptr<Generator> generator(new Generator());
@@ -53,8 +53,8 @@ TEST(CODEGEN, PRIMARY_EXPR_NUM) {
 TEST(CODEGEN, PRIMARY_EXPR_BOOL) {
 
   //create my compare strings
-  const char * expected_ir = "";//TODO
-  const char * result_ir;
+  const char *expected_ir = "";//TODO
+  const char *result_ir;
 
   //create my instances
   std::unique_ptr<Generator> generator(new Generator());
@@ -81,13 +81,13 @@ TEST(CODEGEN, PRIMARY_EXPR_BOOL) {
 TEST(CODEGEN, PRIMARY_EXPR_STR) {
 
   //create my compare strings
-  const char * expected_ir = "";//TODO
-  const char * result_ir =
- "; ModuleID = 'top'\n"
-     "@0 = internal unnamed_addr constant [47 x i8] c\"just a basic test string to write in our ir :)\0A\00\"\n"
-     "define void @main() {\n"
-     "entrypoint:\n"
-"}";
+  const char *expected_ir = "";//TODO
+  const char *result_ir =
+      "; ModuleID = 'top'\n"
+          "@0 = internal unnamed_addr constant [47 x i8] c\"just a basic test string to write in our ir :)\0A\00\"\n"
+          "define void @main() {\n"
+          "entrypoint:\n"
+          "}";
 
   //create my instances
   std::unique_ptr<Generator> generator(new Generator());
@@ -115,8 +115,11 @@ TEST(CODEGEN, PRIMARY_EXPR_STR) {
 TEST(CODEGEN, VAR_DECLARATION_STMT) {
 
   //create my compare strings
-  const char * expected_ir = "";//TODO
-  const char * result_ir;
+  const char *expected_ir = "define void @main() {\n"
+      "entry:\n"
+      "  %0 = alloca i32\n"
+      "}";
+  const char *result_ir;
 
   //create my instances
   std::unique_ptr<Generator> generator(new Generator());
@@ -125,7 +128,9 @@ TEST(CODEGEN, VAR_DECLARATION_STMT) {
   std::unique_ptr<VariableDeclarationStatement> variable_declaration_stmt(new VariableDeclarationStatement());
 
   //create mock variable declaration statement
-  variable_declaration_stmt->identifier = variable_identifier.get();
+
+  assignment_value->int_value = 13;
+  variable_declaration_stmt->identifier = "test";
   variable_declaration_stmt->expression_to_assign = assignment_value.get();
 
   //emits code for variable declaration statement
@@ -143,8 +148,8 @@ TEST(CODEGEN, VAR_DECLARATION_STMT) {
 TEST(CODEGEN, PRINT_POSTFIX_FUNCTION_CALL) {
 
   //create my compare strings
-  const char * expected_ir = "";//TODO
-  const char * result_ir;
+  const char *expected_ir = "";//TODO
+  const char *result_ir;
 
   //create my instances
   std::unique_ptr<Generator> generator(new Generator());
@@ -172,7 +177,7 @@ TEST(CODEGEN, PRINT_POSTFIX_FUNCTION_CALL) {
   generator->construct();
   function_call->emit(generator.get());
 
-   //now i ask the generator for the llvm assembly and compare it with our expected code
+  //now i ask the generator for the llvm assembly and compare it with our expected code
   result_ir = (generator->getIR()).c_str();
   EXPECT_STREQ(result_ir, expected_ir);
 }
