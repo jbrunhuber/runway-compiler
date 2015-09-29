@@ -654,17 +654,17 @@ bool Parser::parseMultiplicativeExpression(Expression **expr) {
  */
 bool Parser::parsePrimaryExpression(Expression **expr) {
 
-  DebugManager::printMessage("parse primary yahahahah", ModuleInfo::PARSER);
-
   //create new primary expression instance
   PrimaryExpression *primary_expr = new PrimaryExpression;
   *expr = primary_expr;
 
   //identifier
   if (IS_TOKEN_TYPE(TokenType::IDENTIFIER)) {
-    primary_expr->expr_type = ExpressionType::IDENTIFIER;
-    primary_expr->string_value = _current_token.textual_content;
+
+    IdentifierPrimaryExpression *identifier_expr = new IdentifierPrimaryExpression;
+    identifier_expr->identifier_description = _current_token.textual_content;
     nextToken();
+    *expr = identifier_expr;
 
   } else if (isType(_current_token)) {
     primary_expr->string_value = _current_token.textual_content;

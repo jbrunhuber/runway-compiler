@@ -94,14 +94,19 @@ enum class ExpressionType {
  */
 class PrimaryExpression: public Expression {
  public:
-  llvm::Value *emit(Generator *generator);
+  llvm::Constant *emit(Generator *generator);
   int int_value;
   double double_value;
   bool bool_value;
   ExpressionType expr_type;
   std::string string_value;
   Expression *expression;
+};
 
+class IdentifierPrimaryExpression: public Expression {
+ public:
+  llvm::Value *emit(Generator *generator);
+  std::string identifier_description;
 };
 
 class EmptyExpressionStatement: public ExpressionStatement {
