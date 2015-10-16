@@ -182,8 +182,19 @@ TEST(CODEGEN, PRINT_POSTFIX_FUNCTION_CALL) {
   EXPECT_STREQ(result_ir, expected_ir);
 }
 
+/**
+ * Tests the creation of a variable declaration statement
+ */
 TEST(CODEGEN, GLOBAL_VARIABLE_TEST) {
 
+  const char *expected_ir = ""
+      "int a = 5;";
+  const char *result_ir;
+
+  std::unique_ptr<Generator> generator(new Generator());
+
+  result_ir = generator->getIR();
+  std::cout << result_ir << std::endl;
 }
 
 int main(int argc, char **argv) {
