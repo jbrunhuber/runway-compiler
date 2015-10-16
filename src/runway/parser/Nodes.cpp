@@ -77,7 +77,7 @@ llvm::Value* RelationalExpression::emit(Generator *generator) {
   return nullptr;
 }
 
-llvm::Value* PrimaryExpression::emit(Generator *generator) {
+llvm::Constant* PrimaryExpression::emit(Generator *generator) {
 
   return generator->emitPrimaryExpression(this);
 }

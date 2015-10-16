@@ -7,6 +7,7 @@
 //
 
 #include <gtest/gtest.h>
+#include <parser/Parser.hpp>
 
 #include "codegen/Generator.hpp"
 
@@ -33,7 +34,7 @@ TEST(CODEGEN, PRIMARY_EXPR_NUM) {
   std::unique_ptr<PrimaryExpression> primary(new PrimaryExpression());
 
   //create a mock double value primary expression
-  primary->expr_type = ExpressionType::NUMERIC;
+  primary->expr_type = ExpressionType::FLOAT;
   primary->double_value = 13.3;
 
   //get the result as an llvm::Value from the generator
@@ -130,7 +131,7 @@ TEST(CODEGEN, VAR_DECLARATION_STMT) {
   //create mock variable declaration statement
 
   assignment_value->int_value = 13;
-  variable_declaration_stmt->identifier = "test";
+  //variable_declaration_stmt->identifier = "test"; TODO
   variable_declaration_stmt->expression_to_assign = assignment_value.get();
 
   //emits code for variable declaration statement
@@ -183,17 +184,25 @@ TEST(CODEGEN, PRINT_POSTFIX_FUNCTION_CALL) {
 }
 
 /**
- * Tests the creation of a variable declaration statement
+ * Tests the creation of a global variable
  */
 TEST(CODEGEN, GLOBAL_VARIABLE_TEST) {
 
-  const char *expected_ir = ""
-      "int a = 5;";
+  const char *expected_ir = "";
   const char *result_ir;
 
   std::unique_ptr<Generator> generator(new Generator());
+  generator->construct();
 
-  result_ir = generator->getIR();
+  VariableDeclarationStatement *expr = new VariableDeclarationStatement;
+  PrimaryExpression *primary = new PrimaryExpression;
+  primary->expr_type = ExpressionType::INTEGER;
+  primary->int_value = 5;
+  expr->expression_to_assign = primary;
+
+  generator->construct();
+  expr->emit(generator.get());
+  result_ir = generator->getIR().c_str();
   std::cout << result_ir << std::endl;
 }
 
