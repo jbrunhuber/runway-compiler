@@ -182,6 +182,10 @@ TEST(CODEGEN, PRINT_POSTFIX_FUNCTION_CALL) {
   EXPECT_STREQ(result_ir, expected_ir);
 }
 
+TEST(CODEGEN, GLOBAL_VARIABLE_TEST) {
+
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

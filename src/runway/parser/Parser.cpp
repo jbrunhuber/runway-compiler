@@ -660,7 +660,6 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
 
   //identifier
   if (IS_TOKEN_TYPE(TokenType::IDENTIFIER)) {
-
     IdentifierPrimaryExpression *identifier_expr = new IdentifierPrimaryExpression;
     identifier_expr->identifier_description = _current_token.textual_content;
     nextToken();
@@ -671,7 +670,6 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
     nextToken();
 
   } else if (IS_TOKEN_TYPE(TokenType::BOOL_LITERAL)) {
-    DebugManager::printMessage("found bool value", ModuleInfo::PARSER);
     primary_expr->expr_type = ExpressionType::BOOL;
     primary_expr->bool_value = _current_token.bool_content;
     nextToken();
