@@ -10,6 +10,7 @@ syntax: glob
 #Other
 Debug/*
 Build/*
+*.orig
 
 #cmake
 CMakeFiles/
@@ -36,3 +37,4 @@ cmake_install.cmake
 #CLion
 *.idea
 *.iml
+
