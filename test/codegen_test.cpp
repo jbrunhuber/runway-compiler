@@ -25,8 +25,8 @@ TEST(CODEGEN, BASE) {
  */
 TEST(CODEGEN, ASSIGNMENT_EXPR) {
 
-  const char *expected_ir = "";
-  const char *result_ir;
+  const char *expected_ir = "none";
+  const char *result_ir = "none";
 
   //mock vars for assignment expr
   std::string identifier = "test_identifier";
@@ -47,6 +47,9 @@ TEST(CODEGEN, ASSIGNMENT_EXPR) {
   assignment_expr->emit(generator.get());
 
   result_ir = generator->getIR().c_str();
+  std::cout << result_ir << std::endl;
+  ASSERT_EQ(result_ir, expected_ir);
+
 }
 
 /**
