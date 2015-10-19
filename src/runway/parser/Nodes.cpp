@@ -61,6 +61,11 @@ llvm::Value* FieldAccessPostFixExpression::emit(Generator *generator) {
   return nullptr;
 }
 
+llvm::Value* IdentifierPrimaryExpression::emit(Generator *generator) {
+
+  return nullptr;
+}
+
 llvm::Value* ConditionalExpression::emit(Generator *generator) {
 
   //TODO impl
@@ -83,7 +88,7 @@ llvm::Constant* PrimaryExpression::emit(Generator *generator) {
 }
 
 void IfStatement::emit(Generator *generator) {
-   //TODO impl
+  //TODO impl
 }
 
 void ForStatement::emit(Generator *generator) {

@@ -190,29 +190,33 @@ void Generator::createPrintFunction(Expression *expr, bool new_line) {
 /**
  * Generates code for a variable declaration statement
  */
-void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *var_decl_stmt) {
+void Generator::emitVariableDeclarationStatement(
+    VariableDeclarationStatement *var_decl_stmt) {
 
-  DebugManager::printMessage("variable declaration statement", ModuleInfo::CODEGEN);
+  DebugManager::printMessage("variable declaration statement",
+                             ModuleInfo::CODEGEN);
 
   if (var_decl_stmt == 0) {
     std::cerr << "variable declaration statement is empty" << std::endl;
     return;
   }
+  /**
+   * TODO make the current variable known to the scope
+   */
+}
 
-  AssignmentExpression *assignment_expr =((AssignmentExpression *) var_decl_stmt->expression_to_assign);
-  Expression *expression = assignment_expr->expression_to_assign;
+llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *) {
 
-  std::string identifier = assignment_expr->identifier;
+  llvm::Value *real_llvm_value = nullptr;
 
-  llvm::Constant *llvm_value = (llvm::Constant*)expression->emit(this);
+  //1. Allocate space
+  llvm::Type *type = nullptr;
+  llvm::AllocaInst *alloca_inst = new llvm::AllocaInst(type);
 
-  if (llvm_value == 0) {
-    std::cerr << "VariableDeclarationStatement: emitted value is empty" << std::endl;
-    return;
-  }
-
-  llvm::GlobalVariable *llvm_global_variable = new llvm::GlobalVariable(*_module, llvm_value->getType(), true, llvm::GlobalValue::ExternalLinkage,llvm_value, "testval");
-  _values[identifier] = llvm_global_variable;
+  //2. Store the variable
+  llvm::StoreInst *store_inst = new llvm::StoreInst(alloca_inst,
+                                                    real_llvm_value);
+  return real_llvm_value;
 }
 
 /**
@@ -298,9 +302,11 @@ llvm::Constant *Generator::emitPrimaryExpression(PrimaryExpression *expr) {
   //determine the type of the declared expression
   ExpressionType expr_type = expr->expr_type;
   if (expr_type == ExpressionType::BOOL) {
-    DebugManager::printMessage("emit primary expression BOOLEAN", ModuleInfo::CODEGEN);
+    DebugManager::printMessage("emit primary expression BOOLEAN",
+                               ModuleInfo::CODEGEN);
     uint8_t value = expr->bool_value;
-    return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt1Ty(llvm::getGlobalContext()), llvm::APInt(1, value));
+    return llvm::ConstantInt::getIntegerValue(
+        llvm::Type::getInt1Ty(llvm::getGlobalContext()), llvm::APInt(1, value));
 
   } else if (expr_type == ExpressionType::STRING) {
     return _builder->CreateGlobalString(expr->string_value);
@@ -333,28 +339,28 @@ llvm::Value *Generator::emitEqualityExpression(EqualityExpression *expr) {
 
   Operator compare_operator = expr->compare_operator;
   if (compare_operator == Operator::COMPARE_EQUAL) {
-    result_value = std::shared_ptr < llvm::Value
-        > (_builder->CreateICmpEQ(lhs_value.get(), rhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(
+        _builder->CreateICmpEQ(lhs_value.get(), rhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_GREATER) {
-    result_value = std::shared_ptr < llvm::Value
-        > (_builder->CreateICmpSGT(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(
+        _builder->CreateICmpSGT(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_GREATER_OR_EQUAL) {
-    result_value = std::shared_ptr < llvm::Value
-        > (_builder->CreateICmpSGE(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(
+        _builder->CreateICmpSGE(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_LESS) {
-    result_value = std::shared_ptr < llvm::Value
-        > (_builder->CreateICmpSLT(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(
+        _builder->CreateICmpSLT(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_LESS_OR_EQUAL) {
-    result_value = std::shared_ptr < llvm::Value
-        > (_builder->CreateICmpSLE(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(
+        _builder->CreateICmpSLE(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_UNEQUAL) {
-    result_value = std::shared_ptr < llvm::Value
-        > (_builder->CreateICmpNE(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(
+        _builder->CreateICmpNE(rhs_value.get(), lhs_value.get()));
 
   } else {
     ERR_PRINTLN("INVALID COMPARE OPERATOR");

@@ -53,6 +53,8 @@ class Generator {
 
   llvm::Value *emitPostFixExpression(PostFixExpression *);
 
+  llvm::Value *emitAssignmentExpression(AssignmentExpression *);
+
   llvm::Constant *emitPrimaryExpression(PrimaryExpression *);
 
   void emitVariableDeclarationStatement(VariableDeclarationStatement *);

@@ -21,6 +21,35 @@ TEST(CODEGEN, BASE) {
 }
 
 /**
+ *
+ */
+TEST(CODEGEN, ASSIGNMENT_EXPR) {
+
+  const char *expected_ir = "";
+  const char *result_ir;
+
+  //mock vars for assignment expr
+  std::string identifier = "test_identifier";
+  Operator assignment_operator = Operator::ASSIGNMENT;
+
+  //mock vars for primary expression (assignment value)
+  PrimaryExpression *expr_to_assign = new PrimaryExpression;
+  ExpressionType expr_type = ExpressionType::STRING;
+  expr_to_assign->string_value = "hello world";
+  expr_to_assign->expr_type = expr_type;
+
+  std::unique_ptr<Generator> generator(new Generator());
+  AssignmentExpression *assignment_expr = new AssignmentExpression;
+  assignment_expr->assignment_operator = assignment_operator;
+  assignment_expr->identifier = identifier;
+
+  generator->construct();
+  assignment_expr->emit(generator.get());
+
+  result_ir = generator->getIR().c_str();
+}
+
+/**
  * Test for a primary expression: numeric
  */
 TEST(CODEGEN, PRIMARY_EXPR_NUM) {
@@ -38,7 +67,8 @@ TEST(CODEGEN, PRIMARY_EXPR_NUM) {
   primary->double_value = 13.3;
 
   //get the result as an llvm::Value from the generator
-  std::unique_ptr<llvm::Value> llvm_result_value(generator->emitPrimaryExpression(primary.get()));
+  std::unique_ptr<llvm::Value> llvm_result_value(
+      generator->emitPrimaryExpression(primary.get()));
 
   //now i ask the generator for the llvm assembly and compare it with our expected code
   result_ir = (generator->getIR()).c_str();
@@ -54,7 +84,7 @@ TEST(CODEGEN, PRIMARY_EXPR_NUM) {
 TEST(CODEGEN, PRIMARY_EXPR_BOOL) {
 
   //create my compare strings
-  const char *expected_ir = "";//TODO
+  const char *expected_ir = "";  //TODO
   const char *result_ir;
 
   //create my instances
@@ -66,7 +96,8 @@ TEST(CODEGEN, PRIMARY_EXPR_BOOL) {
   primary->bool_value = true;
 
   //get the result as an llvm::Value from the generator
-  std::unique_ptr<llvm::Value> llvm_result_value(generator->emitPrimaryExpression(primary.get()));
+  std::unique_ptr<llvm::Value> llvm_result_value(
+      generator->emitPrimaryExpression(primary.get()));
 
   //now i ask the generator for the llvm assembly and compare it with our expected code
   result_ir = (generator->getIR()).c_str();
@@ -82,7 +113,7 @@ TEST(CODEGEN, PRIMARY_EXPR_BOOL) {
 TEST(CODEGEN, PRIMARY_EXPR_STR) {
 
   //create my compare strings
-  const char *expected_ir = "";//TODO
+  const char *expected_ir = "";  //TODO
   const char *result_ir =
       "; ModuleID = 'top'\n"
           "@0 = internal unnamed_addr constant [47 x i8] c\"just a basic test string to write in our ir :)\0A\00\"\n"
@@ -97,10 +128,11 @@ TEST(CODEGEN, PRIMARY_EXPR_STR) {
   //create a mock string primary expression
   primary->expr_type = ExpressionType::STRING;
   primary->string_value = "just a basic test string to write in our ir :)";
-  generator->construct();//the builder requires a function and basic block, otherwise segfault
+  generator->construct();  //the builder requires a function and basic block, otherwise segfault
 
   //get the result as an llvm::Value from the generator
-  std::unique_ptr<llvm::Value> llvm_result_value(generator->emitPrimaryExpression(primary.get()));
+  std::unique_ptr<llvm::Value> llvm_result_value(
+      generator->emitPrimaryExpression(primary.get()));
 
   //now i ask the generator for the llvm assembly and compare it with our expected code
   result_ir = (generator->getIR()).c_str();
@@ -124,9 +156,11 @@ TEST(CODEGEN, VAR_DECLARATION_STMT) {
 
   //create my instances
   std::unique_ptr<Generator> generator(new Generator());
-  std::unique_ptr<PrimaryExpression> variable_identifier(new PrimaryExpression());
+  std::unique_ptr<PrimaryExpression> variable_identifier(
+      new PrimaryExpression());
   std::unique_ptr<PrimaryExpression> assignment_value(new PrimaryExpression());
-  std::unique_ptr<VariableDeclarationStatement> variable_declaration_stmt(new VariableDeclarationStatement());
+  std::unique_ptr<VariableDeclarationStatement> variable_declaration_stmt(
+      new VariableDeclarationStatement());
 
   //create mock variable declaration statement
 
@@ -149,14 +183,16 @@ TEST(CODEGEN, VAR_DECLARATION_STMT) {
 TEST(CODEGEN, PRINT_POSTFIX_FUNCTION_CALL) {
 
   //create my compare strings
-  const char *expected_ir = "";//TODO
+  const char *expected_ir = "";  //TODO
   const char *result_ir;
 
   //create my instances
   std::unique_ptr<Generator> generator(new Generator());
-  std::unique_ptr<PrimaryExpression> function_call_identifier(new PrimaryExpression());
+  std::unique_ptr<PrimaryExpression> function_call_identifier(
+      new PrimaryExpression());
   std::unique_ptr<PrimaryExpression> arg_parameter(new PrimaryExpression());
-  std::unique_ptr<FunctionCallPostfixExpression> function_call(new FunctionCallPostfixExpression);
+  std::unique_ptr<FunctionCallPostfixExpression> function_call(
+      new FunctionCallPostfixExpression);
 
   //identifier
   function_call_identifier->string_value = "print";
@@ -184,26 +220,11 @@ TEST(CODEGEN, PRINT_POSTFIX_FUNCTION_CALL) {
 }
 
 /**
- * Tests the creation of a global variable
+ * variable declaration test
  */
 TEST(CODEGEN, GLOBAL_VARIABLE_TEST) {
 
-  const char *expected_ir = "";
-  const char *result_ir;
-
-  std::unique_ptr<Generator> generator(new Generator());
-  generator->construct();
-
-  VariableDeclarationStatement *expr = new VariableDeclarationStatement;
-  PrimaryExpression *primary = new PrimaryExpression;
-  primary->expr_type = ExpressionType::INTEGER;
-  primary->int_value = 5;
-  expr->expression_to_assign = primary;
-
-  generator->construct();
-  expr->emit(generator.get());
-  result_ir = generator->getIR().c_str();
-  std::cout << result_ir << std::endl;
+  //TODO
 }
 
 int main(int argc, char **argv) {
