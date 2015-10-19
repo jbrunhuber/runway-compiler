@@ -122,7 +122,7 @@ TEST(CODEGEN, PRIMARY_EXPR_STR) {
           "}";
 
   //create my instances
-  std::unique_ptr<Generator> generator(new Generator());
+  Generator *generator = new Generator;
   std::unique_ptr<PrimaryExpression> primary(new PrimaryExpression());
 
   //create a mock string primary expression
@@ -131,15 +131,17 @@ TEST(CODEGEN, PRIMARY_EXPR_STR) {
   generator->construct();  //the builder requires a function and basic block, otherwise segfault
 
   //get the result as an llvm::Value from the generator
-  std::unique_ptr<llvm::Value> llvm_result_value(
-      generator->emitPrimaryExpression(primary.get()));
+  llvm::Value *llvm_result_value = generator->emitPrimaryExpression(
+      primary.get());
 
   //now i ask the generator for the llvm assembly and compare it with our expected code
   result_ir = (generator->getIR()).c_str();
   EXPECT_STREQ(result_ir, expected_ir);
 
   //i additionally check that the result llvm::Value is not null
-  EXPECT_FALSE(llvm_result_value.get() == nullptr);
+  EXPECT_FALSE(llvm_result_value == nullptr);
+
+  delete generator;
 }
 
 /**
