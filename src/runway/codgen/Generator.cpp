@@ -188,7 +188,7 @@ void Generator::createPrintFunction(Expression *expr, bool new_line) {
 }
 
 /**
- * Generates code for a variable declaration statement
+ * Allocates space on the stack for the (primitive) type of the declared symbol
  */
 void Generator::emitVariableDeclarationStatement(
     VariableDeclarationStatement *var_decl_stmt) {
@@ -200,22 +200,29 @@ void Generator::emitVariableDeclarationStatement(
     std::cerr << "variable declaration statement is empty" << std::endl;
     return;
   }
+
+  llvm::Type *type = nullptr;
+
   /**
-   * TODO make the current variable known to the scope
+   * todo determine type
    */
+
+  //allocate stack space
+  std::unique_ptr<llvm::AllocaInst> llvm_alloca_inst(
+      new llvm::AllocaInst(type));
+
+  AssignmentExpression *assignment = nullptr;
+  llvm::Value *llvm_resolved_assignment_value = assignment->emit(this);
 }
 
+/**
+ * Stores the assignment value to the asignee
+ */
 llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *) {
 
   llvm::Value *real_llvm_value = nullptr;
 
-  //1. Allocate space
-  llvm::Type *type = nullptr;
-  llvm::AllocaInst *alloca_inst = new llvm::AllocaInst(type);
-
-  //2. Store the variable
-  llvm::StoreInst *store_inst = new llvm::StoreInst(alloca_inst,
-                                                    real_llvm_value);
+  //TODO Store the variable
   return real_llvm_value;
 }
 
