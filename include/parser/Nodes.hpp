@@ -113,24 +113,11 @@ class EmptyExpressionStatement : public ExpressionStatement {
 };
 
 /**
- * Variable Expression
- *
- * TODO quatsch
- */
-class VariableExpression : Expression {
- public:
-  std::string type;
-  std::string identifier;
-  PrimaryExpression *value;
-
-};
-
-/**
  * Assignment
  */
 class AssignmentExpression : public Expression {
  public:
-  std::string identifier;
+  PrimaryExpression *identifier;
   Operator assignment_operator;
   Expression *expression_to_assign;
   llvm::Value *emit(Generator *generator);
@@ -270,8 +257,9 @@ class IfStatement : public Statement {
 class VariableDeclarationStatement : public Statement {
  public:
   void emit(Generator*);
+  PrimaryExpression *identifier;
   PrimaryExpression *type;
-  Expression *expression_to_assign;
+  AssignmentExpression *expression_to_assign;
 };
 
 /**

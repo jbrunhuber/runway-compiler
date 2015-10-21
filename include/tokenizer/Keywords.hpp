@@ -16,7 +16,7 @@
 /**
  * List of keywords
  */
-extern std::vector<std::string> WOCHENTAGE;
+extern std::vector<std::string> KEYWORDS;
 
 /**
  * Checks if a keywords is contained in the list

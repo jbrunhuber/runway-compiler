@@ -62,8 +62,7 @@ bool Parser::parseStatement(Statement **stmt) {
   }
 
   //Syntax Error
-  ERROR_PRINT(
-      "Syntax Error: Expected ';' but " << _current_token.textual_content << " found");
+  ERROR_PRINT("Syntax Error: Expected ';' but " << _current_token.textual_content << " found");
   return false;
 }
 
@@ -207,13 +206,11 @@ bool Parser::parseForStatement(ForStatement **for_statement) {
       Expression *range_end_expr = 0;
       parseExpression(&range_end_expr);
     } else {
-      ERROR_PRINT(
-          "Syntax Error: Invalid range token" << _current_token.textual_content << "in for loop. Use '..' to mark a range like '0 .. 1337'");
+      ERROR_PRINT("Syntax Error: Invalid range token" << _current_token.textual_content << "in for loop. Use '..' to mark a range like '0 .. 1337'");
       return false;
     }
   } else {
-    ERROR_PRINT(
-        "Syntax Error: Invalid Token " << _current_token.textual_content << "  in for loop");
+    ERROR_PRINT("Syntax Error: Invalid Token " << _current_token.textual_content << "  in for loop");
     return false;
   }
 
@@ -260,23 +257,22 @@ bool Parser::parseBodyStatement(BodyStatement **body_statement) {
 /**
  * VariableDeclarationStatement
  */
-bool Parser::parseVariableDeclarationStatement(
-    VariableDeclarationStatement **variable_declaration_statement) {
+bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **variable_declaration_statement) {
 
   //create variable declaration statement
   *variable_declaration_statement = new VariableDeclarationStatement;
 
   //set the type in the variable declaration statement
   PrimaryExpression *type_primary_expr = new PrimaryExpression;
-  type_primary_expr->string_value = _current_token.textual_content;
+  type_primary_expr->string_val = _current_token.textual_content;
   (*variable_declaration_statement)->type = type_primary_expr;
   nextToken();  //eat type
 
   //if the current token is a identifier then parse the assignment expression
   if (_current_token.token_type == TokenType::IDENTIFIER) {
-    Expression *assignment_expr = 0;
+    Expression *assignment_expr = nullptr;
     parseAssignmentExpression(&assignment_expr);
-    (*variable_declaration_statement)->expression_to_assign = assignment_expr;
+    (*variable_declaration_statement)->expression_to_assign = (AssignmentExpression*) assignment_expr;
     return true;
   } else {
     return false;
@@ -317,7 +313,9 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
   if (assignment_operator != Operator::NONE) {
     AssignmentExpression *assignment_expr = new AssignmentExpression;
     PrimaryExpression *primary = (PrimaryExpression*) lhs_identifier_expr;
-    assignment_expr->identifier = primary->string_value;
+    PrimaryExpression *identifier = new PrimaryExpression;
+    identifier->string_val = primary->string_val;
+    identifier->expr_type = ExpressionType::IDENTIFIER;
     delete primary;
     assignment_expr->assignment_operator = assignment_operator;
     nextToken();  //eat operator
@@ -369,8 +367,7 @@ bool Parser::parseLogicalAndExpression(Expression **expr) {
   if (IS_PUNCTUATOR("&&")) {
 
     LogicalAndExpression *logical_and_expr = new LogicalAndExpression;
-    logical_and_expr->lhs_equality_expr =
-        (EqualityExpression *) lhs_equality_expression;
+    logical_and_expr->lhs_equality_expr = (EqualityExpression *) lhs_equality_expression;
 
     nextToken();  //eat '&&'
 
@@ -504,8 +501,7 @@ bool Parser::parsePostFixExpression(Expression **expr) {
   // parse the primary
   PrimaryExpression *primary_expr = 0;
   parsePrimaryExpression((Expression **) &primary_expr);
-  DebugManager::printMessage("PRIMARY:" + primary_expr->string_value,
-                             ModuleInfo::PARSER);
+  DebugManager::printMessage("PRIMARY:" + primary_expr->string_val, ModuleInfo::PARSER);
   last_tmp_expr = primary_expr;
 
   bool exit = false;
@@ -515,8 +511,7 @@ bool Parser::parsePostFixExpression(Expression **expr) {
     if (IS_PUNCTUATOR(".")) {
       //field access
       nextToken();  //step '.'
-      FieldAccessPostFixExpression *field_access_expr =
-          new FieldAccessPostFixExpression;
+      FieldAccessPostFixExpression *field_access_expr = new FieldAccessPostFixExpression;
       field_access_expr->identifier = _current_token.textual_content;
       nextToken();  //step identifier
       current_postfix_expr = field_access_expr;
@@ -531,8 +526,7 @@ bool Parser::parsePostFixExpression(Expression **expr) {
       current_postfix_expr = array_postfix_expr;
     } else if (IS_PUNCTUATOR("(")) {
       DebugManager::printMessage("function call", ModuleInfo::PARSER);
-      FunctionCallPostfixExpression *func_call_expr =
-          new FunctionCallPostfixExpression;
+      FunctionCallPostfixExpression *func_call_expr = new FunctionCallPostfixExpression;
       nextToken();  //step '('
       if (!IS_PUNCTUATOR(")")) {  //when parameter are available parse them
         std::vector<Expression *> params;
@@ -550,9 +544,7 @@ bool Parser::parsePostFixExpression(Expression **expr) {
       nextToken();  //step ')'
       func_call_expr->identifier = primary_expr;
       current_postfix_expr = func_call_expr;
-      DebugManager::printMessage(
-          "FCALL:" + func_call_expr->identifier->string_value,
-          ModuleInfo::PARSER);
+      DebugManager::printMessage("FCALL:" + func_call_expr->identifier->string_val, ModuleInfo::PARSER);
     } else if (IS_PUNCTUATOR("++")) {
 
       nextToken();  // step '++'
@@ -602,8 +594,7 @@ bool Parser::parseAdditiveExpression(Expression **expr) {
   }
   if (has_rhs) {
     *expr = additive_expr;
-    additive_expr->lhs_multiplicative_expression =
-        lhs_multiplicative_expression;
+    additive_expr->lhs_multiplicative_expression = lhs_multiplicative_expression;
     nextToken();  //step operator
     //parse rhs additive expression
     AdditiveExpression *rhs_additive_expression;
@@ -666,7 +657,7 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
     *expr = identifier_expr;
 
   } else if (isType(_current_token)) {
-    primary_expr->string_value = _current_token.textual_content;
+    primary_expr->string_val = _current_token.textual_content;
     nextToken();
 
   } else if (IS_TOKEN_TYPE(TokenType::BOOL_LITERAL)) {
@@ -676,7 +667,7 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_INT)) {
     primary_expr->expr_type = ExpressionType::INTEGER;
-    primary_expr->int_value = (int)_current_token.numeric_content;
+    primary_expr->int_value = (int) _current_token.numeric_content;
     nextToken();
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_FLOAT)) {
@@ -686,7 +677,7 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
 
   } else if (IS_TOKEN_TYPE(TokenType::TEXTUAL_LITERAL)) {
     primary_expr->expr_type = ExpressionType::STRING;
-    primary_expr->string_value = _current_token.textual_content;
+    primary_expr->string_val = _current_token.textual_content;
     nextToken();
 
   } else if (IS_PUNCTUATOR("(")) {

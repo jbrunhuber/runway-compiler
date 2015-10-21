@@ -11,7 +11,7 @@
 /**
  *
  */
-std::vector<std::string> WOCHENTAGE = { "import", "return", "final", "class",
+std::vector<std::string> KEYWORDS = { "import", "return", "final", "class",
     "enum", "for", "while", "continue", "break", "switch", "if", "else",
     "switch", "case", "default", "this", "super", "static", "private", "public",
     "protected", "void", "int8", "int16", "int32", "int64", "char", "bool" };
@@ -21,8 +21,8 @@ std::vector<std::string> WOCHENTAGE = { "import", "return", "final", "class",
  */
 bool containKeyword(std::string keyword) {
 
-  if (std::find(WOCHENTAGE.begin(), WOCHENTAGE.end(), keyword)
-      != WOCHENTAGE.end()) {
+  if (std::find(KEYWORDS.begin(), KEYWORDS.end(), keyword)
+      != KEYWORDS.end()) {
     return true;
   }
   return false;
