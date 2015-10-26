@@ -208,9 +208,9 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
   DebugManager::printMessage("type", ModuleInfo::CODEGEN);
 
   //allocate stack space
-  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(type);
+  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(type, identifier,_insert_point);
   llvm::Value *llvm_test_int = llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(32, 5));
-  llvm::StoreInst *store = new llvm::StoreInst(llvm_test_int, llvm_alloca_inst);
+  llvm::StoreInst *store = new llvm::StoreInst(llvm_test_int, llvm_alloca_inst, false, _insert_point);
 
   DebugManager::printMessage("alloca", ModuleInfo::CODEGEN);
 
@@ -413,8 +413,8 @@ void Generator::construct() {
   llvm::FunctionType *main_function_type = llvm::FunctionType::get(_builder->getVoidTy(), false);
   llvm::Function *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", _module);
 
-  llvm::BasicBlock *insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
-  _builder->SetInsertPoint(insert_point);
+  _insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
+  _builder->SetInsertPoint(_insert_point);
 }
 
 /**

@@ -79,6 +79,7 @@ class Generator {
  private:
   llvm::Module *_module;
   llvm::IRBuilder<> *_builder;
+    llvm::BasicBlock *_insert_point;
   std::map<std::string, llvm::Value *> _values;
   std::map<std::string, llvm::Function *> _functions;
 };
