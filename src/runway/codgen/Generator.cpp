@@ -188,6 +188,8 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
   //identifier
   std::string identifier = var_decl_stmt->identifier->string_value;
 
+  DebugManager::printMessage("identifier", ModuleInfo::CODEGEN);
+
   //type
   llvm::Type *type = nullptr;
   ExpressionType expression_type = var_decl_stmt->type->expr_type;
@@ -203,8 +205,14 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
       break;
   }
 
+  DebugManager::printMessage("type", ModuleInfo::CODEGEN);
+
   //allocate stack space
-  std::unique_ptr<llvm::AllocaInst> llvm_alloca_inst(new llvm::AllocaInst(type));
+  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(type);
+  llvm::Value *llvm_test_int = llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(32, 5));
+  llvm::StoreInst *store = new llvm::StoreInst(llvm_test_int, llvm_alloca_inst);
+
+  DebugManager::printMessage("alloca", ModuleInfo::CODEGEN);
 
   //store assignment value
   AssignmentExpression *assignment = var_decl_stmt->expression_to_assign;
@@ -213,6 +221,7 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
     llvm_assignment_value = assignment->emit(this);
   }
 
+  DebugManager::printMessage("value", ModuleInfo::CODEGEN);
   //symbol table
   _values[identifier] = llvm_assignment_value;
 }

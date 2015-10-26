@@ -263,16 +263,41 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
   *variable_declaration_statement = new VariableDeclarationStatement;
 
   //set the type in the variable declaration statement
-  PrimaryExpression *type_primary_expr = new PrimaryExpression;
-  type_primary_expr->string_val = _current_token.textual_content;
-  (*variable_declaration_statement)->type = type_primary_expr;
+  PrimaryExpression *type_expr = new PrimaryExpression;
+  type_expr->string_value = _current_token.textual_content;
+
+  std::string type_identifier = _current_token.textual_content;
+  std::cout << type_identifier << std::endl;
+
+  if (!type_identifier.compare("int")) {
+    type_expr->expr_type = ExpressionType::INTEGER;
+  } else if (!type_identifier.compare("float")) {
+    type_expr->expr_type = ExpressionType::FLOAT;
+  } else if (!type_identifier.compare("double")) {
+    type_expr->expr_type = ExpressionType::FLOAT;  //TODO add double
+  } else if (!type_identifier.compare("string")) {
+    type_expr->expr_type = ExpressionType::STRING;
+  }
+
+  (*variable_declaration_statement)->type = type_expr;
   nextToken();  //eat type
 
   //if the current token is a identifier then parse the assignment expression
   if (_current_token.token_type == TokenType::IDENTIFIER) {
-    Expression *assignment_expr = nullptr;
-    parseAssignmentExpression(&assignment_expr);
-    (*variable_declaration_statement)->expression_to_assign = (AssignmentExpression*) assignment_expr;
+
+    //identifier
+    std::string value_identifier = _current_token.textual_content;
+    PrimaryExpression *identifier_expr = new PrimaryExpression;
+    identifier_expr->expr_type = ExpressionType::IDENTIFIER;
+    identifier_expr->string_value = value_identifier;
+
+    //when it's just a declaration don't parse assignment expression
+    if (_lookahead_token.textual_content.compare(";")) {  //its NOT semicolon (assignment)
+      Expression *assignment_expr = nullptr;
+      parseAssignmentExpression(&assignment_expr);
+      (*variable_declaration_statement)->expression_to_assign = (AssignmentExpression*) assignment_expr;
+    }
+    (*variable_declaration_statement)->identifier = identifier_expr;
     return true;
   } else {
     return false;
@@ -314,7 +339,7 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
     AssignmentExpression *assignment_expr = new AssignmentExpression;
     PrimaryExpression *primary = (PrimaryExpression*) lhs_identifier_expr;
     PrimaryExpression *identifier = new PrimaryExpression;
-    identifier->string_val = primary->string_val;
+    identifier->string_value = primary->string_value;
     identifier->expr_type = ExpressionType::IDENTIFIER;
     delete primary;
     assignment_expr->assignment_operator = assignment_operator;
@@ -501,7 +526,7 @@ bool Parser::parsePostFixExpression(Expression **expr) {
   // parse the primary
   PrimaryExpression *primary_expr = 0;
   parsePrimaryExpression((Expression **) &primary_expr);
-  DebugManager::printMessage("PRIMARY:" + primary_expr->string_val, ModuleInfo::PARSER);
+  DebugManager::printMessage("PRIMARY:" + primary_expr->string_value, ModuleInfo::PARSER);
   last_tmp_expr = primary_expr;
 
   bool exit = false;
@@ -544,7 +569,7 @@ bool Parser::parsePostFixExpression(Expression **expr) {
       nextToken();  //step ')'
       func_call_expr->identifier = primary_expr;
       current_postfix_expr = func_call_expr;
-      DebugManager::printMessage("FCALL:" + func_call_expr->identifier->string_val, ModuleInfo::PARSER);
+      DebugManager::printMessage("FCALL:" + func_call_expr->identifier->string_value, ModuleInfo::PARSER);
     } else if (IS_PUNCTUATOR("++")) {
 
       nextToken();  // step '++'
@@ -657,7 +682,7 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
     *expr = identifier_expr;
 
   } else if (isType(_current_token)) {
-    primary_expr->string_val = _current_token.textual_content;
+    primary_expr->string_value = _current_token.textual_content;
     nextToken();
 
   } else if (IS_TOKEN_TYPE(TokenType::BOOL_LITERAL)) {
@@ -677,7 +702,7 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
 
   } else if (IS_TOKEN_TYPE(TokenType::TEXTUAL_LITERAL)) {
     primary_expr->expr_type = ExpressionType::STRING;
-    primary_expr->string_val = _current_token.textual_content;
+    primary_expr->string_value = _current_token.textual_content;
     nextToken();
 
   } else if (IS_PUNCTUATOR("(")) {
