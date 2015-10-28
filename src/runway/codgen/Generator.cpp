@@ -28,13 +28,18 @@ Generator::~Generator() {
   delete _builder;
 }
 
+llvm::Value *Generator::emitIdentifierPrimaryExpression(Expression *expr) {
+
+  IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression*) expr;
+  return _values[identifier->identifier_description];
+}
+
 /**
  * Emits code for a function call statement
  */
-llvm::Value *Generator::emitFunctionCallPostFixExpression(
-    FunctionCallPostfixExpression *func_call_expr) {
+llvm::Value *Generator::emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *func_call_expr) {
 
-  std::string identifier = func_call_expr->identifier->string_value;
+  std::string identifier = func_call_expr->identifier->identifier_description;
   if (!identifier.compare("print") == 0) {
     DebugManager::printMessage("create print func", ModuleInfo::CODEGEN);
     createPrintFunction(func_call_expr->arguments.at(0), false);
@@ -62,15 +67,9 @@ void Generator::createPrintFunction(Expression *expr, bool new_line) {
   llvm::Function *llvm_print_func = _functions[print_function_identifier];
   if (llvm_print_func == nullptr) {
     std::vector<llvm::Type *> printf_arg_types;
-    printf_arg_types.push_back(
-        llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
-    llvm::FunctionType *llvm_printf_type = llvm::FunctionType::get(
-        llvm::Type::getInt32Ty(llvm::getGlobalContext()), printf_arg_types,
-        true);
-    llvm_print_func = llvm::Function::Create(llvm_printf_type,
-                                             llvm::Function::ExternalLinkage,
-                                             print_function_identifier,
-                                             _module);
+    printf_arg_types.push_back(llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
+    llvm::FunctionType *llvm_printf_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(llvm::getGlobalContext()), printf_arg_types, true);
+    llvm_print_func = llvm::Function::Create(llvm_printf_type, llvm::Function::ExternalLinkage, print_function_identifier, _module);
     llvm_print_func->setCallingConv(llvm::CallingConv::C);
     _functions[print_function_identifier] = llvm_print_func;
   }
@@ -79,7 +78,7 @@ void Generator::createPrintFunction(Expression *expr, bool new_line) {
    * Determine which kind of expression we have (numeric, string, bool, ...)
    */
   ExpressionType expression_type;
-  llvm::Type *llvm_value_type = llvm_value_expr->getType();
+  llvm::Type *llvm_value_type = llvm_value_expr->getType(); //TODO error
   std::string printf_function_type_spcifier;
 
   if (llvm_value_type->isFloatTy() || llvm_value_type->isDoubleTy()) {  //todo impl double
@@ -94,8 +93,7 @@ void Generator::createPrintFunction(Expression *expr, bool new_line) {
   }
   llvm::Constant *llvm_printf_func_const = llvm_print_func;
   std::vector<llvm::Value *> param_values;
-  param_values.push_back(
-      _builder->CreateGlobalStringPtr(printf_function_type_spcifier));
+  param_values.push_back(_builder->CreateGlobalStringPtr(printf_function_type_spcifier));
 
   param_values.push_back(llvm_value_expr);
   llvm::ArrayRef<llvm::Value *> llvm_func_arguments(param_values);
@@ -110,11 +108,9 @@ void Generator::createPrintFunction(Expression *expr, bool new_line) {
 /**
  * Allocates space on the stack for the (primitive) type of the declared symbol
  */
-void Generator::emitVariableDeclarationStatement(
-    VariableDeclarationStatement *var_decl_stmt) {
+void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *var_decl_stmt) {
 
-  DebugManager::printMessage("variable declaration statement",
-                             ModuleInfo::CODEGEN);
+  DebugManager::printMessage("variable declaration statement", ModuleInfo::CODEGEN);
 
   if (var_decl_stmt == 0) {
     std::cerr << "variable declaration statement is empty" << std::endl;
@@ -144,12 +140,9 @@ void Generator::emitVariableDeclarationStatement(
   DebugManager::printMessage("type", ModuleInfo::CODEGEN);
 
   //allocate stack space
-  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(type, identifier,
-                                                            _insert_point);
-  llvm::Value *llvm_test_int = llvm::ConstantInt::getIntegerValue(
-      llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(32, 5));
-  llvm::StoreInst *store = new llvm::StoreInst(llvm_test_int, llvm_alloca_inst,
-                                               false, _insert_point);
+  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(type, identifier, _insert_point);
+  llvm::Value *llvm_test_int = llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(32, 5));
+  llvm::StoreInst *store = new llvm::StoreInst(llvm_test_int, llvm_alloca_inst, false, _insert_point);
 
   DebugManager::printMessage("alloca", ModuleInfo::CODEGEN);
 
@@ -168,13 +161,12 @@ void Generator::emitVariableDeclarationStatement(
 /**
  * Stores the assignment value to the asignee
  */
-llvm::Value* Generator::emitAssignmentExpression(
-    AssignmentExpression *assignment_expr) {
+llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
   llvm::Value *llvm_value = nullptr;
 
   //identifier
-  std::string identifier = assignment_expr->identifier->string_value;
+  std::string identifier = assignment_expr->identifier->identifier_description;
 
   //store the variable
 
@@ -235,8 +227,7 @@ llvm::Value *Generator::emitAdditiveExpression(AdditiveExpression *expr) {
 /**
  *
  */
-llvm::Value *Generator::emitMultiplicativeExpression(
-    MultiplicativeExpression *expr) {
+llvm::Value *Generator::emitMultiplicativeExpression(MultiplicativeExpression *expr) {
 
   llvm::Value *llvm_lhs_value = expr->lhs_unary_expression->emit(this);
   llvm::Value *llvm_rhs_value = expr->rhs_additive_expression->emit(this);
@@ -246,8 +237,7 @@ llvm::Value *Generator::emitMultiplicativeExpression(
   if (expr->multiplicative_operator == Operator::MUL) {
     llvm_result_value = _builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
   } else if (expr->multiplicative_operator == Operator::DIV) {
-    llvm_result_value = _builder->CreateExactSDiv(llvm_lhs_value,
-                                                  llvm_rhs_value);
+    llvm_result_value = _builder->CreateExactSDiv(llvm_lhs_value, llvm_rhs_value);
   } else {
     ERR_PRINTLN("undefined operator for multiplicative operation");
   }
@@ -264,11 +254,9 @@ llvm::Constant *Generator::emitPrimaryExpression(PrimaryExpression *expr) {
   //determine the type of the declared expression
   ExpressionType expr_type = expr->expr_type;
   if (expr_type == ExpressionType::BOOL) {
-    DebugManager::printMessage("emit primary expression BOOLEAN",
-                               ModuleInfo::CODEGEN);
+    DebugManager::printMessage("emit primary expression BOOLEAN", ModuleInfo::CODEGEN);
     uint8_t value = expr->bool_value;
-    return llvm::ConstantInt::getIntegerValue(
-        llvm::Type::getInt1Ty(llvm::getGlobalContext()), llvm::APInt(1, value));
+    return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt1Ty(llvm::getGlobalContext()), llvm::APInt(1, value));
 
   } else if (expr_type == ExpressionType::STRING) {
     return _builder->CreateGlobalString(expr->string_value);
@@ -279,9 +267,7 @@ llvm::Constant *Generator::emitPrimaryExpression(PrimaryExpression *expr) {
 
   } else if (expr_type == ExpressionType::INTEGER) {
     int value = expr->int_value;
-    return llvm::ConstantInt::getIntegerValue(
-        llvm::Type::getInt32Ty(llvm::getGlobalContext()),
-        llvm::APInt(32, value));
+    return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(32, value));
   }
   return nullptr;
 }
@@ -301,28 +287,22 @@ llvm::Value *Generator::emitEqualityExpression(EqualityExpression *expr) {
 
   Operator compare_operator = expr->compare_operator;
   if (compare_operator == Operator::COMPARE_EQUAL) {
-    result_value = std::shared_ptr<llvm::Value>(
-        _builder->CreateICmpEQ(lhs_value.get(), rhs_value.get()));
+    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpEQ(lhs_value.get(), rhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_GREATER) {
-    result_value = std::shared_ptr<llvm::Value>(
-        _builder->CreateICmpSGT(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpSGT(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_GREATER_OR_EQUAL) {
-    result_value = std::shared_ptr<llvm::Value>(
-        _builder->CreateICmpSGE(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpSGE(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_LESS) {
-    result_value = std::shared_ptr<llvm::Value>(
-        _builder->CreateICmpSLT(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpSLT(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_LESS_OR_EQUAL) {
-    result_value = std::shared_ptr<llvm::Value>(
-        _builder->CreateICmpSLE(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpSLE(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_UNEQUAL) {
-    result_value = std::shared_ptr<llvm::Value>(
-        _builder->CreateICmpNE(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpNE(rhs_value.get(), lhs_value.get()));
 
   } else {
     ERR_PRINTLN("INVALID COMPARE OPERATOR");
@@ -362,13 +342,10 @@ llvm::Value *Generator::emitUnaryExpression(UnaryExpression *expr) {
  */
 void Generator::construct() {
 
-  llvm::FunctionType *main_function_type = llvm::FunctionType::get(
-      _builder->getVoidTy(), false);
-  llvm::Function *main_function = llvm::Function::Create(
-      main_function_type, llvm::Function::ExternalLinkage, "main", _module);
+  llvm::FunctionType *main_function_type = llvm::FunctionType::get(_builder->getVoidTy(), false);
+  llvm::Function *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", _module);
 
-  _insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(),
-                                           "entrypoint", main_function);
+  _insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
   _builder->SetInsertPoint(_insert_point);
 }
 

@@ -35,8 +35,7 @@ class Generator {
    * Generates LLVM-IR for expressions
    */
 
-  llvm::Value *emitFunctionCallPostFixExpression(
-      FunctionCallPostfixExpression *);
+  llvm::Value *emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *);
 
   llvm::Value *emitLogicalOrExpression(LogicalOrExpression *);
 
@@ -55,6 +54,8 @@ class Generator {
   llvm::Value *emitPostFixExpression(PostFixExpression *);
 
   llvm::Value *emitAssignmentExpression(AssignmentExpression *);
+
+  llvm::Value *emitIdentifierPrimaryExpression(Expression*);
 
   llvm::Constant *emitPrimaryExpression(PrimaryExpression *);
 

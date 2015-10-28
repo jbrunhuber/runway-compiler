@@ -117,7 +117,7 @@ class EmptyExpressionStatement : public ExpressionStatement {
  */
 class AssignmentExpression : public Expression {
  public:
-  PrimaryExpression *identifier;
+  IdentifierPrimaryExpression *identifier;
   Operator assignment_operator;
   Expression *expression_to_assign;
   llvm::Value *emit(Generator *generator);
@@ -178,7 +178,7 @@ class FunctionCallPostfixExpression : public PostFixExpression {
  public:
   llvm::Value *emit(Generator *generator);
   std::vector<Expression *> arguments;
-  PrimaryExpression *identifier;
+  IdentifierPrimaryExpression *identifier;
 };
 
 /**

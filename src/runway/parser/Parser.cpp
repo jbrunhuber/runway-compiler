@@ -322,6 +322,8 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
 
   Expression *lhs_identifier_expr = new AssignmentExpression;
 
+  DebugManager::printMessage("assi", ModuleInfo::PARSER);
+
   //identifier
   parseLogicalOrExpression(&lhs_identifier_expr);
 
@@ -337,17 +339,13 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
   //when there's no operator there's no assignment expression
   if (assignment_operator != Operator::NONE) {
     AssignmentExpression *assignment_expr = new AssignmentExpression;
-    PrimaryExpression *primary = (PrimaryExpression*) lhs_identifier_expr;
-    PrimaryExpression *identifier = new PrimaryExpression;
-    identifier->string_value = primary->string_value;
-    identifier->expr_type = ExpressionType::IDENTIFIER;
-    delete primary;
     assignment_expr->assignment_operator = assignment_operator;
-    nextToken();  //eat operator
+    assignment_expr->identifier = (IdentifierPrimaryExpression*) lhs_identifier_expr;
+    nextToken();
     Expression *expression_to_assign = 0;
     parseExpression(&expression_to_assign);
     assignment_expr->expression_to_assign = expression_to_assign;
-    *expr = assignment_expr;  //if it's a assignment expression it's a assignment expression
+    *expr = assignment_expr;
   } else {
     *expr = lhs_identifier_expr;
   }
@@ -526,7 +524,6 @@ bool Parser::parsePostFixExpression(Expression **expr) {
   // parse the primary
   PrimaryExpression *primary_expr = 0;
   parsePrimaryExpression((Expression **) &primary_expr);
-  DebugManager::printMessage("PRIMARY:" + primary_expr->string_value, ModuleInfo::PARSER);
   last_tmp_expr = primary_expr;
 
   bool exit = false;
@@ -567,9 +564,10 @@ bool Parser::parsePostFixExpression(Expression **expr) {
         func_call_expr->arguments = params;
       }
       nextToken();  //step ')'
-      func_call_expr->identifier = primary_expr;
+
+      //If it's an identifier, the primary expression is actually an identifier-primary-expression
+      func_call_expr->identifier = (IdentifierPrimaryExpression*)primary_expr;
       current_postfix_expr = func_call_expr;
-      DebugManager::printMessage("FCALL:" + func_call_expr->identifier->string_value, ModuleInfo::PARSER);
     } else if (IS_PUNCTUATOR("++")) {
 
       nextToken();  // step '++'
