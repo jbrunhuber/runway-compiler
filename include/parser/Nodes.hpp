@@ -86,7 +86,8 @@ enum class ExpressionType {
   IDENTIFIER,
   EXPR,
   FLOAT,
-  INTEGER
+  INTEGER,
+  NULL_PTR
 };
 
 /**
@@ -94,7 +95,7 @@ enum class ExpressionType {
  */
 class PrimaryExpression : public Expression {
  public:
-  llvm::Constant *emit(Generator *generator);
+  llvm::Value *emit(Generator *generator);
   int int_value;
   double double_value;
   bool bool_value;
@@ -103,7 +104,7 @@ class PrimaryExpression : public Expression {
   Expression *expression;
 };
 
-class IdentifierPrimaryExpression : public Expression {
+class IdentifierPrimaryExpression : public PrimaryExpression {
  public:
   llvm::Value *emit(Generator *generator);
   std::string identifier_description;
@@ -257,7 +258,7 @@ class IfStatement : public Statement {
 class VariableDeclarationStatement : public Statement {
  public:
   void emit(Generator*);
-  PrimaryExpression *identifier;
+  IdentifierPrimaryExpression *identifier;
   PrimaryExpression *type;
   AssignmentExpression *expression_to_assign;
 };

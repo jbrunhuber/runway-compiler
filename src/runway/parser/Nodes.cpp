@@ -63,7 +63,7 @@ llvm::Value* FieldAccessPostFixExpression::emit(Generator *generator) {
 
 llvm::Value* IdentifierPrimaryExpression::emit(Generator *generator) {
 
-    return nullptr;
+  return generator->emitIdentifierPrimaryExpression(this);
 }
 
 llvm::Value* ConditionalExpression::emit(Generator *generator) {
@@ -73,7 +73,7 @@ llvm::Value* ConditionalExpression::emit(Generator *generator) {
 }
 llvm::Value* AssignmentExpression::emit(Generator *generator) {
 
-  return nullptr;
+  return generator->emitAssignmentExpression(this);
 }
 
 llvm::Value* RelationalExpression::emit(Generator *generator) {
@@ -82,7 +82,7 @@ llvm::Value* RelationalExpression::emit(Generator *generator) {
   return nullptr;
 }
 
-llvm::Constant* PrimaryExpression::emit(Generator *generator) {
+llvm::Value* PrimaryExpression::emit(Generator *generator) {
 
   return generator->emitPrimaryExpression(this);
 }

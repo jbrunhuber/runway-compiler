@@ -287,9 +287,9 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
 
     //identifier
     std::string value_identifier = _current_token.textual_content;
-    PrimaryExpression *identifier_expr = new PrimaryExpression;
+    IdentifierPrimaryExpression *identifier_expr = new IdentifierPrimaryExpression;
     identifier_expr->expr_type = ExpressionType::IDENTIFIER;
-    identifier_expr->string_value = value_identifier;
+    identifier_expr->identifier_description = value_identifier;
 
     //when it's just a declaration don't parse assignment expression
     if (_lookahead_token.textual_content.compare(";")) {  //its NOT semicolon (assignment)
@@ -340,7 +340,10 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
   if (assignment_operator != Operator::NONE) {
     AssignmentExpression *assignment_expr = new AssignmentExpression;
     assignment_expr->assignment_operator = assignment_operator;
-    assignment_expr->identifier = (IdentifierPrimaryExpression*) lhs_identifier_expr;
+
+    IdentifierPrimaryExpression *identifier_expr = (IdentifierPrimaryExpression*) lhs_identifier_expr;
+    identifier_expr->expr_type = ExpressionType::NULL_PTR;
+    assignment_expr->identifier = identifier_expr;
     nextToken();
     Expression *expression_to_assign = 0;
     parseExpression(&expression_to_assign);
@@ -566,7 +569,7 @@ bool Parser::parsePostFixExpression(Expression **expr) {
       nextToken();  //step ')'
 
       //If it's an identifier, the primary expression is actually an identifier-primary-expression
-      func_call_expr->identifier = (IdentifierPrimaryExpression*)primary_expr;
+      func_call_expr->identifier = (IdentifierPrimaryExpression*) primary_expr;
       current_postfix_expr = func_call_expr;
     } else if (IS_PUNCTUATOR("++")) {
 

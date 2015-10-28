@@ -41,7 +41,7 @@ TEST(CODEGEN, ASSIGNMENT_EXPR) {
   std::unique_ptr<Generator> generator(new Generator());
   AssignmentExpression *assignment_expr = new AssignmentExpression;
   assignment_expr->assignment_operator = assignment_operator;
-  assignment_expr->identifier = identifier;
+  //assignment_expr->identifier = identifier;
 
   generator->construct();
   assignment_expr->emit(generator.get());
@@ -171,7 +171,7 @@ TEST(CODEGEN, VAR_DECLARATION_STMT) {
 
   assignment_value->int_value = 13;
   //variable_declaration_stmt->identifier = "test"; TODO
-  variable_declaration_stmt->expression_to_assign = assignment_value.get();
+  //variable_declaration_stmt->expression_to_assign = assignment_value.get();
 
   //emits code for variable declaration statement
   generator->construct();
@@ -212,7 +212,7 @@ TEST(CODEGEN, PRINT_POSTFIX_FUNCTION_CALL) {
   args.push_back(arg_parameter.get());
 
   //fill mock function call expression
-  function_call->identifier = function_call_identifier.get();
+  //function_call->identifier = function_call_identifier.get();
   function_call->arguments = args;
 
   //emir IR
