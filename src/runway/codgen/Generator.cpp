@@ -106,81 +106,67 @@ void Generator::createPrintFunction(Expression *expr, bool new_line) {
 }
 
 /**
- * Allocates space on the stack for the (primitive) type of the declared symbol
+ * Allocates stack space for a variable declaration statement and assign the value if there's an assignment available
+ *
+ * param: the parsed variable declaration statement
  */
 void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *var_decl_stmt) {
 
-  DebugManager::printMessage("variable declaration statement", ModuleInfo::CODEGEN);
-
-  if (var_decl_stmt == 0) {
-    std::cerr << "variable declaration statement is empty" << std::endl;
-    return;
-  }
-
-  //identifier
   std::string identifier = var_decl_stmt->identifier->string_value;
 
-  DebugManager::printMessage("identifier", ModuleInfo::CODEGEN);
-
-  //type
-  llvm::Type *type = nullptr;
+  llvm::Type *llvm_variable_type = nullptr;
   ExpressionType expression_type = var_decl_stmt->type->expr_type;
+
+  //set the llvm type
   switch (expression_type) {
     case ExpressionType::BOOL:
-      type = llvm::Type::getInt1Ty(llvm::getGlobalContext());
+      llvm_variable_type = llvm::Type::getInt1Ty(llvm::getGlobalContext());
       break;
     case ExpressionType::FLOAT:
-      type = llvm::Type::getFloatTy(llvm::getGlobalContext());
+      llvm_variable_type = llvm::Type::getFloatTy(llvm::getGlobalContext());
       break;
     case ExpressionType::INTEGER:
-      type = llvm::Type::getInt32Ty(llvm::getGlobalContext());
+      llvm_variable_type = llvm::Type::getInt32Ty(llvm::getGlobalContext());
       break;
   }
 
-  DebugManager::printMessage("type", ModuleInfo::CODEGEN);
-
   //allocate stack space
-  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(type, identifier, _insert_point);
-  DebugManager::printMessage("alloca", ModuleInfo::CODEGEN);
+  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(llvm_variable_type, identifier, _insert_point);
 
-  //symbol table
+  //save the pointer of the value in the symbol table
   _values[identifier] = llvm_alloca_inst;
 
-  //store assignment value
-  AssignmentExpression *assignment = var_decl_stmt->expression_to_assign;
-  llvm::Value *llvm_assignment_value = nullptr;
-  if (assignment != nullptr) {
-    llvm_assignment_value = assignment->emit(this);
+  //if there's a assignment beside the variable declaration, emit the rhs assignment value
+  AssignmentExpression *assignment_expr = var_decl_stmt->expression_to_assign;
+  if (assignment_expr != nullptr) {
+    assignment_expr->emit(this);
   }
-
-  DebugManager::printMessage("emit variable declaration " + identifier, ModuleInfo::CODEGEN);
-
 }
 
 /**
- * Stores the assignment value to the asignee
+ * Stores the rhs of an assignment expression
+ *
+ * param: the parsed assignment expression
+ * return: the pointer to the new assigned value
  */
 llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
-  llvm::Value *llvm_new_value = assignment_expr->expression_to_assign->emit(this);
-  //identifier
+  //emit the righthandside value in the assignment-expression
+  llvm::Value *llvm_emitted_assignment_value = assignment_expr->expression_to_assign->emit(this);
+
   std::string identifier = assignment_expr->identifier->string_value;
 
-  //store the variable
+  //get the llvm pointer from the symbol table
   llvm::Value *llvm_ptr = _values[identifier];
 
+  //when there's no value in symbol table print error
   if (llvm_ptr == nullptr) {
-    std::cerr << "ERROR" << std::endl;
+    std: cerr << "Use of undeclared identifier " << identifier << std::endl;
     return nullptr;
   }
-  if (llvm_new_value == nullptr) {
 
-    std::cerr << "oops something went wrong :/" << std::endl;
-  }
-  llvm::StoreInst *store = new llvm::StoreInst(llvm_new_value, llvm_ptr, false, _insert_point);
-
-  _values[identifier] = llvm_new_value;
-
+  //create a store instruction to store the assignment value
+  new llvm::StoreInst(llvm_emitted_assignment_value, llvm_ptr, false, _insert_point);
   return llvm_ptr;
 }
 
