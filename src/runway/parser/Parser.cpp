@@ -289,7 +289,7 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
     std::string value_identifier = _current_token.textual_content;
     IdentifierPrimaryExpression *identifier_expr = new IdentifierPrimaryExpression;
     identifier_expr->expr_type = ExpressionType::IDENTIFIER;
-    identifier_expr->identifier_description = value_identifier;
+    identifier_expr->string_value = value_identifier;
 
     //when it's just a declaration don't parse assignment expression
     if (_lookahead_token.textual_content.compare(";")) {  //its NOT semicolon (assignment)
@@ -678,7 +678,7 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
   //identifier
   if (IS_TOKEN_TYPE(TokenType::IDENTIFIER)) {
     IdentifierPrimaryExpression *identifier_expr = new IdentifierPrimaryExpression;
-    identifier_expr->identifier_description = _current_token.textual_content;
+    identifier_expr->string_value = _current_token.textual_content;
     nextToken();
     *expr = identifier_expr;
 

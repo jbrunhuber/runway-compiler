@@ -107,7 +107,6 @@ class PrimaryExpression : public Expression {
 class IdentifierPrimaryExpression : public PrimaryExpression {
  public:
   llvm::Value *emit(Generator *generator);
-  std::string identifier_description;
 };
 
 class EmptyExpressionStatement : public ExpressionStatement {

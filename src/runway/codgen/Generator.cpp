@@ -31,7 +31,7 @@ Generator::~Generator() {
 llvm::Value *Generator::emitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression*) expr;
-  return _values[identifier->identifier_description];
+  return _values[identifier->string_value];
 }
 
 /**
@@ -39,7 +39,7 @@ llvm::Value *Generator::emitIdentifierPrimaryExpression(Expression *expr) {
  */
 llvm::Value *Generator::emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *func_call_expr) {
 
-  std::string identifier = func_call_expr->identifier->identifier_description;
+  std::string identifier = func_call_expr->identifier->string_value;
   if (!identifier.compare("print")) {
     DebugManager::printMessage("create print func", ModuleInfo::CODEGEN);
     createPrintFunction(func_call_expr->arguments.at(0), false);
@@ -118,7 +118,7 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
   }
 
   //identifier
-  std::string identifier = var_decl_stmt->identifier->identifier_description;
+  std::string identifier = var_decl_stmt->identifier->string_value;
 
   DebugManager::printMessage("identifier", ModuleInfo::CODEGEN);
 
@@ -141,10 +141,10 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
 
   //allocate stack space
   llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(type, identifier, _insert_point);
-  llvm::Value *llvm_test_int = llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(32, 5));
-  llvm::StoreInst *store = new llvm::StoreInst(llvm_test_int, llvm_alloca_inst, false, _insert_point);
-
   DebugManager::printMessage("alloca", ModuleInfo::CODEGEN);
+
+  //symbol table
+  _values[identifier] = llvm_alloca_inst;
 
   //store assignment value
   AssignmentExpression *assignment = var_decl_stmt->expression_to_assign;
@@ -154,8 +154,7 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
   }
 
   DebugManager::printMessage("emit variable declaration " + identifier, ModuleInfo::CODEGEN);
-  //symbol table
-  _values[identifier] = llvm_assignment_value;
+
 }
 
 /**
@@ -163,20 +162,26 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
  */
 llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
-  llvm::Value *llvm_value = nullptr;
-
   llvm::Value *llvm_new_value = assignment_expr->expression_to_assign->emit(this);
   //identifier
-  std::string identifier = assignment_expr->identifier->identifier_description;
+  std::string identifier = assignment_expr->identifier->string_value;
 
   //store the variable
-  llvm_value = _values[identifier];
-  llvm::LoadInst *load_instr = _builder->CreateLoad(llvm_value, identifier);  //TODO error
-  llvm::StoreInst *store = new llvm::StoreInst(llvm_new_value, load_instr, false, _insert_point);
+  llvm::Value *llvm_ptr = _values[identifier];
+
+  if (llvm_ptr == nullptr) {
+    std::cerr << "ERROR" << std::endl;
+    return nullptr;
+  }
+  if (llvm_new_value == nullptr) {
+
+    std::cerr << "oops something went wrong :/" << std::endl;
+  }
+  llvm::StoreInst *store = new llvm::StoreInst(llvm_new_value, llvm_ptr, false, _insert_point);
 
   _values[identifier] = llvm_new_value;
 
-  return llvm_value;
+  return llvm_ptr;
 }
 
 /**
