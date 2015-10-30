@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
   ir_file << generator->getIR();
   ir_file.close();
 
-  std::cout << "Your outputfile was created on " << runway_source_path << "out.ll" << std::endl;
+  std::cout << "Your outputfile has been created on " << runway_source_path << "out.ll" << std::endl;
   std::cout << "Have a nice day/night" << std::endl;
 }
 

@@ -51,58 +51,67 @@ llvm::Value *Generator::emitFunctionCallPostFixExpression(FunctionCallPostfixExp
 }
 
 /**
- * Creates a print function for the specific type (bool, numeric, string, ...)
+ * Creates a print function
+ *
+ * param: parameter expression
+ * param: true, if the function should make a line break
  */
-void Generator::createPrintFunction(Expression *expr, bool new_line) {
+void Generator::createPrintFunction(Expression *parameter_expr, bool new_line) {
 
-  std::cout << "print" << std::endl;
+  const std::string const_function_name = "printf";
+  const std::string const_form_string_arg = "%s";
+  const std::string const_form_int_arg = "%i";
+  const std::string const_form_float_arg = "%f";
+  const std::string const_new_line_string = "\n";
 
-  llvm::Value *llvm_value_expr = expr->emit(this);
+  llvm::Value *llvm_parameter_value = parameter_expr->emit(this);
 
-  std::string print_function_identifier = "printf";
+  //when it's a pointer type load the value
+  if (llvm_parameter_value->getType()->isPointerTy()) {
+    llvm_parameter_value = _builder->CreateLoad(llvm_parameter_value);
+  }
 
   /**
    * Look in symbol table for existing function
    */
-  llvm::Function *llvm_print_func = _functions[print_function_identifier];
+  llvm::Function *llvm_print_func = _functions[const_function_name];
   if (llvm_print_func == nullptr) {
     std::vector<llvm::Type *> printf_arg_types;
     printf_arg_types.push_back(llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
     llvm::FunctionType *llvm_printf_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(llvm::getGlobalContext()), printf_arg_types, true);
-    llvm_print_func = llvm::Function::Create(llvm_printf_type, llvm::Function::ExternalLinkage, print_function_identifier, _module);
+    llvm_print_func = llvm::Function::Create(llvm_printf_type, llvm::Function::ExternalLinkage, const_function_name, _module);
     llvm_print_func->setCallingConv(llvm::CallingConv::C);
-    _functions[print_function_identifier] = llvm_print_func;
+    _functions[const_function_name] = llvm_print_func;
   }
 
   /**
    * Determine which kind of expression we have (numeric, string, bool, ...)
    */
-  ExpressionType expression_type;
-  llvm::Type *llvm_value_type = llvm_value_expr->getType();
-  std::string printf_function_type_spcifier;
+  llvm::Type *llvm_parameter_type = llvm_parameter_value->getType();
+  std::string printf_parameter_format;
 
-  if (llvm_value_type->isFloatTy() || llvm_value_type->isDoubleTy()) {  //todo impl double
-    expression_type = ExpressionType::FLOAT;
-    printf_function_type_spcifier = "%f";
-  } else if (llvm_value_type->isIntegerTy()) {
-    expression_type = ExpressionType::INTEGER;
-    printf_function_type_spcifier = "%i";
+  if (llvm_parameter_type->isFloatTy() || llvm_parameter_type->isDoubleTy()) {  //todo impl double
+    printf_parameter_format = const_form_float_arg;
+  } else if (llvm_parameter_type->isIntegerTy()) {
+    printf_parameter_format = const_form_int_arg;
   } else {
-    expression_type = ExpressionType::STRING;
-    printf_function_type_spcifier = "%s";
+    printf_parameter_format = const_form_string_arg;
   }
-  llvm::Constant *llvm_printf_func_const = llvm_print_func;
-  std::vector<llvm::Value *> param_values;
-  param_values.push_back(_builder->CreateGlobalStringPtr(printf_function_type_spcifier));
 
-  param_values.push_back(llvm_value_expr);
+  if (new_line) {
+    printf_parameter_format.append(const_new_line_string);
+  }
+
+  std::vector<llvm::Value *> param_values;
+  param_values.push_back(_builder->CreateGlobalStringPtr(printf_parameter_format));
+
+  param_values.push_back(llvm_parameter_value);
   llvm::ArrayRef<llvm::Value *> llvm_func_arguments(param_values);
 
   /**
-   * Finally create the build call
+   * Finally create the function call call
    */
   _builder->CreateCall(llvm_print_func, llvm_func_arguments);
-
 }
 
 /**
@@ -161,7 +170,7 @@ llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignmen
 
   //when there's no value in symbol table print error
   if (llvm_ptr == nullptr) {
-      std::cerr << "Use of undeclared identifier " << identifier << std::endl;
+    std::cerr << "Use of undeclared identifier " << identifier << std::endl;
     return nullptr;
   }
 
