@@ -161,7 +161,7 @@ llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignmen
 
   //when there's no value in symbol table print error
   if (llvm_ptr == nullptr) {
-    std: cerr << "Use of undeclared identifier " << identifier << std::endl;
+      std::cerr << "Use of undeclared identifier " << identifier << std::endl;
     return nullptr;
   }
 

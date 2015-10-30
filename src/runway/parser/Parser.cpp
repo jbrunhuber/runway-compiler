@@ -280,7 +280,7 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
   }
 
   (*variable_declaration_statement)->type = type_expr;
-  nextToken();  //eat type
+  nextToken();  //step type
 
   //if the current token is a identifier then parse the assignment expression
   if (_current_token.token_type == TokenType::IDENTIFIER) {
@@ -292,10 +292,12 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
     identifier_expr->string_value = value_identifier;
 
     //when it's just a declaration don't parse assignment expression
-    if (_lookahead_token.textual_content.compare(";")) {  //its NOT semicolon (assignment)
+    if (_lookahead_token.textual_content.compare(";")) {  //it's NOT a semicolon (assignment)
       Expression *assignment_expr = nullptr;
       parseAssignmentExpression(&assignment_expr);
       (*variable_declaration_statement)->expression_to_assign = (AssignmentExpression*) assignment_expr;
+    } else {
+      nextToken();  //step identifier
     }
     (*variable_declaration_statement)->identifier = identifier_expr;
     return true;
