@@ -236,15 +236,9 @@ bool Parser::parseBodyStatement(BodyStatement **body_statement) {
   std::vector<Statement *> statements;
   Statement *statement = 0;
 
-  /**
-   * DEBUG
-   */
-  int stmt_cnt = 0;
-
   Statement *stmt = 0;
   while (!(IS_PUNCTUATOR("}"))) {
     parseStatement(&stmt);
-    ++stmt_cnt;
     statements.push_back(statement);
   }
   nextToken();  //step '}'

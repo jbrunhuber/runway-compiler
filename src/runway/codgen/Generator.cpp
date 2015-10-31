@@ -31,7 +31,11 @@ Generator::~Generator() {
 llvm::Value *Generator::emitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression*) expr;
-  return _values[identifier->string_value];
+  llvm::Value *ptr = _values[identifier->string_value];
+
+  delete expr;
+
+  return ptr;
 }
 
 /**
@@ -47,6 +51,8 @@ llvm::Value *Generator::emitFunctionCallPostFixExpression(FunctionCallPostfixExp
     DebugManager::printMessage("create println func", ModuleInfo::CODEGEN);
     createPrintFunction(func_call_expr->arguments.at(0), true);
   }
+
+  delete func_call_expr;
   return nullptr;
 }
 
@@ -150,6 +156,9 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
   if (assignment_expr != nullptr) {
     assignment_expr->emit(this);
   }
+
+  delete assignment_expr;
+  delete var_decl_stmt;
 }
 
 /**
@@ -275,6 +284,7 @@ llvm::Constant *Generator::emitPrimaryExpression(PrimaryExpression *expr) {
     int value = expr->int_value;
     return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(32, value));
   }
+  delete expr;
   return nullptr;
 }
 
@@ -368,7 +378,7 @@ void Generator::finalize() {
  */
 void Generator::emitExpressionStatement(ExpressionStatement *expr_stmt) {
 
-  std::unique_ptr<Expression> expression(expr_stmt->expression);
+  Expression *expression = expr_stmt->expression;
   expression->emit(this);
 }
 
