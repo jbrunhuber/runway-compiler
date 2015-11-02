@@ -78,7 +78,7 @@ class MultiplicativeExpression : public Expression {
 };
 
 /**
- * INFO: Numeric is depreacted. Please use the specified type
+ *
  */
 enum class ExpressionType {
   STRING,
@@ -120,6 +120,7 @@ class AssignmentExpression : public Expression {
   IdentifierPrimaryExpression *identifier;
   Operator assignment_operator;
   Expression *expression_to_assign;
+  ExpressionType type;
   llvm::Value *emit(Generator *generator);
 
 };

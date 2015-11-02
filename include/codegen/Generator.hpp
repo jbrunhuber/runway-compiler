@@ -57,7 +57,7 @@ class Generator {
 
   llvm::Value *emitIdentifierPrimaryExpression(Expression*);
 
-  llvm::Constant *emitPrimaryExpression(PrimaryExpression *);
+  llvm::Value *emitPrimaryExpression(PrimaryExpression *);
 
   void emitVariableDeclarationStatement(VariableDeclarationStatement *);
 

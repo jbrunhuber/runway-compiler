@@ -261,14 +261,11 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
   type_expr->string_value = _current_token.textual_content;
 
   std::string type_identifier = _current_token.textual_content;
-  std::cout << type_identifier << std::endl;
 
   if (!type_identifier.compare("int")) {
     type_expr->expr_type = ExpressionType::INTEGER;
-  } else if (!type_identifier.compare("float")) {
+  } else if (!type_identifier.compare("double") || !type_identifier.compare("float")) {
     type_expr->expr_type = ExpressionType::FLOAT;
-  } else if (!type_identifier.compare("double")) {
-    type_expr->expr_type = ExpressionType::FLOAT;  //TODO add double
   } else if (!type_identifier.compare("string")) {
     type_expr->expr_type = ExpressionType::STRING;
   }
@@ -289,6 +286,7 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
     if (_lookahead_token.textual_content.compare(";")) {  //it's NOT a semicolon (assignment)
       Expression *assignment_expr = nullptr;
       parseAssignmentExpression(&assignment_expr);
+      ((AssignmentExpression*)assignment_expr)->type = type_expr->expr_type;
       (*variable_declaration_statement)->expression_to_assign = (AssignmentExpression*) assignment_expr;
     } else {
       nextToken();  //step identifier
@@ -350,6 +348,7 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
   }
   return true;
 }
+
 
 /**
  * LogicalOR
@@ -720,7 +719,11 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
  */
 bool Parser::isType(Token &token) {
 
-  //double
+  //float
+  if (token.textual_content == "float") {
+    return true;
+  }
+  //doule
   if (token.textual_content == "double") {
     return true;
   }
@@ -728,6 +731,7 @@ bool Parser::isType(Token &token) {
   if (token.textual_content == "bool") {
     return true;
   }
+
   //character
   if (token.textual_content == "char") {
     return true;
