@@ -282,11 +282,14 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
     identifier_expr->expr_type = ExpressionType::IDENTIFIER;
     identifier_expr->string_value = value_identifier;
 
+    //register types so we can show error by incompatible assignment
+    _registered_values[value_identifier] = type_identifier;
+
     //when it's just a declaration don't parse assignment expression
     if (_lookahead_token.textual_content.compare(";")) {  //it's NOT a semicolon (assignment)
       Expression *assignment_expr = nullptr;
       parseAssignmentExpression(&assignment_expr);
-      ((AssignmentExpression*)assignment_expr)->type = type_expr->expr_type;
+      ((AssignmentExpression*) assignment_expr)->type = type_expr->expr_type;
       (*variable_declaration_statement)->expression_to_assign = (AssignmentExpression*) assignment_expr;
     } else {
       nextToken();  //step identifier
@@ -316,7 +319,7 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
 
   Expression *lhs_identifier_expr = new AssignmentExpression;
 
-  DebugManager::printMessage("assi", ModuleInfo::PARSER);
+  DebugManager::printMessage("assignment", ModuleInfo::PARSER);
 
   //identifier
   parseLogicalOrExpression(&lhs_identifier_expr);
@@ -342,13 +345,13 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
     Expression *expression_to_assign = 0;
     parseExpression(&expression_to_assign);
     assignment_expr->expression_to_assign = expression_to_assign;
+
     *expr = assignment_expr;
   } else {
     *expr = lhs_identifier_expr;
   }
   return true;
 }
-
 
 /**
  * LogicalOR

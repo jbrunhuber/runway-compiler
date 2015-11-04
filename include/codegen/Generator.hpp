@@ -23,6 +23,9 @@
 
 #include "errprint.h"
 #include "parser/Nodes.hpp"
+#include "codegen/rw_symtable_entry.hpp"
+
+class rw_symtable_entry;
 
 class Generator {
  public:
@@ -82,7 +85,7 @@ class Generator {
   llvm::Module *_module;
   llvm::IRBuilder<> *_builder;
   llvm::BasicBlock *_insert_point;
-  std::map<std::string, llvm::Value *> _values;
+  std::map<std::string, rw_symtable_entry *> _values;
   std::map<std::string, llvm::Function *> _functions;
 };
 

@@ -32,13 +32,13 @@ llvm::Value *Generator::emitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression*) expr;
 
-  llvm::Value *ptr = _values[identifier->string_value];
+  rw_symtable_entry *value = _values[identifier->string_value];
+  llvm::Value *ptr = value->llvm_ptr;
+  delete expr;
 
   if (ptr == nullptr) {
     std::cerr << "use of undeclared identifier " << identifier << std::endl;
   }
-
-  delete expr;
 
   return ptr;
 }
@@ -157,7 +157,11 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
   llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(llvm_variable_type, identifier, _insert_point);
 
   //save the pointer of the value in the symbol table
-  _values[identifier] = llvm_alloca_inst;
+  rw_symtable_entry *variable_declaration_entry = new rw_symtable_entry;
+
+  variable_declaration_entry->llvm_ptr = llvm_alloca_inst;
+  variable_declaration_entry->type = ExpressionType::NULL_PTR;
+  _values[identifier] = variable_declaration_entry;
 
   //if there's a assignment beside the variable declaration, emit the rhs assignment value
   AssignmentExpression *assignment_expr = var_decl_stmt->expression_to_assign;
@@ -183,13 +187,17 @@ llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignmen
   std::string identifier = assignment_expr->identifier->string_value;
 
   //get the llvm pointer from the symbol table
-  llvm::Value *llvm_ptr = _values[identifier];
+
+  rw_symtable_entry *entry = _values[identifier];
+  entry->type = assignment_expr->type;
 
   //when there's no value in symbol table print error
-  if (llvm_ptr == nullptr) {
+  if (entry == nullptr) {
     std::cerr << "Use of undeclared identifier " << identifier << std::endl;
     return nullptr;
   }
+
+  llvm::Value *llvm_ptr = entry->llvm_ptr;
 
   //create a store instruction to store the assignment value
   new llvm::StoreInst(llvm_emitted_assignment_value, llvm_ptr, false, _insert_point);
@@ -293,9 +301,9 @@ llvm::Value *Generator::emitPrimaryExpression(PrimaryExpression *expr) {
     return llvm::ConstantFP::get(llvm::Type::getDoubleTy(llvm::getGlobalContext()), value);
 
   } else if (expr_type == ExpressionType::INTEGER) {
+
     int value = expr->int_value;
     return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(32, value));
-
   }
   delete expr;
   return nullptr;
