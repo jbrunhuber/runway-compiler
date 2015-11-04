@@ -25,7 +25,16 @@ TEST(CODEGEN, BASE) {
  */
 TEST(CODEGEN, ASSIGNMENT_EXPR) {
 
-  const char *expected_ir = "none";
+  const char *expected_ir = "; Module ID = 'runway'"
+      ""
+      "@0 = private unnamed_addr constant [12 x i8] c\"hello world\00\""
+      ""
+      "define void @main() {"
+      "entrypoint:"
+      "  %test_identifier = alloca i8*"
+      "  store i8* getelementptr inbounds ([12 x i8], [12 x i8]* @0, i32 0, i32 0), i8** %test_identifier"
+      "  ret void"
+      "}";
   const char *result_ir = "none";
 
   //mock vars for assignment expr
@@ -116,8 +125,8 @@ TEST(CODEGEN, PRIMARY_EXPR_BOOL) {
 TEST(CODEGEN, PRIMARY_EXPR_STR) {
 
   //create my compare strings
-  const char *expected_ir = "";  //TODO
-  const char *result_ir =
+  const char *result_ir = "none";
+  const char *expected_ir =
       "; ModuleID = 'top'\n"
           "@0 = internal unnamed_addr constant [47 x i8] c\"just a basic test string to write in our ir :)\0A\00\"\n"
           "define void @main() {\n"
@@ -153,7 +162,9 @@ TEST(CODEGEN, PRIMARY_EXPR_STR) {
 TEST(CODEGEN, VAR_DECLARATION_STMT) {
 
   //create my compare strings
-  const char *expected_ir = "define void @main() {\n"
+  const char *expected_ir = "; ModuleID = 'runway'"
+      ""
+      "define void @main() {\n"
       "entry:\n"
       "  %0 = alloca i32\n"
       "}";
@@ -222,14 +233,6 @@ TEST(CODEGEN, PRINT_POSTFIX_FUNCTION_CALL) {
   //now i ask the generator for the llvm assembly and compare it with our expected code
   result_ir = (generator->getIR()).c_str();
   EXPECT_STREQ(result_ir, expected_ir);
-}
-
-/**
- * variable declaration test
- */
-TEST(CODEGEN, GLOBAL_VARIABLE_TEST) {
-
-  //TODO
 }
 
 int main(int argc, char **argv) {
