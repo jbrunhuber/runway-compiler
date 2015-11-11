@@ -181,13 +181,21 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
  */
 llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
+  std::string identifier = assignment_expr->identifier->string_value;
+  
+  //check if the type in assignnment expression matches the allocated type
+  ExpressionType expected = assignment_expr->expr_type;
+  ExpressionType real_type = _values[identifier]->type;
+  
+  if(expected != real_type) {
+  
+    //check if type is castable, otherwise error
+  }
+  
   //emit the righthandside value in the assignment-expression
   llvm::Value *llvm_emitted_assignment_value = assignment_expr->expression_to_assign->emit(this);
 
-  std::string identifier = assignment_expr->identifier->string_value;
-
   //get the llvm pointer from the symbol table
-
   rw_symtable_entry *entry = _values[identifier];
   entry->type = assignment_expr->type;
 
