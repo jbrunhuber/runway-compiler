@@ -71,7 +71,7 @@ bool Parser::parseStatement(Statement **stmt) {
  */
 bool Parser::parseExpressionStatement(Statement **stmt) {
 
-  if (isType(_current_token)) {
+  if (isType (_current_token)) {
     DebugManager::printMessage("type", ModuleInfo::PARSER);
     VariableDeclarationStatement *variable_decl_stmt = 0;
     parseVariableDeclarationStatement(&variable_decl_stmt);
@@ -263,11 +263,11 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
   std::string type_identifier = _current_token.textual_content;
 
   if (!type_identifier.compare("int")) {
-    type_expr->expr_type = ExpressionType::INTEGER;
+    type_expr->type = ExpressionType::INTEGER;
   } else if (!type_identifier.compare("double") || !type_identifier.compare("float")) {
-    type_expr->expr_type = ExpressionType::FLOAT;
+    type_expr->type = ExpressionType::FLOAT;
   } else if (!type_identifier.compare("string")) {
-    type_expr->expr_type = ExpressionType::STRING;
+    type_expr->type = ExpressionType::STRING;
   }
 
   (*variable_declaration_statement)->type = type_expr;
@@ -279,17 +279,14 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
     //identifier
     std::string value_identifier = _current_token.textual_content;
     IdentifierPrimaryExpression *identifier_expr = new IdentifierPrimaryExpression;
-    identifier_expr->expr_type = ExpressionType::IDENTIFIER;
+    identifier_expr->type = ExpressionType::IDENTIFIER;
     identifier_expr->string_value = value_identifier;
-
-    //register types so we can show error by incompatible assignment
-    _registered_values[value_identifier] = type_identifier;
 
     //when it's just a declaration don't parse assignment expression
     if (_lookahead_token.textual_content.compare(";")) {  //it's NOT a semicolon (assignment)
       Expression *assignment_expr = nullptr;
       parseAssignmentExpression(&assignment_expr);
-      ((AssignmentExpression*) assignment_expr)->type = type_expr->expr_type;
+      ((AssignmentExpression*) assignment_expr)->type = type_expr->type;
       (*variable_declaration_statement)->expression_to_assign = (AssignmentExpression*) assignment_expr;
     } else {
       nextToken();  //step identifier
@@ -339,7 +336,7 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
     assignment_expr->assignment_operator = assignment_operator;
 
     IdentifierPrimaryExpression *identifier_expr = (IdentifierPrimaryExpression*) lhs_identifier_expr;
-    identifier_expr->expr_type = ExpressionType::NULL_PTR;
+    identifier_expr->type = ExpressionType::NULL_PTR;
     assignment_expr->identifier = identifier_expr;
     nextToken();
     Expression *expression_to_assign = 0;
@@ -680,32 +677,32 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
     nextToken();
     *expr = identifier_expr;
 
-  } else if (isType(_current_token)) {
+  } else if (isType (_current_token)) {
     primary_expr->string_value = _current_token.textual_content;
     nextToken();
 
   } else if (IS_TOKEN_TYPE(TokenType::BOOL_LITERAL)) {
-    primary_expr->expr_type = ExpressionType::BOOL;
+    primary_expr->type = ExpressionType::BOOL;
     primary_expr->bool_value = _current_token.bool_content;
     nextToken();
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_INT)) {
-    primary_expr->expr_type = ExpressionType::INTEGER;
+    primary_expr->type = ExpressionType::INTEGER;
     primary_expr->int_value = (int) _current_token.numeric_content;
     nextToken();
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_FLOAT)) {
-    primary_expr->expr_type = ExpressionType::FLOAT;
+    primary_expr->type = ExpressionType::FLOAT;
     primary_expr->double_value = _current_token.numeric_content;
     nextToken();
 
   } else if (IS_TOKEN_TYPE(TokenType::TEXTUAL_LITERAL)) {
-    primary_expr->expr_type = ExpressionType::STRING;
+    primary_expr->type = ExpressionType::STRING;
     primary_expr->string_value = _current_token.textual_content;
     nextToken();
 
   } else if (IS_PUNCTUATOR("(")) {
-    primary_expr->expr_type = ExpressionType::EXPR;
+    primary_expr->type = ExpressionType::EXPR;
     nextToken();  // eat '('
     LogicalOrExpression *logical_or_expr = 0;
     parseLogicalOrExpression((Expression **) &logical_or_expr);

@@ -27,6 +27,20 @@ class Node {
 };
 
 /**
+ *
+ */
+enum class ExpressionType {
+  STRING,
+  BOOL,
+  IDENTIFIER,
+  EXPR,
+  FLOAT,
+  DOUBLE,
+  INTEGER,
+  NULL_PTR
+};
+
+/**
  * Statement
  */
 class Statement : public Node {
@@ -46,6 +60,7 @@ class ExpressionStatement : public Statement {
 class Expression {
  public:
   virtual llvm::Value *emit(Generator *) = 0;
+  ExpressionType type;
 };
 
 class ReturnStatement : public Statement {
@@ -78,19 +93,6 @@ class MultiplicativeExpression : public Expression {
 };
 
 /**
- *
- */
-enum class ExpressionType {
-  STRING,
-  BOOL,
-  IDENTIFIER,
-  EXPR,
-  FLOAT,
-  INTEGER,
-  NULL_PTR
-};
-
-/**
  * Primary
  */
 class PrimaryExpression : public Expression {
@@ -99,7 +101,6 @@ class PrimaryExpression : public Expression {
   int int_value;
   double double_value;
   bool bool_value;
-  ExpressionType expr_type;
   std::string string_value;
   Expression *expression;
 };
@@ -120,7 +121,6 @@ class AssignmentExpression : public Expression {
   IdentifierPrimaryExpression *identifier;
   Operator assignment_operator;
   Expression *expression_to_assign;
-  ExpressionType type;
   llvm::Value *emit(Generator *generator);
 
 };

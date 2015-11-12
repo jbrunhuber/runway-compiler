@@ -11,7 +11,6 @@
 #include <sstream>
 #include <memory>
 
-
 #include "../include/tokenizer/Tokenizer.hpp"
 #include "../include/parser/Parser.hpp"
 
@@ -20,7 +19,7 @@ std::string getSourceCode(std::string path);
 /**
  * for testing
  */
-const char *DEFAULT_DEBUG_PATH = "/users/josh/Desktop/";
+const char *DEFAULT_DEBUG_PATH = "/home/josh/Dokumente/";
 
 /**
  *
@@ -29,16 +28,16 @@ int main(int argc, char **argv) {
 
   std::cout << "Welcome to Runway!" << std::endl;
 
-  DebugManager::debug = true; //prints debug messages
+  DebugManager::debug = true;  //prints debug messages
 
   //read the source code
   std::string runway_source_path = DEFAULT_DEBUG_PATH;
   std::string runway_source_code = getSourceCode(runway_source_path + "Runway.rw");
 
   //create instances
-  std::unique_ptr<Tokenizer> tokenizer(new Tokenizer(runway_source_code));
-  std::unique_ptr<Parser> parser(new Parser(tokenizer.get()));
-  std::unique_ptr<Generator> generator(new Generator());
+  std::unique_ptr < Tokenizer > tokenizer(new Tokenizer(runway_source_code));
+  std::unique_ptr < Parser > parser(new Parser(tokenizer.get()));
+  std::unique_ptr < Generator > generator(new Generator());
 
   //parse and emit the code
   generator->construct();

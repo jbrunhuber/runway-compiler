@@ -12,10 +12,12 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/Bitcode/ReaderWriter.h>
 #include <llvm/Support/raw_ostream.h>
+
 #include <iostream>
 #include <algorithm>
 #include <memory>
@@ -26,6 +28,8 @@
 #include "codegen/rw_symtable_entry.hpp"
 
 class rw_symtable_entry;
+enum class ExpressionType
+;
 
 class Generator {
  public:
@@ -73,6 +77,10 @@ class Generator {
   void emitExpressionStatement(ExpressionStatement*);
 
   void createPrintFunction(Expression *, bool);
+
+  llvm::Value* createLlvmFpValue(double, ExpressionType);
+
+  llvm::Value* createLlvmIntValue(int64_t, ExpressionType);
 
   // Creates base construct
   void construct();

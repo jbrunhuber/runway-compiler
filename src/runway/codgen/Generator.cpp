@@ -56,7 +56,6 @@ llvm::Value *Generator::emitFunctionCallPostFixExpression(FunctionCallPostfixExp
     DebugManager::printMessage("create println func", ModuleInfo::CODEGEN);
     createPrintFunction(func_call_expr->arguments.at(0), true);
   }
-
   delete func_call_expr;
   return nullptr;
 }
@@ -134,8 +133,10 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
 
   std::string identifier = var_decl_stmt->identifier->string_value;
 
+  std::cout << "declare " << identifier << std::endl;
+
   llvm::Type *llvm_variable_type = nullptr;
-  ExpressionType expression_type = var_decl_stmt->type->expr_type;
+  ExpressionType expression_type = var_decl_stmt->type->type;
 
   //set the llvm type
   switch (expression_type) {
@@ -160,7 +161,7 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
   rw_symtable_entry *variable_declaration_entry = new rw_symtable_entry;
 
   variable_declaration_entry->llvm_ptr = llvm_alloca_inst;
-  variable_declaration_entry->type = ExpressionType::NULL_PTR;
+  variable_declaration_entry->type = expression_type;
   _values[identifier] = variable_declaration_entry;
 
   //if there's a assignment beside the variable declaration, emit the rhs assignment value
@@ -182,34 +183,28 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
 llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
   std::string identifier = assignment_expr->identifier->string_value;
-  
+
   //check if the type in assignnment expression matches the allocated type
-  ExpressionType expected = assignment_expr->expr_type;
-  ExpressionType real_type = _values[identifier]->type;
-  
-  if(expected != real_type) {
-  
-    //check if type is castable, otherwise error
-  }
-  
-  //emit the righthandside value in the assignment-expression
+  ExpressionType assigned_type = assignment_expr->type;
+  ExpressionType declared_type = _values[identifier]->type;
+
   llvm::Value *llvm_emitted_assignment_value = assignment_expr->expression_to_assign->emit(this);
 
-  //get the llvm pointer from the symbol table
-  rw_symtable_entry *entry = _values[identifier];
-  entry->type = assignment_expr->type;
+  //cast from int to float/double
+  llvm::ConstantInt *integer_value = (llvm::ConstantInt*) llvm_emitted_assignment_value;
+  llvm_emitted_assignment_value = createLlvmFpValue(integer_value->getSExtValue(), ExpressionType::FLOAT);
 
+  rw_symtable_entry *entry = _values[identifier];
   //when there's no value in symbol table print error
   if (entry == nullptr) {
-    std::cerr << "Use of undeclared identifier " << identifier << std::endl;
+    std::cerr << "Use of undeclared identifier" << " " << identifier << std::endl;
     return nullptr;
   }
 
-  llvm::Value *llvm_ptr = entry->llvm_ptr;
+  std::cout << "assign " << identifier << std::endl;
 
-  //create a store instruction to store the assignment value
-  new llvm::StoreInst(llvm_emitted_assignment_value, llvm_ptr, false, _insert_point);
-  return llvm_ptr;
+  new llvm::StoreInst(llvm_emitted_assignment_value, entry->llvm_ptr, false, _insert_point);
+  return entry->llvm_ptr;
 }
 
 /**
@@ -291,7 +286,7 @@ llvm::Value *Generator::emitMultiplicativeExpression(MultiplicativeExpression *e
 llvm::Value *Generator::emitPrimaryExpression(PrimaryExpression *expr) {
 
   //determine the type of the declared expression
-  ExpressionType expr_type = expr->expr_type;
+  ExpressionType expr_type = expr->type;
   if (expr_type == ExpressionType::BOOL) {
     uint8_t value = expr->bool_value;
     return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt1Ty(llvm::getGlobalContext()), llvm::APInt(1, value));
@@ -299,21 +294,16 @@ llvm::Value *Generator::emitPrimaryExpression(PrimaryExpression *expr) {
   } else if (expr_type == ExpressionType::STRING) {
     return _builder->CreateGlobalStringPtr(expr->string_value);
 
-  } else if (expr_type == ExpressionType::FLOAT) {
+  } else if (expr_type == ExpressionType::FLOAT || expr_type == ExpressionType::DOUBLE) {
 
-    /**
-     * At this state of runway compiler every floating point value will be stored as a double
-     */
-
-    double value = expr->double_value;
-    return llvm::ConstantFP::get(llvm::Type::getDoubleTy(llvm::getGlobalContext()), value);
+    delete expr;
+    return createLlvmFpValue(expr->double_value, expr_type);
 
   } else if (expr_type == ExpressionType::INTEGER) {
 
-    int value = expr->int_value;
-    return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(32, value));
+    delete expr;
+    return createLlvmIntValue(expr->int_value, expr_type);
   }
-  delete expr;
   return nullptr;
 }
 
@@ -420,4 +410,49 @@ std::string Generator::getIR() {
   llvm::raw_string_ostream rso(str);
   _module->print(rso, nullptr);
   return str;
+}
+
+/**
+ * Creates a llvm value from a floating point value and the type (float/double)
+ *
+ * param fp_value: the floating point value to create
+ * param type: the type of the floating point precision (float/double)
+ *
+ * return: created llvm value
+ */
+llvm::Value* Generator::createLlvmFpValue(double fp_value, ExpressionType type) {
+
+  bool double_precision = false;
+  if (type == ExpressionType::FLOAT) {
+    double_precision = false;
+  } else if (type == ExpressionType::DOUBLE) {
+    double_precision = true;
+  } else {
+    std::cerr << "invalid type" << std::endl;
+    return nullptr;
+  }
+
+  if (double_precision) {
+    return llvm::ConstantFP::get(llvm::Type::getDoubleTy(llvm::getGlobalContext()), fp_value);
+  } else {
+    return llvm::ConstantFP::get(llvm::Type::getFloatTy(llvm::getGlobalContext()), fp_value);
+  }
+}
+
+/**
+ * Creates a llvm value from a integer value (just i32 supported yet)
+ *
+ * param integer_value: the integer value to create
+ * param type: the integer type to specify the size (short, int, long,) UNSUPPORTED //TODO
+ */
+llvm::Value* Generator::createLlvmIntValue(int64_t integer_value, ExpressionType type) {
+
+  uint16_t integer_size = 0;
+  if (type == ExpressionType::INTEGER) {
+    integer_size = 32;
+  } else {
+    std::cerr << "invalid type" << std::endl;
+    return nullptr;
+  }
+  return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(integer_size, integer_value));
 }
