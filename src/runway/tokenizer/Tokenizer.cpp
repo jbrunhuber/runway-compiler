@@ -126,8 +126,7 @@ void Tokenizer::skipWhitespace() {
   }
 
   //File Header (e. g. BOM)
-  if (_current == (char) 0xEF || _current == (char) 0xBB
-      || _current == (char) 0xBF) {  //Ignore ﻿ BOM Header in text-files
+  if (_current == (char) 0xEF || _current == (char) 0xBB || _current == (char) 0xBF) {  //Ignore ﻿ BOM Header in text-files
     step();
   }
 }
@@ -137,8 +136,7 @@ void Tokenizer::skipWhitespace() {
  */
 bool Tokenizer::isValidIdentifierFirst(char c) {
 
-  return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '|')
-      || (c == '$') || c == '_');
+  return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '|') || (c == '$') || c == '_');
 }
 
 /**
@@ -204,15 +202,12 @@ std::string Tokenizer::readPunctuator() {
   bool sub = _current == '-' && _lookahead == '=';
   bool mul = _current == '*' && _lookahead == '=';
   bool div = _current == '/' && _lookahead == '=';
-  bool compare = (_current == '<' || _current == '>' || _current == '='
-      || _current == '!') && _lookahead == '=';
+  bool compare = (_current == '<' || _current == '>' || _current == '=' || _current == '!') && _lookahead == '=';
   bool range = _current == '.' && _lookahead == '.';
-  bool bool_equality = (_current == '&' && _lookahead == '&')
-      || (_current == '|' && _lookahead == '|');
+  bool bool_equality = (_current == '&' && _lookahead == '&') || (_current == '|' && _lookahead == '|');
 
   //Checks if it's a double character punctuator
-  if (increment || decrement || add || sub || mul || div || compare
-      || bool_equality || range) {
+  if (increment || decrement || add || sub || mul || div || compare || bool_equality || range) {
     sstream << _lookahead;
     step();
   }
@@ -233,7 +228,7 @@ bool Tokenizer::tokenizeNumericLiteral(Token &token) {
 
     std::stringstream sstream;
     while (isdigit(_current) || _current == '.') {
-      if(!floating_point && _current == '.') {
+      if (!floating_point && _current == '.') {
         floating_point = true;
       }
       sstream << _current;
@@ -244,7 +239,14 @@ bool Tokenizer::tokenizeNumericLiteral(Token &token) {
     sstream >> number;
 
     if (floating_point) {
-      token.token_type = TokenType::NUMERIC_LITERAL_FLOAT;
+      if (_current == 'f') {
+        std::cout << "float" << std::endl;
+        token.token_type = TokenType::NUMERIC_LITERAL_FLOAT;
+        step();
+      } else {
+        std::cout << "double" << std::endl;
+        token.token_type = TokenType::NUMERIC_LITERAL_DOUBLE;
+      }
     } else {
       token.token_type = TokenType::NUMERIC_LITERAL_INT;
     }
