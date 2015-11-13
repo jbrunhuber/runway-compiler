@@ -1,0 +1,78 @@
+
+body {
+  font-family: 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  margin-top: 170px;
+}
+
+p {
+  font-family: 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  color: #1C1D21;
+}
+
+a {
+  color: #009BEB;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #00A9FF;
+}
+
+small {
+  font-style: italic;
+  font-size: 14px;
+}
+
+h1, header {
+  font-weight: 300;
+  font-family: 'Source Code Pro', monaco,Consolas,monospace;
+}
+
+header {
+  color: #eee;
+  background-color: #1C1D21;
+  position: absolute;
+  padding-left: 15px;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 128px;
+}
+
+header span {
+  color: #5AF3BB;
+}
+
+main {
+  margin: 0 14%;
+}
+
+.cursor {
+  -webkit-animation: cursor-anim 1.7s infinite; /* Safari 4+ */
+  -moz-animation:    cursor-anim 1.7s infinite; /* Fx 5+ */
+  -o-animation:      cursor-anim 1.7s infinite; /* Opera 12+ */
+  animation:         cursor-anim 1.7s infinite; /* IE 10+, Fx 29+ */
+}
+
+@-webkit-keyframes cursor-anim {
+  0%   { opacity: 0; }
+  50%  { opacity: 0; }
+  51%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+@-moz-keyframes cursor-anim {
+  0%   { opacity: 0; }
+  50%  { opacity: 0; }
+  51%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+@-o-keyframes cursor-anim {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes cursor-anim {
+  0%   { opacity: 0; }
+  50%  { opacity: 0; }
+  51%  { opacity: 1; }
+  100% { opacity: 1; }
+}
