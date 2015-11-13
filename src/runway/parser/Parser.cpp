@@ -71,7 +71,7 @@ bool Parser::parseStatement(Statement **stmt) {
  */
 bool Parser::parseExpressionStatement(Statement **stmt) {
 
-  if (isType (_current_token)) {
+  if (isType(_current_token)) {
     DebugManager::printMessage("type", ModuleInfo::PARSER);
     VariableDeclarationStatement *variable_decl_stmt = 0;
     parseVariableDeclarationStatement(&variable_decl_stmt);
@@ -264,8 +264,10 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
 
   if (!type_identifier.compare("int")) {
     type_expr->type = ExpressionType::INTEGER;
-  } else if (!type_identifier.compare("double") || !type_identifier.compare("float")) {
+  } else if (!type_identifier.compare("float")) {
     type_expr->type = ExpressionType::FLOAT;
+  } else if (!type_identifier.compare("double")) {
+    type_expr->type = ExpressionType::DOUBLE;
   } else if (!type_identifier.compare("string")) {
     type_expr->type = ExpressionType::STRING;
   }
@@ -677,7 +679,7 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
     nextToken();
     *expr = identifier_expr;
 
-  } else if (isType (_current_token)) {
+  } else if (isType(_current_token)) {
     primary_expr->string_value = _current_token.textual_content;
     nextToken();
 
@@ -693,6 +695,11 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_FLOAT)) {
     primary_expr->type = ExpressionType::FLOAT;
+    primary_expr->double_value = _current_token.numeric_content;
+    nextToken();
+
+  } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_DOUBLE)) {
+    primary_expr->type = ExpressionType::DOUBLE;
     primary_expr->double_value = _current_token.numeric_content;
     nextToken();
 

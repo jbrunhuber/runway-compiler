@@ -144,6 +144,9 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
       llvm_variable_type = llvm::Type::getInt1Ty(llvm::getGlobalContext());
       break;
     case ExpressionType::FLOAT:
+      llvm_variable_type = llvm::Type::getFloatTy(llvm::getGlobalContext());
+      break;
+    case ExpressionType::DOUBLE:
       llvm_variable_type = llvm::Type::getDoubleTy(llvm::getGlobalContext());
       break;
     case ExpressionType::INTEGER:
@@ -185,14 +188,21 @@ llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignmen
   std::string identifier = assignment_expr->identifier->string_value;
 
   //check if the type in assignnment expression matches the allocated type
-  ExpressionType assigned_type = assignment_expr->type;
+  ExpressionType assigned_type = assignment_expr->expression_to_assign->type;
   ExpressionType declared_type = _values[identifier]->type;
 
   llvm::Value *llvm_emitted_assignment_value = assignment_expr->expression_to_assign->emit(this);
 
-  //cast from int to float/double
-  llvm::ConstantInt *integer_value = (llvm::ConstantInt*) llvm_emitted_assignment_value;
-  llvm_emitted_assignment_value = createLlvmFpValue(integer_value->getSExtValue(), ExpressionType::FLOAT);
+  if (assigned_type != declared_type) {
+    //cast from int to float/double
+    llvm::ConstantInt *integer_value = (llvm::ConstantInt*) llvm_emitted_assignment_value;
+    llvm_emitted_assignment_value = createLlvmFpValue(integer_value->getSExtValue(), ExpressionType::FLOAT);
+  } else if (declared_type == ExpressionType::FLOAT && assigned_type == ExpressionType::DOUBLE) {
+    //precision loss
+  } else if (declared_type == ExpressionType::DOUBLE && assigned_type == ExpressionType::FLOAT) {
+    //yeah
+    std::cout << "case" << std::endl;
+  }
 
   rw_symtable_entry *entry = _values[identifier];
   //when there's no value in symbol table print error
