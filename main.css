@@ -6,7 +6,7 @@ body {
 
 p {
   font-family: 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
-  color: #1C1D21;
+  color: #333;
 }
 
 a {
@@ -21,11 +21,18 @@ a:hover {
 small {
   font-style: italic;
   font-size: 14px;
+  color: #888;
 }
 
 h1, header {
   font-weight: 300;
   font-family: 'Source Code Pro', monaco,Consolas,monospace;
+}
+
+h2 {
+  font-family: 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
 }
 
 header {
