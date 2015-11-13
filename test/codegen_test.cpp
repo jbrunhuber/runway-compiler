@@ -45,7 +45,7 @@ TEST(CODEGEN, ASSIGNMENT_EXPR) {
   PrimaryExpression *expr_to_assign = new PrimaryExpression;
   ExpressionType expr_type = ExpressionType::STRING;
   expr_to_assign->string_value = "hello world";
-  expr_to_assign->expr_type = expr_type;
+  expr_to_assign->type = expr_type;
 
   std::unique_ptr<Generator> generator(new Generator());
   AssignmentExpression *assignment_expr = new AssignmentExpression;
@@ -75,7 +75,7 @@ TEST(CODEGEN, PRIMARY_EXPR_NUM) {
   std::unique_ptr<PrimaryExpression> primary(new PrimaryExpression());
 
   //create a mock double value primary expression
-  primary->expr_type = ExpressionType::FLOAT;
+  primary->type = ExpressionType::FLOAT;
   primary->double_value = 13.3;
 
   //get the result as an llvm::Value from the generator
@@ -104,7 +104,7 @@ TEST(CODEGEN, PRIMARY_EXPR_BOOL) {
   std::unique_ptr<PrimaryExpression> primary(new PrimaryExpression());
 
   //create a mock bool primary expression
-  primary->expr_type = ExpressionType::BOOL;
+  primary->type = ExpressionType::BOOL;
   primary->bool_value = true;
 
   //get the result as an llvm::Value from the generator
@@ -138,7 +138,7 @@ TEST(CODEGEN, PRIMARY_EXPR_STR) {
   std::unique_ptr<PrimaryExpression> primary(new PrimaryExpression());
 
   //create a mock string primary expression
-  primary->expr_type = ExpressionType::STRING;
+  primary->type = ExpressionType::STRING;
   primary->string_value = "just a basic test string to write in our ir :)";
   generator->construct();  //the builder requires a function and basic block, otherwise segfault
 
@@ -212,11 +212,11 @@ TEST(CODEGEN, PRINT_POSTFIX_FUNCTION_CALL) {
 
   //identifier
   function_call_identifier->string_value = "print";
-  function_call_identifier->expr_type = ExpressionType::IDENTIFIER;
+  function_call_identifier->type = ExpressionType::IDENTIFIER;
 
   //assign the value
   arg_parameter->string_value = "hello world";
-  arg_parameter->expr_type = ExpressionType::STRING;
+  arg_parameter->type = ExpressionType::STRING;
 
   //create a parameter list
   std::vector<Expression *> args;
