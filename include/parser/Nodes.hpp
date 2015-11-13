@@ -46,12 +46,16 @@ enum class ExpressionType {
 class Statement : public Node {
  public:
   virtual void emit(Generator*) = 0;
+  virtual ~Statement() {
+  }
 };
 
 class ExpressionStatement : public Statement {
  public:
   void emit(Generator*);
   Expression *expression;
+  virtual ~ExpressionStatement() {
+  }
 };
 
 /**
@@ -61,6 +65,8 @@ class Expression {
  public:
   virtual llvm::Value *emit(Generator *) = 0;
   ExpressionType type;
+  virtual ~Expression() {
+  }
 };
 
 class ReturnStatement : public Statement {
