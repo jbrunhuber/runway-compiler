@@ -124,6 +124,7 @@ class EmptyExpressionStatement : public ExpressionStatement {
  */
 class AssignmentExpression : public Expression {
  public:
+  AssignmentExpression();
   IdentifierPrimaryExpression *identifier;
   Operator assignment_operator;
   Expression *expression_to_assign;
