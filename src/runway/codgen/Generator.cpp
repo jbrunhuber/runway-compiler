@@ -30,15 +30,17 @@ Generator::~Generator() {
 
 llvm::Value *Generator::emitIdentifierPrimaryExpression(Expression *expr) {
 
-  IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression*) expr;
+  IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
 
   rw_symtable_entry *value = _values[identifier->string_value];
+
+  if (value == nullptr) {
+    std::cerr << "use of undeclared identifier " << identifier << std::endl;
+    return nullptr;
+  }
+
   llvm::Value *ptr = value->llvm_ptr;
   delete expr;
-
-  if (ptr == nullptr) {
-    std::cerr << "use of undeclared identifier " << identifier << std::endl;
-  }
 
   return ptr;
 }
@@ -88,8 +90,10 @@ void Generator::createPrintFunction(Expression *parameter_expr, bool new_line) {
   if (llvm_print_func == nullptr) {
     std::vector<llvm::Type *> printf_arg_types;
     printf_arg_types.push_back(llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
-    llvm::FunctionType *llvm_printf_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(llvm::getGlobalContext()), printf_arg_types, true);
-    llvm_print_func = llvm::Function::Create(llvm_printf_type, llvm::Function::ExternalLinkage, const_function_name, _module);
+    llvm::FunctionType *llvm_printf_type =
+        llvm::FunctionType::get(llvm::Type::getInt32Ty(llvm::getGlobalContext()), printf_arg_types, true);
+    llvm_print_func =
+        llvm::Function::Create(llvm_printf_type, llvm::Function::ExternalLinkage, const_function_name, _module);
     llvm_print_func->setCallingConv(llvm::CallingConv::C);
     _functions[const_function_name] = llvm_print_func;
   }
@@ -183,7 +187,7 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
  * param: the parsed assignment expression
  * return: the pointer to the new assigned value
  */
-llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
+llvm::Value *Generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
   std::string identifier = assignment_expr->identifier->string_value;
 
@@ -195,7 +199,7 @@ llvm::Value* Generator::emitAssignmentExpression(AssignmentExpression *assignmen
 
   if (assigned_type != declared_type) {
     //cast from int to float/double
-    llvm::ConstantInt *integer_value = (llvm::ConstantInt*) llvm_emitted_assignment_value;
+    llvm::ConstantInt *integer_value = (llvm::ConstantInt *) llvm_emitted_assignment_value;
     llvm_emitted_assignment_value = createLlvmFpValue(integer_value->getSExtValue(), ExpressionType::FLOAT);
   } else if (declared_type == ExpressionType::FLOAT && assigned_type == ExpressionType::DOUBLE) {
     //precision loss
@@ -332,22 +336,22 @@ llvm::Value *Generator::emitEqualityExpression(EqualityExpression *expr) {
 
   Operator compare_operator = expr->compare_operator;
   if (compare_operator == Operator::COMPARE_EQUAL) {
-    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpEQ(lhs_value.get(), rhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpEQ(lhs_value.get(), rhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_GREATER) {
-    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpSGT(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpSGT(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_GREATER_OR_EQUAL) {
-    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpSGE(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpSGE(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_LESS) {
-    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpSLT(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpSLT(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_LESS_OR_EQUAL) {
-    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpSLE(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpSLE(rhs_value.get(), lhs_value.get()));
 
   } else if (compare_operator == Operator::COMPARE_UNEQUAL) {
-    result_value = std::shared_ptr < llvm::Value > (_builder->CreateICmpNE(rhs_value.get(), lhs_value.get()));
+    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpNE(rhs_value.get(), lhs_value.get()));
 
   } else {
     ERR_PRINTLN("INVALID COMPARE OPERATOR");
@@ -388,7 +392,8 @@ llvm::Value *Generator::emitUnaryExpression(UnaryExpression *expr) {
 void Generator::construct() {
 
   llvm::FunctionType *main_function_type = llvm::FunctionType::get(_builder->getVoidTy(), false);
-  llvm::Function *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", _module);
+  llvm::Function
+      *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", _module);
 
   _insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
   _builder->SetInsertPoint(_insert_point);
@@ -430,7 +435,7 @@ std::string Generator::getIR() {
  *
  * return: created llvm value
  */
-llvm::Value* Generator::createLlvmFpValue(double fp_value, ExpressionType type) {
+llvm::Value *Generator::createLlvmFpValue(double fp_value, ExpressionType type) {
 
   bool double_precision = false;
   if (type == ExpressionType::FLOAT) {
@@ -455,7 +460,7 @@ llvm::Value* Generator::createLlvmFpValue(double fp_value, ExpressionType type) 
  * param integer_value: the integer value to create
  * param type: the integer type to specify the size (short, int, long,) UNSUPPORTED //TODO
  */
-llvm::Value* Generator::createLlvmIntValue(int64_t integer_value, ExpressionType type) {
+llvm::Value *Generator::createLlvmIntValue(int64_t integer_value, ExpressionType type) {
 
   uint16_t integer_size = 0;
   if (type == ExpressionType::INTEGER) {
@@ -464,5 +469,6 @@ llvm::Value* Generator::createLlvmIntValue(int64_t integer_value, ExpressionType
     std::cerr << "invalid type" << std::endl;
     return nullptr;
   }
-  return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()), llvm::APInt(integer_size, integer_value));
+  return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()),
+                                            llvm::APInt(integer_size, integer_value));
 }
