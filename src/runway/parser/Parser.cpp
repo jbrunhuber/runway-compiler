@@ -72,14 +72,12 @@ bool Parser::parseStatement(Statement **stmt) {
 bool Parser::parseExpressionStatement(Statement **stmt) {
 
   if (isType(_current_token)) {
-    DebugManager::printMessage("type", ModuleInfo::PARSER);
     VariableDeclarationStatement *variable_decl_stmt = 0;
     parseVariableDeclarationStatement(&variable_decl_stmt);
     *stmt = variable_decl_stmt;
     return true;
 
   } else if (IS_KEYWORD("return")) {
-    DebugManager::printMessage("return", ModuleInfo::PARSER);
     nextToken();  //step 'return'
     ReturnStatement *return_statement = new ReturnStatement;
     Expression *return_value = 0;
@@ -89,7 +87,6 @@ bool Parser::parseExpressionStatement(Statement **stmt) {
     return true;
 
   } else if (IS_KEYWORD("continue")) {
-    DebugManager::printMessage("continue", ModuleInfo::PARSER);
     nextToken();  //step 'continue'
     JumpStatement *continue_jump_statement = new JumpStatement;
     continue_jump_statement->jump_statement_type = JumpStatementType::CONTINUE;
@@ -97,7 +94,6 @@ bool Parser::parseExpressionStatement(Statement **stmt) {
     return true;
 
   } else if (IS_KEYWORD("break")) {
-    DebugManager::printMessage("break", ModuleInfo::PARSER);
     nextToken();  //step 'break'
     JumpStatement *break_jump_statement = new JumpStatement;
     break_jump_statement->jump_statement_type = JumpStatementType::BREAK;
@@ -106,7 +102,6 @@ bool Parser::parseExpressionStatement(Statement **stmt) {
 
   } else {
     //Create an expression statement and assign an expression
-    DebugManager::printMessage("expression statement", ModuleInfo::PARSER);
     ExpressionStatement *expr_stmt = new ExpressionStatement;
     Expression *expr = nullptr;
 
@@ -317,8 +312,6 @@ bool Parser::parseExpression(Expression **expr) {
 bool Parser::parseAssignmentExpression(Expression **expr) {
 
   Expression *lhs_identifier_expr = new AssignmentExpression;
-
-  DebugManager::printMessage("assignment", ModuleInfo::PARSER);
 
   //identifier
   parseLogicalOrExpression(&lhs_identifier_expr);
@@ -547,7 +540,6 @@ bool Parser::parsePostFixExpression(Expression **expr) {
       nextToken();  //step ']'
       current_postfix_expr = array_postfix_expr;
     } else if (IS_PUNCTUATOR("(")) {
-      DebugManager::printMessage("function call", ModuleInfo::PARSER);
       FunctionCallPostfixExpression *func_call_expr = new FunctionCallPostfixExpression;
       nextToken();  //step '('
       if (!IS_PUNCTUATOR(")")) {  //when parameter are available parse them

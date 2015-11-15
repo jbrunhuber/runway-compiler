@@ -7,7 +7,7 @@
 //
 
 #include "codegen/Generator.hpp"
-#include <tools/DebugManager.hpp>
+#include <logger.h>
 #include <parser/Parser.hpp>
 
 /**
@@ -52,10 +52,8 @@ llvm::Value *Generator::emitFunctionCallPostFixExpression(FunctionCallPostfixExp
 
   std::string identifier = func_call_expr->identifier->string_value;
   if (!identifier.compare("print")) {
-    DebugManager::printMessage("create print func", ModuleInfo::CODEGEN);
     createPrintFunction(func_call_expr->arguments.at(0), false);
   } else if (!identifier.compare("println")) {
-    DebugManager::printMessage("create println func", ModuleInfo::CODEGEN);
     createPrintFunction(func_call_expr->arguments.at(0), true);
   }
   delete func_call_expr;

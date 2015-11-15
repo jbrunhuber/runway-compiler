@@ -264,6 +264,7 @@ class IfStatement : public Statement {
  */
 class VariableDeclarationStatement : public Statement {
  public:
+  VariableDeclarationStatement();
   void emit(Generator*);
   IdentifierPrimaryExpression *identifier;
   PrimaryExpression *type;

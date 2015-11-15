@@ -23,7 +23,7 @@
 #include <memory>
 #include <tools/ModuleInfo.hpp>
 
-#include "errprint.h"
+#include "logger.h"
 #include "parser/Nodes.hpp"
 #include "codegen/rw_symtable_entry.hpp"
 

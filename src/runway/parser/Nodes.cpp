@@ -122,5 +122,6 @@ void ExpressionStatement::emit(Generator *generator) {
   generator->emitExpressionStatement(this);
 }
 
-
 AssignmentExpression::AssignmentExpression() : expression_to_assign(nullptr) { }
+
+VariableDeclarationStatement::VariableDeclarationStatement() : expression_to_assign(nullptr) { }
