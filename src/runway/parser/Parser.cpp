@@ -591,15 +591,10 @@ bool Parser::parsePostFixExpression(Expression **expr) {
  */
 bool Parser::parseAdditiveExpression(Expression **expr) {
 
-  AdditiveExpression *additive_expr = new AdditiveExpression;
-
-  //Parse lhs multiplicative expression
-  MultiplicativeExpression *lhs_multiplicative_expression;
-  parseMultiplicativeExpression((Expression **) &lhs_multiplicative_expression);
+  parseMultiplicativeExpression(expr);
 
   bool has_rhs = false;
-
-  //if the token is a punctuator and matches one of the additive operators
+  AdditiveExpression *additive_expr = new AdditiveExpression;
   if (IS_PUNCTUATOR("+")) {
     additive_expr->additive_operator = Operator::SUM;
     has_rhs = true;
@@ -607,16 +602,19 @@ bool Parser::parseAdditiveExpression(Expression **expr) {
     additive_expr->additive_operator = Operator::SUB;
     has_rhs = true;
   }
+
   if (has_rhs) {
-    *expr = additive_expr;
-    additive_expr->lhs_multiplicative_expression = lhs_multiplicative_expression;
+    //lhs
+    additive_expr->lhs_multiplicative_expression = *expr;
+
     nextToken();  //step operator
-    //parse rhs additive expression
-    AdditiveExpression *rhs_additive_expression;
-    parseAdditiveExpression((Expression **) &rhs_additive_expression);
+
+    //rhs
+    Expression *rhs_additive_expression;
+    parseAdditiveExpression(&rhs_additive_expression);
     additive_expr->rhs_additive_expression = rhs_additive_expression;
-  } else {
-    *expr = lhs_multiplicative_expression;
+
+    *expr = additive_expr;
   }
   return true;
 }
@@ -626,14 +624,10 @@ bool Parser::parseAdditiveExpression(Expression **expr) {
  */
 bool Parser::parseMultiplicativeExpression(Expression **expr) {
 
-  //create new multiplicative expression instance
-  MultiplicativeExpression *multiplicative_expr = new MultiplicativeExpression;
-
-  Expression *lhs_unary_expression = 0;
-  parseUnaryExpression(&lhs_unary_expression);
+  parseUnaryExpression(expr);
 
   bool has_rhs = false;
-  //if the token is a punctuator and matches one of the multiplicative operators
+  MultiplicativeExpression *multiplicative_expr = new MultiplicativeExpression;
   if (IS_PUNCTUATOR("*")) {
     multiplicative_expr->multiplicative_operator = Operator::MUL;
     has_rhs = true;
@@ -641,16 +635,19 @@ bool Parser::parseMultiplicativeExpression(Expression **expr) {
     multiplicative_expr->multiplicative_operator = Operator::DIV;
     has_rhs = true;
   }
+
   if (has_rhs) {
-    multiplicative_expr->lhs_unary_expression = lhs_unary_expression;
-    *expr = multiplicative_expr;
+    //lhs
+    multiplicative_expr->lhs_unary_expression = *expr;
+
     nextToken();  //step operator
-    //Parse the rhs additive expression
-    AdditiveExpression *rhs_additive_expression;
-    parseAdditiveExpression((Expression **) &rhs_additive_expression);
+
+    //rhs
+    Expression *rhs_additive_expression;
+    parseAdditiveExpression(&rhs_additive_expression);
     multiplicative_expr->rhs_additive_expression = rhs_additive_expression;
-  } else {
-    *expr = lhs_unary_expression;
+
+    *expr = multiplicative_expr;
   }
   return true;
 }

@@ -81,8 +81,8 @@ class ReturnStatement : public Statement {
 class AdditiveExpression : public Expression {
  public:
   Operator additive_operator;
-  MultiplicativeExpression *lhs_multiplicative_expression;
-  AdditiveExpression *rhs_additive_expression;
+  Expression *lhs_multiplicative_expression;
+  Expression *rhs_additive_expression;
   llvm::Value *emit(Generator *generator);
 };
 
@@ -92,7 +92,7 @@ class AdditiveExpression : public Expression {
 class MultiplicativeExpression : public Expression {
  public:
   Expression *lhs_unary_expression;
-  AdditiveExpression *rhs_additive_expression;
+  Expression *rhs_additive_expression;
   Operator multiplicative_operator;
   llvm::Value *emit(Generator *generator);
 
