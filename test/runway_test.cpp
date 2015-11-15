@@ -23,12 +23,12 @@ int main(int argc, char **argv) {
  */
 TEST(CODEGEN, DECLARATION_DOUBLE) {
 
-  const char *expected = "; ModuleID = 'runway'\n"
+  std::string expected = "; ModuleID = 'runway'\n"
       "\n"
       "define void @main() {\n"
       "entrypoint:\n"
       "  %d = alloca double\n"
-      "}";
+      "}\n";
 
   VariableDeclarationStatement *variable_declaration_statement = new VariableDeclarationStatement;
 
@@ -51,7 +51,7 @@ TEST(CODEGEN, DECLARATION_DOUBLE) {
 
   variable_declaration_statement->emit(generator);
 
-  EXPECT_TRUE(strcmp(expected, generator->getIR().c_str()));
+  EXPECT_EQ(expected, generator->getIR().c_str());
 }
 
 /**
@@ -59,13 +59,13 @@ TEST(CODEGEN, DECLARATION_DOUBLE) {
  */
 TEST(CODEGEN, ASSIGNMENT_DOUBLE) {
 
-  const char *expected = "; ModuleID = 'runway'\n"
+  std::string expected = "; ModuleID = 'runway'\n"
       "\n"
       "define void @main() {\n"
       "entrypoint:\n"
       "  %d = alloca double\n"
       "  store double 1.330000e+01, double* %d\n"
-      "}";
+      "}\n";
 
   VariableDeclarationStatement *variable_declaration_statement = new VariableDeclarationStatement;
 
@@ -99,5 +99,89 @@ TEST(CODEGEN, ASSIGNMENT_DOUBLE) {
 
   variable_declaration_statement->emit(generator);
 
-  EXPECT_TRUE(strcmp(expected, generator->getIR().c_str()));
+  EXPECT_EQ(expected, generator->getIR().c_str());
+}
+
+/**
+ * tests the allocation of an integer
+ */
+TEST(CODEGEN, DECLARATION_INTEGER) {
+
+  std::string expected = "; ModuleID = 'runway'\n"
+      "\n"
+      "define void @main() {\n"
+      "entrypoint:\n"
+      "  %test = alloca i32\n"
+      "}\n";
+
+  VariableDeclarationStatement *variable_declaration_statement = new VariableDeclarationStatement;
+
+  //type
+  PrimaryExpression *type_primary_expression = new PrimaryExpression;
+  type_primary_expression->type = ExpressionType::INTEGER;
+
+  //identifier
+  IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
+  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->string_value = "test";
+
+  //build variableDeclarationStatement
+  variable_declaration_statement->type = type_primary_expression;
+  variable_declaration_statement->identifier = identifier_primary_expression;
+  variable_declaration_statement->expression_to_assign = nullptr;
+
+  Generator *generator = new Generator;
+  generator->construct();
+
+  variable_declaration_statement->emit(generator);
+
+  EXPECT_EQ(expected, generator->getIR().c_str());
+}
+
+/**
+ * Allocates a double and assign a test value
+ */
+TEST(CODEGEN, ASSIGNMENT_INTEGER) {
+
+  std::string expected = "; ModuleID = 'runway'\n"
+      "\n"
+      "define void @main() {\n"
+      "entrypoint:\n"
+      "  %d = alloca i32\n"
+      "  store i32 13, i32* %d\n"
+      "}\n";
+
+  VariableDeclarationStatement *variable_declaration_statement = new VariableDeclarationStatement;
+
+  //type
+  PrimaryExpression *type_primary_expression = new PrimaryExpression;
+  type_primary_expression->type = ExpressionType::INTEGER;
+
+  //identifier
+  IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
+  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->string_value = "d";
+
+  //double assignment value
+  PrimaryExpression *assignment_value = new PrimaryExpression;
+  assignment_value->type = ExpressionType::INTEGER;
+  assignment_value->int_value = 13;
+
+  //expression node
+  AssignmentExpression *assignment_expr = new AssignmentExpression;
+  assignment_expr->type = ExpressionType::INTEGER;
+  assignment_expr->identifier = identifier_primary_expression;
+  assignment_expr->expression_to_assign = assignment_value;
+
+  //build variableDeclarationStatement
+  variable_declaration_statement->type = type_primary_expression;
+  variable_declaration_statement->identifier = identifier_primary_expression;
+  variable_declaration_statement->expression_to_assign = assignment_expr;
+
+  Generator *generator = new Generator;
+  generator->construct();
+
+  variable_declaration_statement->emit(generator);
+
+  EXPECT_EQ(expected, generator->getIR().c_str());
 }
