@@ -188,19 +188,23 @@ llvm::Value *Generator::emitAssignmentExpression(AssignmentExpression *assignmen
   std::string identifier = assignment_expr->identifier->string_value;
 
   //check if the type in assignnment expression matches the allocated type
-  ExpressionType assigned_type = assignment_expr->expression_to_assign->type;
   ExpressionType declared_type = _values[identifier]->type;
+  ExpressionType assigned_type = assignment_expr->expression_to_assign->type;
 
   llvm::Value *llvm_emitted_assignment_value = assignment_expr->expression_to_assign->emit(this);
 
-  if (assigned_type != declared_type) {
+  if ((declared_type == ExpressionType::FLOAT || declared_type == ExpressionType::DOUBLE)
+      && assigned_type == ExpressionType::INTEGER) {
     //cast from int to float/double
     llvm::ConstantInt *integer_value = (llvm::ConstantInt *) llvm_emitted_assignment_value;
     llvm_emitted_assignment_value = createLlvmFpValue(integer_value->getSExtValue(), declared_type);
   } else if (declared_type == ExpressionType::FLOAT && assigned_type == ExpressionType::DOUBLE) {
-    //precision loss
+    WARN_PRINTLN("precision loss: conversion from double to float is currently not supported");
+    return nullptr;
   } else if (declared_type == ExpressionType::DOUBLE && assigned_type == ExpressionType::FLOAT) {
-
+    llvm::ConstantFP *fp_value = (llvm::ConstantFP *) llvm_emitted_assignment_value;
+    double value = fp_value->getValueAPF().convertToFloat();
+    llvm_emitted_assignment_value = createLlvmFpValue(value, ExpressionType::DOUBLE);
   }
 
   rw_symtable_entry *entry = _values[identifier];
@@ -432,7 +436,7 @@ std::string Generator::getIR() {
  */
 llvm::Value *Generator::createLlvmFpValue(double fp_value, ExpressionType type) {
 
-  bool double_precision = false;
+  bool double_precision;
   if (type == ExpressionType::FLOAT) {
     double_precision = false;
   } else if (type == ExpressionType::DOUBLE) {
