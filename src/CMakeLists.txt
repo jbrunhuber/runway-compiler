@@ -16,7 +16,7 @@ add_definitions(${LLVM_DEFINITIONS})
 # We need llvm include directories
 include_directories(${LLVM_INCLUDE_DIRS} "../include")
 
-# We build a library with all our soures (except of the main.cpp). We'll link the library against the main.cpp later
+# We build a library with all our soures (except of the main.cpp)
 FILE(GLOB_RECURSE runway_src "runway/*.cpp")
 
 # Now we add the runway libary and our executable
