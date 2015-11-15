@@ -9,6 +9,7 @@
 #include "codegen/Generator.hpp"
 #include <logger.h>
 #include <parser/Parser.hpp>
+#include <tools/MemManager.hpp>
 
 /**
  * Creates the module and the IRBuilder
@@ -28,21 +29,22 @@ Generator::~Generator() {
   delete _builder;
 }
 
+/**
+ * Identifier
+ */
 llvm::Value *Generator::emitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
-
   rw_symtable_entry *value = _values[identifier->string_value];
+
+  delete identifier;
 
   if (value == nullptr) {
     std::cerr << "use of undeclared identifier " << identifier << std::endl;
     return nullptr;
   }
 
-  llvm::Value *ptr = value->llvm_ptr;
-  delete expr;
-
-  return ptr;
+  return value->llvm_ptr;
 }
 
 /**
@@ -172,8 +174,6 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
   if (assignment_expr != nullptr) {
     assignment_expr->emit(this);
   }
-
-  delete assignment_expr;
   delete var_decl_stmt;
 }
 
@@ -211,6 +211,8 @@ llvm::Value *Generator::emitAssignmentExpression(AssignmentExpression *assignmen
   }
 
   new llvm::StoreInst(llvm_emitted_assignment_value, entry->llvm_ptr, false, _insert_point);
+
+  delete assignment_expr;
   return entry->llvm_ptr;
 }
 
