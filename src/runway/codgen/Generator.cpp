@@ -196,7 +196,7 @@ llvm::Value *Generator::emitAssignmentExpression(AssignmentExpression *assignmen
   if (assigned_type != declared_type) {
     //cast from int to float/double
     llvm::ConstantInt *integer_value = (llvm::ConstantInt *) llvm_emitted_assignment_value;
-    llvm_emitted_assignment_value = createLlvmFpValue(integer_value->getSExtValue(), ExpressionType::FLOAT);
+    llvm_emitted_assignment_value = createLlvmFpValue(integer_value->getSExtValue(), declared_type);
   } else if (declared_type == ExpressionType::FLOAT && assigned_type == ExpressionType::DOUBLE) {
     //precision loss
   } else if (declared_type == ExpressionType::DOUBLE && assigned_type == ExpressionType::FLOAT) {

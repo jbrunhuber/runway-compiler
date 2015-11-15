@@ -28,8 +28,6 @@ int main(int argc, char **argv) {
 
   std::cout << "Welcome to Runway!" << std::endl;
 
-  DebugManager::debug = true;  //prints debug messages
-
   //read the source code
   std::string runway_source_path = DEFAULT_DEBUG_PATH;
   std::string runway_source_code = getSourceCode(runway_source_path + "Runway.rw");
