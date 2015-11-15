@@ -147,8 +147,8 @@ TEST(CODEGEN, ASSIGNMENT_INTEGER) {
       "\n"
       "define void @main() {\n"
       "entrypoint:\n"
-      "  %d = alloca i32\n"
-      "  store i32 13, i32* %d\n"
+      "  %i = alloca i32\n"
+      "  store i32 13, i32* %i\n"
       "}\n";
 
   VariableDeclarationStatement *variable_declaration_statement = new VariableDeclarationStatement;
@@ -160,7 +160,7 @@ TEST(CODEGEN, ASSIGNMENT_INTEGER) {
   //identifier
   IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
   identifier_primary_expression->type = ExpressionType::IDENTIFIER;
-  identifier_primary_expression->string_value = "d";
+  identifier_primary_expression->string_value = "i";
 
   //double assignment value
   PrimaryExpression *assignment_value = new PrimaryExpression;

@@ -11,10 +11,10 @@
 #define ERR_PRINTLN(action)           (std::cerr << "ERROR: " << action << std::endl)
 #define ERR_PRINT(action)             (std::cerr << "ERROR: " << action << " ")
 
-#define WARN_PRINTLN(action)          (std::cerr << "WARN: " << action << std::endl)
-#define WARN_PRINT(action)            (std::cerr << "WARN: " << action << " ")
+#define WARN_PRINTLN(action)          (std::cout << "WARN: " << action << std::endl)
+#define WARN_PRINT(action)            (std::cout << "WARN: " << action << " ")
 
-#define DEBUG_PRINTLN(action)         (std::cerr << "INFO: " << action << std::endl)
-#define DEBUG_PRINT(action)           (std::cerr << "INFO: " << action << " ")
+#define DEBUG_PRINTLN(action)         (std::cout << "INFO: " << action << std::endl)
+#define DEBUG_PRINT(action)           (std::cout << "INFO: " << action << " ")
 
 #endif /* RUNWAY_LOGGER_H */

@@ -135,8 +135,6 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
 
   std::string identifier = var_decl_stmt->identifier->string_value;
 
-  std::cout << "declare " << identifier << std::endl;
-
   llvm::Type *llvm_variable_type = nullptr;
   ExpressionType expression_type = var_decl_stmt->type->type;
 
@@ -202,18 +200,15 @@ llvm::Value *Generator::emitAssignmentExpression(AssignmentExpression *assignmen
   } else if (declared_type == ExpressionType::FLOAT && assigned_type == ExpressionType::DOUBLE) {
     //precision loss
   } else if (declared_type == ExpressionType::DOUBLE && assigned_type == ExpressionType::FLOAT) {
-    //yeah
-    std::cout << "case" << std::endl;
+
   }
 
   rw_symtable_entry *entry = _values[identifier];
   //when there's no value in symbol table print error
   if (entry == nullptr) {
-    std::cerr << "Use of undeclared identifier" << " " << identifier << std::endl;
+    ERR_PRINTLN("Use of undeclared identifier " << " " << identifier);
     return nullptr;
   }
-
-  std::cout << "assign " << identifier << std::endl;
 
   new llvm::StoreInst(llvm_emitted_assignment_value, entry->llvm_ptr, false, _insert_point);
   return entry->llvm_ptr;
