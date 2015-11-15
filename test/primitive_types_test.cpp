@@ -235,6 +235,55 @@ TEST(CODEGEN, ASSIGNMENT_INT_TO_DOUBLE) {
 }
 
 /**
+ * Allocates a double and assign a test value
+ */
+TEST(CODEGEN, ASSIGNMENT_FLOAT_TO_DOUBLE) {
+
+  std::string expected = "; ModuleID = 'runway'\n"
+      "\n"
+      "define void @main() {\n"
+      "entrypoint:\n"
+      "  %d = alloca double\n"
+      "  store double 0x402A9999A0000000, double* %d\n"
+      "}\n";
+
+  VariableDeclarationStatement *variable_declaration_statement = new VariableDeclarationStatement;
+
+  //type
+  PrimaryExpression *type_primary_expression = new PrimaryExpression;
+  type_primary_expression->type = ExpressionType::DOUBLE;
+
+  //identifier
+  IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
+  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->string_value = "d";
+
+  //double assignment value
+  PrimaryExpression *assignment_value = new PrimaryExpression;
+  assignment_value->type = ExpressionType::FLOAT;
+  assignment_value->double_value = 13.3;
+
+  //expression node
+  AssignmentExpression *assignment_expr = new AssignmentExpression;
+  assignment_expr->type = ExpressionType::FLOAT;
+  assignment_expr->identifier = identifier_primary_expression;
+  assignment_expr->expression_to_assign = assignment_value;
+
+  //build variableDeclarationStatement
+  variable_declaration_statement->type = type_primary_expression;
+  variable_declaration_statement->identifier = identifier_primary_expression;
+  variable_declaration_statement->expression_to_assign = assignment_expr;
+
+  Generator *generator = new Generator;
+  generator->construct();
+
+  variable_declaration_statement->emit(generator);
+
+  EXPECT_EQ(expected, generator->getIR().c_str());
+}
+
+
+/**
  * tests the allocation of an integer
  */
 TEST(CODEGEN, DECLARATION_INTEGER) {
