@@ -60,25 +60,25 @@ class Generator {
 
   llvm::Value *emitAssignmentExpression(AssignmentExpression *);
 
-  llvm::Value *emitIdentifierPrimaryExpression(Expression*);
+  llvm::Value *emitIdentifierPrimaryExpression(Expression *);
 
   llvm::Value *emitPrimaryExpression(PrimaryExpression *);
 
   void emitVariableDeclarationStatement(VariableDeclarationStatement *);
 
-  void emitIfStatement(IfStatement*);
+  void emitIfStatement(IfStatement *);
 
-  void emitReturnStatement(ReturnStatement*);
+  void emitReturnStatement(ReturnStatement *);
 
-  void emitWhileLoopStatement(WhileLoopStatement*);
+  void emitWhileLoopStatement(WhileLoopStatement *);
 
-  void emitExpressionStatement(ExpressionStatement*);
+  void emitExpressionStatement(ExpressionStatement *);
 
   void createPrintFunction(Expression *, bool);
 
-  llvm::Value* createLlvmFpValue(double, ExpressionType);
+  llvm::Value *createLlvmFpValue(double, ExpressionType);
 
-  llvm::Value* createLlvmIntValue(int64_t, ExpressionType);
+  llvm::Value *createLlvmIntValue(int64_t, ExpressionType);
 
   // Creates base construct
   void construct();
