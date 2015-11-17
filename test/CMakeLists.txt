@@ -15,7 +15,7 @@ add_definitions(${LLVM_DEFINITIONS})
 include_directories(${GTEST_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS} "../include")
 
 #define our test targets
-add_executable(test_target primitive_types_test.cpp additive_codegen_test.cpp)
+add_executable(test_target primitive_types_test.cpp additive_codegen_test.cpp multiplicative_codegen_test.cpp)
 
 # Find the libraries that correspond to the LLVM components
 # that we wish to use
