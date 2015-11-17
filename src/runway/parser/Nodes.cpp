@@ -125,3 +125,5 @@ void ExpressionStatement::emit(Generator *generator) {
 AssignmentExpression::AssignmentExpression() : expression_to_assign(nullptr) { }
 
 VariableDeclarationStatement::VariableDeclarationStatement() : expression_to_assign(nullptr) { }
+
+Expression::Expression() : type(ExpressionType::UNDEFINED){ }

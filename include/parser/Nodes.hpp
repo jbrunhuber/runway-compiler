@@ -32,12 +32,13 @@ class Node {
 enum class ExpressionType {
   STRING,
   BOOL,
-  IDENTIFIER,
   EXPR,
   FLOAT,
   DOUBLE,
   INTEGER,
-  NULL_PTR
+  NULL_PTR,
+  UNDEFINED,
+  IDENTIFIER,
 };
 
 /**
@@ -65,6 +66,7 @@ class Expression {
  public:
   virtual llvm::Value *emit(Generator *) = 0;
   ExpressionType type;
+  Expression();
   virtual ~Expression() {
   }
 };
