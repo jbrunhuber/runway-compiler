@@ -259,15 +259,28 @@ llvm::Value *Generator::emitAdditiveExpression(AdditiveExpression *expr) {
   llvm::Value *llvm_lhs_value = expr->lhs_multiplicative_expression->emit(this);
   llvm::Value *llvm_rhs_value = expr->rhs_additive_expression->emit(this);
 
-  llvm::Value *llvm_result_value = 0;
+  llvm::Value *llvm_result_value = nullptr;
+
+  bool floating_point = llvm_lhs_value->getType()->isFloatingPointTy();
 
   if (expr->additive_operator == Operator::SUM) {
-    llvm_result_value = _builder->CreateAdd(llvm_lhs_value, llvm_rhs_value);
+    if (floating_point) {
+      llvm_result_value = _builder->CreateFAdd(llvm_lhs_value, llvm_rhs_value);
+    } else {
+      llvm_result_value = _builder->CreateAdd(llvm_lhs_value, llvm_rhs_value);
+    }
   } else if (expr->additive_operator == Operator::SUB) {
-    llvm_result_value = _builder->CreateSub(llvm_lhs_value, llvm_rhs_value);
+    if (floating_point) {
+      llvm_result_value = _builder->CreateFSub(llvm_lhs_value, llvm_rhs_value);
+    } else {
+      llvm_result_value = _builder->CreateSub(llvm_lhs_value, llvm_rhs_value);
+    }
   } else {
     ERR_PRINTLN("undefined operator for additive operation");
   }
+
+  delete expr;
+
   return llvm_result_value;
 }
 
@@ -279,7 +292,7 @@ llvm::Value *Generator::emitMultiplicativeExpression(MultiplicativeExpression *e
   llvm::Value *llvm_lhs_value = expr->lhs_unary_expression->emit(this);
   llvm::Value *llvm_rhs_value = expr->rhs_additive_expression->emit(this);
 
-  llvm::Value *llvm_result_value = 0;
+  llvm::Value *llvm_result_value = nullptr;
 
   if (expr->multiplicative_operator == Operator::MUL) {
     llvm_result_value = _builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
@@ -288,6 +301,11 @@ llvm::Value *Generator::emitMultiplicativeExpression(MultiplicativeExpression *e
   } else {
     ERR_PRINTLN("undefined operator for multiplicative operation");
   }
+
+  delete expr;
+  delete llvm_rhs_value;
+  delete llvm_lhs_value;
+
   return llvm_result_value;
 }
 
