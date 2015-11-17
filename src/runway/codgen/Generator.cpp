@@ -261,7 +261,8 @@ llvm::Value *Generator::emitAdditiveExpression(AdditiveExpression *expr) {
 
   llvm::Value *llvm_result_value = nullptr;
 
-  bool floating_point = llvm_lhs_value->getType()->isFloatingPointTy();
+  bool floating_point =
+      llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
 
   if (expr->additive_operator == Operator::SUM) {
     if (floating_point) {
@@ -293,6 +294,9 @@ llvm::Value *Generator::emitMultiplicativeExpression(MultiplicativeExpression *e
   llvm::Value *llvm_rhs_value = expr->rhs_additive_expression->emit(this);
 
   llvm::Value *llvm_result_value = nullptr;
+
+  bool floating_point =
+      llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
 
   if (expr->multiplicative_operator == Operator::MUL) {
     llvm_result_value = _builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
