@@ -299,8 +299,17 @@ llvm::Value *Generator::emitMultiplicativeExpression(MultiplicativeExpression *e
       llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
 
   if (expr->multiplicative_operator == Operator::MUL) {
-    llvm_result_value = _builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
+    if(floating_point) {
+      llvm_result_value = _builder->CreateFMul(llvm_lhs_value, llvm_rhs_value);
+    } else {
+      llvm_result_value = _builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
+    }
   } else if (expr->multiplicative_operator == Operator::DIV) {
+    if(floating_point) {
+      llvm_result_value = _builder->CreateFMul(llvm_lhs_value, llvm_rhs_value);
+    } else {
+      llvm_result_value = _builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
+    }
     llvm_result_value = _builder->CreateExactSDiv(llvm_lhs_value, llvm_rhs_value);
   } else {
     ERR_PRINTLN("undefined operator for multiplicative operation");
