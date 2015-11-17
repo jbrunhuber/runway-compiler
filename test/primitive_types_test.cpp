@@ -10,15 +10,6 @@
 #include <parser/Parser.hpp>
 
 /**
- *
- */
-int main(int argc, char **argv) {
-
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
-
-/**
  * Tests the allocation of a double
  */
 TEST(CODEGEN, DECLARATION_DOUBLE) {
