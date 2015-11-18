@@ -64,6 +64,8 @@ class Generator {
 
   llvm::Value *emitPrimaryExpression(PrimaryExpression *);
 
+  void emitForStatement(ForStatement *);
+
   void emitVariableDeclarationStatement(VariableDeclarationStatement *);
 
   void emitIfStatement(IfStatement *);
