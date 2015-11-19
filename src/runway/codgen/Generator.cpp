@@ -187,7 +187,7 @@ llvm::Value *Generator::emitAssignmentExpression(AssignmentExpression *assignmen
 
   std::string identifier = assignment_expr->identifier->string_value;
 
-  //check if the type in assignnment expression matches the allocated type
+  //check if the type in assignment expression matches the allocated type
   ExpressionType declared_type = _values[identifier]->type;
   ExpressionType assigned_type = assignment_expr->expression_to_assign->type;
 
@@ -221,17 +221,16 @@ llvm::Value *Generator::emitAssignmentExpression(AssignmentExpression *assignmen
 }
 
 /**
- * LogicalOrExpression
+ * Emits lhs and rhs and returns the compared result
+ *
+ * param: logical or expression
  */
 llvm::Value *Generator::emitLogicalOrExpression(LogicalOrExpression *expr) {
 
-  std::unique_ptr<Expression> lhs_expr(expr->lhs_logical_and_expr);
-  std::unique_ptr<LogicalOrExpression> rhs_expr(expr->rhs_logical_or_expr);
+  llvm::Value *lhs_value = expr->lhs_logical_and_expr->emit(this);
+  llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
 
-  std::unique_ptr<llvm::Value> lhs_value(lhs_expr->emit(this));
-  std::unique_ptr<llvm::Value> rhs_value(rhs_expr->emit(this));
-
-  //TODO compare
+  //logical or check todo
 
   return nullptr;
 }
@@ -299,13 +298,13 @@ llvm::Value *Generator::emitMultiplicativeExpression(MultiplicativeExpression *e
       llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
 
   if (expr->multiplicative_operator == Operator::MUL) {
-    if(floating_point) {
+    if (floating_point) {
       llvm_result_value = _builder->CreateFMul(llvm_lhs_value, llvm_rhs_value);
     } else {
       llvm_result_value = _builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
     }
   } else if (expr->multiplicative_operator == Operator::DIV) {
-    if(floating_point) {
+    if (floating_point) {
       llvm_result_value = _builder->CreateFMul(llvm_lhs_value, llvm_rhs_value);
     } else {
       llvm_result_value = _builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
@@ -425,6 +424,8 @@ void Generator::construct() {
   llvm::Function
       *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", _module);
 
+  _functions["main"] = main_function;
+
   _insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
   _builder->SetInsertPoint(_insert_point);
 }
@@ -482,6 +483,17 @@ llvm::Value *Generator::createLlvmFpValue(double fp_value, ExpressionType type) 
   } else {
     return llvm::ConstantFP::get(llvm::Type::getFloatTy(llvm::getGlobalContext()), fp_value);
   }
+}
+
+/**
+ * Emits code for a for-loop
+ */
+void Generator::emitForStatement(ForStatement *for_statment) {
+
+  llvm::BasicBlock *for_instructions =
+      llvm::BasicBlock::Create(llvm::getGlobalContext(), "forinst", _functions["main"], _insert_point);
+
+
 }
 
 /**
