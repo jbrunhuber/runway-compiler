@@ -7,9 +7,9 @@
 //
 
 #include "codegen/Generator.hpp"
-#include <logger.h>
-#include <parser/Parser.hpp>
-#include <tools/MemManager.hpp>
+#include "parser/Parser.hpp"
+#include "tools/codegen_datatypes.hpp"
+#include "tools/codegen.h"
 
 /**
  * Creates the module and the IRBuilder
@@ -230,24 +230,20 @@ llvm::Value *Generator::emitLogicalOrExpression(LogicalOrExpression *expr) {
   llvm::Value *lhs_value = expr->lhs_logical_and_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
 
-  //logical or check todo
-
-  return nullptr;
+  return createCompareResult(lhs_value, rhs_value, Operator::LOGICAL_OR);
 }
 
 /**
- * LogicalAndExpression
+ * Emits lhs and rhs and returns the compared result
+ *
+ * param: logical and expression
  */
 llvm::Value *Generator::emitLogicalAndExpression(LogicalAndExpression *expr) {
 
-  std::unique_ptr<EqualityExpression> lhs_expr(expr->lhs_equality_expr);
-  std::unique_ptr<LogicalOrExpression> rhs_expr(expr->rhs_logical_or_expr);
+  llvm::Value *lhs_value = expr->lhs_equality_expr->emit(this);
+  llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
 
-  std::unique_ptr<llvm::Value> lhs_value(lhs_expr->emit(this));
-  std::unique_ptr<llvm::Value> rhs_value(rhs_expr->emit(this));
-
-  //TODO compare
-  return nullptr;
+  return createCompareResult(lhs_value, rhs_value, Operator::LOGICAL_AND);
 }
 
 /**
@@ -355,37 +351,37 @@ llvm::Value *Generator::emitPrimaryExpression(PrimaryExpression *expr) {
  */
 llvm::Value *Generator::emitEqualityExpression(EqualityExpression *expr) {
 
-  std::unique_ptr<RelationalExpression> lhs_expr(expr->lhs_relational_expr);
-  std::unique_ptr<EqualityExpression> rhs_expr(expr->rhs_equality_expr);
+  Expression *lhs_expr = expr->lhs_relational_expr;
+  Expression *rhs_expr = expr->rhs_equality_expr;
 
-  std::unique_ptr<llvm::Value> lhs_value(lhs_expr->emit(this));
-  std::unique_ptr<llvm::Value> rhs_value(rhs_expr->emit(this));
+  llvm::Value *lhs_value = lhs_expr->emit(this);
+  llvm::Value *rhs_value = rhs_expr->emit(this);
 
-  std::shared_ptr<llvm::Value> result_value = 0;
+  llvm::Value *result_value = nullptr;
 
   Operator compare_operator = expr->compare_operator;
   if (compare_operator == Operator::COMPARE_EQUAL) {
-    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpEQ(lhs_value.get(), rhs_value.get()));
+    result_value = _builder->CreateICmpEQ(lhs_value, rhs_value);
 
   } else if (compare_operator == Operator::COMPARE_GREATER) {
-    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpSGT(rhs_value.get(), lhs_value.get()));
+    result_value = _builder->CreateICmpSGT(rhs_value, lhs_value);
 
   } else if (compare_operator == Operator::COMPARE_GREATER_OR_EQUAL) {
-    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpSGE(rhs_value.get(), lhs_value.get()));
+    result_value = _builder->CreateICmpSGE(rhs_value, lhs_value);
 
   } else if (compare_operator == Operator::COMPARE_LESS) {
-    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpSLT(rhs_value.get(), lhs_value.get()));
+    result_value = _builder->CreateICmpSLT(rhs_value, lhs_value);
 
   } else if (compare_operator == Operator::COMPARE_LESS_OR_EQUAL) {
-    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpSLE(rhs_value.get(), lhs_value.get()));
+    result_value = _builder->CreateICmpSLE(rhs_value, lhs_value);
 
   } else if (compare_operator == Operator::COMPARE_UNEQUAL) {
-    result_value = std::shared_ptr<llvm::Value>(_builder->CreateICmpNE(rhs_value.get(), lhs_value.get()));
+    result_value = _builder->CreateICmpNE(rhs_value, lhs_value);
 
   } else {
     ERR_PRINTLN("INVALID COMPARE OPERATOR");
   }
-  return result_value.get();
+  return result_value;
 }
 
 /**
@@ -459,33 +455,6 @@ std::string Generator::getIR() {
 }
 
 /**
- * Creates a llvm value from a floating point value and the type (float/double)
- *
- * param fp_value: the floating point value to create
- * param type: the type of the floating point precision (float/double)
- *
- * return: created llvm value
- */
-llvm::Value *Generator::createLlvmFpValue(double fp_value, ExpressionType type) {
-
-  bool double_precision;
-  if (type == ExpressionType::FLOAT) {
-    double_precision = false;
-  } else if (type == ExpressionType::DOUBLE) {
-    double_precision = true;
-  } else {
-    std::cerr << "invalid type" << std::endl;
-    return nullptr;
-  }
-
-  if (double_precision) {
-    return llvm::ConstantFP::get(llvm::Type::getDoubleTy(llvm::getGlobalContext()), fp_value);
-  } else {
-    return llvm::ConstantFP::get(llvm::Type::getFloatTy(llvm::getGlobalContext()), fp_value);
-  }
-}
-
-/**
  * Emits code for a for-loop
  */
 void Generator::emitForStatement(ForStatement *for_statment) {
@@ -493,24 +462,5 @@ void Generator::emitForStatement(ForStatement *for_statment) {
   llvm::BasicBlock *for_instructions =
       llvm::BasicBlock::Create(llvm::getGlobalContext(), "forinst", _functions["main"], _insert_point);
 
-
 }
 
-/**
- * Creates a llvm value from a integer value (just i32 supported yet)
- *
- * param integer_value: the integer value to create
- * param type: the integer type to specify the size (short, int, long,) UNSUPPORTED //TODO
- */
-llvm::Value *Generator::createLlvmIntValue(int64_t integer_value, ExpressionType type) {
-
-  uint16_t integer_size = 0;
-  if (type == ExpressionType::INTEGER) {
-    integer_size = 32;
-  } else {
-    std::cerr << "invalid type" << std::endl;
-    return nullptr;
-  }
-  return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt32Ty(llvm::getGlobalContext()),
-                                            llvm::APInt(integer_size, integer_value));
-}

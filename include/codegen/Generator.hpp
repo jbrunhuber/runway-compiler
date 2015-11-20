@@ -78,10 +78,6 @@ class Generator {
 
   void createPrintFunction(Expression *, bool);
 
-  llvm::Value *createLlvmFpValue(double, ExpressionType);
-
-  llvm::Value *createLlvmIntValue(int64_t, ExpressionType);
-
   // Creates base construct
   void construct();
 
