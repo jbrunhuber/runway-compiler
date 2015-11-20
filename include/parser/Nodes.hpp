@@ -149,8 +149,8 @@ class ConditionalExpression : public Expression {
  */
 class LogicalOrExpression : public ConditionalExpression {
  public:
-  LogicalAndExpression *lhs_logical_and_expr;
-  LogicalOrExpression *rhs_logical_or_expr;
+  Expression *lhs_logical_and_expr;
+  Expression *rhs_logical_or_expr;
   llvm::Value *emit(Generator *generator);
 };
 
@@ -215,8 +215,8 @@ class UnaryExpression : public Expression {
  */
 class LogicalAndExpression : public ConditionalExpression {
  public:
-  EqualityExpression *lhs_equality_expr;
-  LogicalOrExpression *rhs_logical_or_expr;
+  Expression *lhs_equality_expr;
+  Expression *rhs_logical_or_expr;
   llvm::Value *emit(Generator *generator);
 };
 
@@ -226,8 +226,8 @@ class LogicalAndExpression : public ConditionalExpression {
 class EqualityExpression : public ConditionalExpression {
  public:
   Operator equality_operator;
-  RelationalExpression *lhs_relational_expr;
-  EqualityExpression *rhs_equality_expr;
+  Expression *lhs_relational_expr;
+  Expression *rhs_equality_expr;
   llvm::Value *emit(Generator *generator);
 };
 

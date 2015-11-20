@@ -265,6 +265,8 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
     type_expr->type = ExpressionType::DOUBLE;
   } else if (!type_identifier.compare("string")) {
     type_expr->type = ExpressionType::STRING;
+  } else if(!type_identifier.compare("bool")) {
+    type_expr->type = ExpressionType::BOOL;
   }
 
   (*variable_declaration_statement)->type = type_expr;
@@ -403,11 +405,9 @@ bool Parser::parseLogicalAndExpression(Expression **expr) {
  */
 bool Parser::parseEqualityExpression(Expression **expr) {
 
-  Expression *lhs_relational_expr = 0;
-  parseRelationalExpression(&lhs_relational_expr);
+  parseRelationalExpression(expr);
 
   EqualityExpression *equality_expr = new EqualityExpression;
-
   bool has_rhs = false;
   if (IS_PUNCTUATOR("==")) {
     equality_expr->compare_operator = Operator::COMPARE_EQUAL;
@@ -417,13 +417,17 @@ bool Parser::parseEqualityExpression(Expression **expr) {
     has_rhs = true;
   }
   if (has_rhs) {
+    //lhs
+    equality_expr->lhs_relational_expr = *expr;
+
     nextToken();  //eat compare operator
-    EqualityExpression *rhs_equality_expr = 0;
-    parseEqualityExpression((Expression **) &rhs_equality_expr);
+
+    //rhs
+    Expression *rhs_equality_expr = nullptr;
+    parseEqualityExpression(&rhs_equality_expr);
     equality_expr->rhs_equality_expr = rhs_equality_expr;
+
     *expr = equality_expr;
-  } else {
-    *expr = lhs_relational_expr;
   }
   return true;
 }
