@@ -33,6 +33,7 @@ class Generator {
  public:
 
   Generator();
+  Generator(llvm::Module *, llvm::IRBuilder *, llvm::BasicBlock *);
 
   ~Generator();
 

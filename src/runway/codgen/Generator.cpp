@@ -21,6 +21,16 @@ Generator::Generator() {
 }
 
 /**
+ *
+ */
+Generator::Generator(llvm::Module *module, llvm::IRBuilder *builder, llvm::BasicBlock *block) {
+
+  _module = module;
+  _builder = builder;
+  _insert_point = block;
+}
+
+/**
  * Free up memory
  */
 Generator::~Generator() {
@@ -421,9 +431,6 @@ void Generator::construct() {
       *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", _module);
 
   _functions["main"] = main_function;
-
-  _insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
-  _builder->SetInsertPoint(_insert_point);
 }
 
 /**
@@ -464,3 +471,48 @@ void Generator::emitForStatement(ForStatement *for_statment) {
 
 }
 
+/**
+ *
+ */
+void Generator::emitIfStatement(IfStatement *if_statement) {
+
+
+  llvm::Value *condition_expr = if_statement->condition->emit(this);
+
+  llvm::BasicBlock *then_block;
+  llvm::BasicBlock *else_block;
+
+
+  // Convert condition to a bool by comparing equal to 0.0
+  llvm::Value *cond_compare_result = _builder->CreateFCmpONE(
+      condition_expr, llvm::ConstantFP::get(llvm::getGlobalContext(), llvm::APFloat(0.0)), "ifcond");
+
+
+  llvm::BasicBlock *if_cond = llvm::BasicBlock::Create(llvm::getGlobalContext(), "cond");
+  Generator *generator = new Generator(_module, _builder, if_cond);
+
+  for (int i = 0; i < if_statement->statements.size(); ++i) {
+    Statement *stmt = if_statement->statements.at(i);
+    stmt->emit(generator);
+  }
+
+  if (if_statement->elseif != nullptr) {
+    emitIfStatement(if_statement->elseif);
+  }
+}
+
+llvm::BasicBlock *elseIf(IfStatement *statement,
+                         llvm::Module *module,
+                         llvm::IRBuilder *builder,
+                         llvm::BasicBlock *callee) {
+
+  if(statement->type == ConditionType::ELSE_IF) {
+
+  } else if(statement->type = ConditionType::ELSE) {
+
+    return callee;
+  } else {
+    //error
+    return nullptr;
+  }
+}
