@@ -54,6 +54,13 @@ bool Parser::parseStatement(Statement **stmt) {
     parseForStatement(&for_statement);
     *stmt = for_statement;
     return true;
+
+  } else if (IS_KEYWORD("else")) {
+    nextToken(); //step 'else' and parse if
+    Statement *statement = nullptr;
+    parseStatement(&statement);
+    *stmt = statement;
+    return true;
   }
 
   if (parseExpressionStatement(stmt) && _current_token.textual_content == ";") {
@@ -135,9 +142,13 @@ bool Parser::parseIfStatement(IfStatement **if_statement) {
 
   nextToken();  //eat ')'
 
-  Statement *stmt = 0;
-  parseStatement(&stmt);
-  (*if_statement)->statement = stmt;
+  if (IS_PUNCTUATOR("{")) {
+
+    BodyStatement *body = nullptr;
+    parseBodyStatement(&body);
+    (*if_statement)->body = body;
+  }
+
   return false;
 }
 
@@ -201,7 +212,8 @@ bool Parser::parseForStatement(ForStatement **for_statement) {
       Expression *range_end_expr = 0;
       parseExpression(&range_end_expr);
     } else {
-      ERROR_PRINT("Syntax Error: Invalid range token" << _current_token.textual_content << "in for loop. Use '..' to mark a range like '0 .. 1337'");
+      ERROR_PRINT("Syntax Error: Invalid range token" << _current_token.textual_content
+                      << "in for loop. Use '..' to mark a range like '0 .. 1337'");
       return false;
     }
   } else {
@@ -223,6 +235,8 @@ bool Parser::parseForStatement(ForStatement **for_statement) {
  * BodyStatement
  */
 bool Parser::parseBodyStatement(BodyStatement **body_statement) {
+
+  nextToken(); //step '{'
 
   //create body statement instance
   *body_statement = new BodyStatement;
@@ -265,7 +279,7 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
     type_expr->type = ExpressionType::DOUBLE;
   } else if (!type_identifier.compare("string")) {
     type_expr->type = ExpressionType::STRING;
-  } else if(!type_identifier.compare("bool")) {
+  } else if (!type_identifier.compare("bool")) {
     type_expr->type = ExpressionType::BOOL;
   }
 
@@ -285,8 +299,8 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
     if (_lookahead_token.textual_content.compare(";")) {  //it's NOT a semicolon (assignment)
       Expression *assignment_expr = nullptr;
       parseAssignmentExpression(&assignment_expr);
-      ((AssignmentExpression*) assignment_expr)->type = type_expr->type;
-      (*variable_declaration_statement)->expression_to_assign = (AssignmentExpression*) assignment_expr;
+      ((AssignmentExpression *) assignment_expr)->type = type_expr->type;
+      (*variable_declaration_statement)->expression_to_assign = (AssignmentExpression *) assignment_expr;
     } else {
       nextToken();  //step identifier
     }
@@ -332,7 +346,7 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
     AssignmentExpression *assignment_expr = new AssignmentExpression;
     assignment_expr->assignment_operator = assignment_operator;
 
-    IdentifierPrimaryExpression *identifier_expr = (IdentifierPrimaryExpression*) lhs_identifier_expr;
+    IdentifierPrimaryExpression *identifier_expr = (IdentifierPrimaryExpression *) lhs_identifier_expr;
     identifier_expr->type = ExpressionType::NULL_PTR;
     assignment_expr->identifier = identifier_expr;
     nextToken();
@@ -562,7 +576,7 @@ bool Parser::parsePostFixExpression(Expression **expr) {
       nextToken();  //step ')'
 
       //If it's an identifier, the primary expression is actually an identifier-primary-expression
-      func_call_expr->identifier = (IdentifierPrimaryExpression*) primary_expr;
+      func_call_expr->identifier = (IdentifierPrimaryExpression *) primary_expr;
       current_postfix_expr = func_call_expr;
     } else if (IS_PUNCTUATOR("++")) {
 
