@@ -33,7 +33,7 @@ class Generator {
  public:
 
   Generator();
-  Generator(llvm::Module *, llvm::IRBuilder *, llvm::BasicBlock *);
+  Generator(llvm::Module *, llvm::IRBuilder<> *, llvm::BasicBlock *);
 
   ~Generator();
 
@@ -79,7 +79,9 @@ class Generator {
 
   void createPrintFunction(Expression *, bool);
 
-  // Creates base construct
+  void emitBodyStatement(BodyStatement *);
+
+  // creates base construct
   void construct();
 
   void finalize();

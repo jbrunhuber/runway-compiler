@@ -21,16 +21,6 @@ Generator::Generator() {
 }
 
 /**
- *
- */
-Generator::Generator(llvm::Module *module, llvm::IRBuilder *builder, llvm::BasicBlock *block) {
-
-  _module = module;
-  _builder = builder;
-  _insert_point = block;
-}
-
-/**
  * Free up memory
  */
 Generator::~Generator() {
@@ -476,43 +466,25 @@ void Generator::emitForStatement(ForStatement *for_statment) {
  */
 void Generator::emitIfStatement(IfStatement *if_statement) {
 
+  llvm::Value *expr = if_statement->condition->emit(this);
+  // Convert condition to a bool by comparing equal to 0.0.
+  llvm::Value *condition = _builder->CreateFCmpONE(
+      expr, llvm::ConstantFP::get(llvm::getGlobalContext(), llvm::APFloat(0.0)), "ifcond");
 
-  llvm::Value *condition_expr = if_statement->condition->emit(this);
+  llvm::BasicBlock *cond_true = llvm::BasicBlock::Create(llvm::getGlobalContext());
+  if_statement->body->emit(this);
 
-  llvm::BasicBlock *then_block;
-  llvm::BasicBlock *else_block;
-
-
-  // Convert condition to a bool by comparing equal to 0.0
-  llvm::Value *cond_compare_result = _builder->CreateFCmpONE(
-      condition_expr, llvm::ConstantFP::get(llvm::getGlobalContext(), llvm::APFloat(0.0)), "ifcond");
-
-
-  llvm::BasicBlock *if_cond = llvm::BasicBlock::Create(llvm::getGlobalContext(), "cond");
-  Generator *generator = new Generator(_module, _builder, if_cond);
-
-  for (int i = 0; i < if_statement->statements.size(); ++i) {
-    Statement *stmt = if_statement->statements.at(i);
-    stmt->emit(generator);
-  }
-
-  if (if_statement->elseif != nullptr) {
-    emitIfStatement(if_statement->elseif);
-  }
+  _builder->CreateCondBr(condition, cond_true, _insert_point);
 }
 
-llvm::BasicBlock *elseIf(IfStatement *statement,
-                         llvm::Module *module,
-                         llvm::IRBuilder *builder,
-                         llvm::BasicBlock *callee) {
+/**
+ *
+ */
+void Generator::emitBodyStatement(BodyStatement *body_statement) {
 
-  if(statement->type == ConditionType::ELSE_IF) {
-
-  } else if(statement->type = ConditionType::ELSE) {
-
-    return callee;
-  } else {
-    //error
-    return nullptr;
+  for (int i = 0; i < body_statement->statements.size(); ++i) {
+    Statement *stmt = body_statement->statements.at(i);
+    stmt->emit(this);
+    delete stmt;
   }
 }

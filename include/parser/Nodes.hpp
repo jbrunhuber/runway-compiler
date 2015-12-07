@@ -262,7 +262,7 @@ class IfStatement: public Statement {
  public:
   void emit(Generator *);
   Expression *condition;
-  std::vector<Statement *> statements;
+  BodyStatement *body;
   IfStatement *elseif;
   ConditionType type;
 };
