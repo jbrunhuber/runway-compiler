@@ -33,9 +33,9 @@ int main(int argc, char **argv) {
   std::string runway_source_code = getSourceCode(runway_source_path + "Runway.rw");
 
   //create instances
-  std::unique_ptr < Tokenizer > tokenizer(new Tokenizer(runway_source_code));
-  std::unique_ptr < Parser > parser(new Parser(tokenizer.get()));
-  std::unique_ptr < Generator > generator(new Generator());
+  std::unique_ptr<Tokenizer> tokenizer(new Tokenizer(runway_source_code));
+  std::unique_ptr<Parser> parser(new Parser(tokenizer.get()));
+  std::unique_ptr<Generator> generator(new Generator());
 
   //parse and emit the code
   generator->construct();
