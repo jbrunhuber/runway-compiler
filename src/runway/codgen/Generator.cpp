@@ -10,6 +10,7 @@
 #include "parser/Parser.hpp"
 #include "tools/codegen_datatypes.hpp"
 #include "tools/codegen.h"
+#include <llvm/IR/Function.h>
 
 /**
  * Creates the module and the IRBuilder
@@ -462,7 +463,7 @@ void Generator::emitForStatement(ForStatement *for_statment) {
 }
 
 /**
- *
+ * code explanation http://llvm.org/docs/tutorial/LangImpl5.html
  */
 void Generator::emitIfStatement(IfStatement *if_statement) {
 
@@ -471,10 +472,44 @@ void Generator::emitIfStatement(IfStatement *if_statement) {
   llvm::Value *condition = _builder->CreateFCmpONE(
       expr, llvm::ConstantFP::get(llvm::getGlobalContext(), llvm::APFloat(0.0)), "ifcond");
 
-  llvm::BasicBlock *cond_true = llvm::BasicBlock::Create(llvm::getGlobalContext());
+  /*
+   * then
+   */
+
+  llvm::Function *parent_func = _builder->GetInsertBlock()->getParent();
+
+  //if true
+  llvm::BasicBlock *then_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "then", parent_func);
+
+  //if false
+  llvm::BasicBlock *else_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "else");
+  llvm::BasicBlock *merge = llvm::BasicBlock::Create(llvm::getGlobalContext(), "merge");
+
+  _builder->CreateCondBr(condition, then_block, else_block);
+  _builder->SetInsertPoint(then_block);
+
   if_statement->body->emit(this);
 
-  _builder->CreateCondBr(condition, cond_true, _insert_point);
+  /*
+   * else
+   */
+
+  _builder->CreateBr(merge);
+
+  then_block = _builder->GetInsertBlock();
+  parent_func->getBasicBlockList().push_back(else_block);
+  _builder->SetInsertPoint(else_block);
+
+  //Todo else branch code generation
+
+  _builder->CreateBr(else_block);
+  else_block = _builder->GetInsertBlock();
+
+  /*
+   * merge
+   */
+  parent_func->getBasicBlockList().push_back(merge);
+  _builder->SetInsertPoint(merge);
 }
 
 /**
