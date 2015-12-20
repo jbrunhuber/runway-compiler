@@ -16,7 +16,7 @@
 #include "NodesForward.hpp"
 #include "JumpStatementType.hpp"
 #include "Operator.hpp"
-#include "../../include/codegen/base_generator.hpp"
+#include <codegen/base_generator.hpp>
 
 class base_generator;
 

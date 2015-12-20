@@ -35,7 +35,9 @@ base_generator::~base_generator() {
 llvm::Value *base_generator::emitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
-  rw_symtable_entry *value = _values[identifier->string_value];
+
+  scope_block *block = _block_stack.top();
+  rw_symtable_entry *value = block->get(identifier->string_value);
 
   delete identifier;
 
@@ -167,7 +169,9 @@ void base_generator::emitVariableDeclarationStatement(VariableDeclarationStateme
 
   variable_declaration_entry->llvm_ptr = llvm_alloca_inst;
   variable_declaration_entry->type = expression_type;
-  _values[identifier] = variable_declaration_entry;
+
+  scope_block *block = _block_stack.top();
+  block->set(identifier, variable_declaration_entry);
 
   //if there's a assignment beside the variable declaration, emit the rhs assignment value
   AssignmentExpression *assignment_expr = var_decl_stmt->expression_to_assign;
@@ -188,7 +192,10 @@ llvm::Value *base_generator::emitAssignmentExpression(AssignmentExpression *assi
   std::string identifier = assignment_expr->identifier->string_value;
 
   //check if the type in assignment expression matches the allocated type
-  ExpressionType declared_type = _values[identifier]->type;
+  scope_block *block = _block_stack.top();
+  rw_symtable_entry *symbol = block->get(identifier);
+
+  ExpressionType declared_type = symbol->type;
   ExpressionType assigned_type = assignment_expr->expression_to_assign->type;
 
   llvm::Value *llvm_emitted_assignment_value = assignment_expr->expression_to_assign->emit(this);
@@ -207,17 +214,16 @@ llvm::Value *base_generator::emitAssignmentExpression(AssignmentExpression *assi
     llvm_emitted_assignment_value = createLlvmFpValue(value, ExpressionType::DOUBLE);
   }
 
-  rw_symtable_entry *entry = _values[identifier];
   //when there's no value in symbol table print error
-  if (entry == nullptr) {
+  if (symbol == nullptr) {
     ERR_PRINTLN("Use of undeclared identifier " << " " << identifier);
     return nullptr;
   }
 
-  new llvm::StoreInst(llvm_emitted_assignment_value, entry->llvm_ptr, false, _insert_point);
+  new llvm::StoreInst(llvm_emitted_assignment_value, symbol->llvm_ptr, false, _insert_point);
 
   delete assignment_expr;
-  return entry->llvm_ptr;
+  return symbol->llvm_ptr;
 }
 
 /**
@@ -416,11 +422,16 @@ llvm::Value *base_generator::emitUnaryExpression(UnaryExpression *expr) {
  */
 void base_generator::construct() {
 
+  // create main function
   llvm::FunctionType *main_function_type = llvm::FunctionType::get(_builder->getVoidTy(), false);
   llvm::Function
       *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", _module);
 
   _functions["main"] = main_function;
+
+  // create a scope block for member symbols and functions
+  scope_block *global_scope = new scope_block;
+  _block_stack.push(global_scope);
 }
 
 /**

@@ -8,8 +8,9 @@
 #ifndef INCLUDE_CODEGEN_RW_SYMTABLE_ENTRY_HPP_
 #define INCLUDE_CODEGEN_RW_SYMTABLE_ENTRY_HPP_
 
-#include "parser/Nodes.hpp"
 #include <llvm/IR/Value.h>
+
+#include <parser/Nodes.hpp>
 
 enum class ExpressionType;
 

@@ -11,14 +11,16 @@
 
 #include <codegen/symtable_entry.hpp>
 
+class rw_symtable_entry;
+
 class scope_block {
  private:
   std::map<std::string, rw_symtable_entry *> _symtable;
 
  public:
 
-  //adds a new symbol to the symbol table
-  void add(std::string, rw_symtable_entry *);
+  //adds a new symbol to the symbol table if no one exists, otherwise changes the value
+  void set(std::string, rw_symtable_entry *);
 
   //access to a symbol in the current scope
   rw_symtable_entry *get(std::string);

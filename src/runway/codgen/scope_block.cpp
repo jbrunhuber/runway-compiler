@@ -1,5 +1,5 @@
 //
-// scope_block.hpp
+// scope_block.cpp
 // Contains symbols for a block
 //
 // Created by Joshua Brunhuber on 20.12.2015
@@ -8,7 +8,7 @@
 
 #include <codegen/scope_block.hpp>
 
-void scope_block::add(std::string identifier, rw_symtable_entry *symbol) {
+void scope_block::set(std::string identifier, rw_symtable_entry *symbol) {
 
   _symtable[identifier] = symbol;
 }

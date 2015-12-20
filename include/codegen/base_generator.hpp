@@ -21,12 +21,12 @@
 #include <iostream>
 #include <algorithm>
 #include <memory>
+#include <stack>
 
-#include "logger.h"
+#include <logger.h>
 #include <parser/Nodes.hpp>
-#include <codegen/symtable_entry.hpp>
+#include <codegen/scope_block.hpp>
 
-class rw_symtable_entry;
 enum class ExpressionType;
 
 class base_generator {
@@ -92,8 +92,8 @@ class base_generator {
   llvm::Module *_module;
   llvm::IRBuilder<> *_builder;
   llvm::BasicBlock *_insert_point;
-  std::map<std::string, rw_symtable_entry *> _values;
   std::map<std::string, llvm::Function *> _functions;
+  std::stack<scope_block *> _block_stack;
 };
 
 #endif /* defined (RUNWAY_CODEGEN_GENERATOR_HPP) */
