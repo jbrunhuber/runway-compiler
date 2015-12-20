@@ -23,8 +23,8 @@
 #include <memory>
 
 #include "logger.h"
-#include "parser/Nodes.hpp"
-#include "codegen/rw_symtable_entry.hpp"
+#include <parser/Nodes.hpp>
+#include <codegen/symtable_entry.hpp>
 
 class rw_symtable_entry;
 enum class ExpressionType;
@@ -88,7 +88,7 @@ class base_generator {
 
   std::string getIR();
 
- private:
+ protected:
   llvm::Module *_module;
   llvm::IRBuilder<> *_builder;
   llvm::BasicBlock *_insert_point;
