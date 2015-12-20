@@ -6,11 +6,10 @@
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
-#include "codegen/Generator.hpp"
+#include "codegen/base_generator.hpp"
 #include "parser/Parser.hpp"
 #include "tools/codegen_datatypes.hpp"
 #include "tools/codegen.h"
-#include <llvm/IR/Function.h>
 
 /**
  * Creates the module and the IRBuilder
