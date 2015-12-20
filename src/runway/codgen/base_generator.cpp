@@ -8,16 +8,20 @@
 
 #include <codegen/base_generator.hpp>
 
-#include <tools/codegen_datatypes.hpp>
-#include <tools/codegen.h>
-
 /**
  * Creates the module and the IRBuilder
  */
-base_generator::base_generator() {
+base_generator::base_generator() : _insert_point(nullptr){
 
   _module = new llvm::Module("runway", llvm::getGlobalContext());
   _builder = new llvm::IRBuilder<>(_module->getContext());
+}
+
+base_generator::base_generator(llvm::Module *module, llvm::IRBuilder<> *builder, llvm::BasicBlock *insert) {
+
+  _module = module;
+  _builder = builder;
+  _insert_point = insert;
 }
 
 /**
@@ -235,8 +239,6 @@ llvm::Value *base_generator::emitLogicalOrExpression(LogicalOrExpression *expr) 
 
   llvm::Value *lhs_value = expr->lhs_logical_and_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
-
-  return createCompareResult(lhs_value, rhs_value, Operator::LOGICAL_OR);
 }
 
 /**
@@ -248,8 +250,6 @@ llvm::Value *base_generator::emitLogicalAndExpression(LogicalAndExpression *expr
 
   llvm::Value *lhs_value = expr->lhs_equality_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
-
-  return createCompareResult(lhs_value, rhs_value, Operator::LOGICAL_AND);
 }
 
 /**

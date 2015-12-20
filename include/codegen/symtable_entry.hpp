@@ -5,8 +5,8 @@
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
-#ifndef INCLUDE_CODEGEN_RW_SYMTABLE_ENTRY_HPP_
-#define INCLUDE_CODEGEN_RW_SYMTABLE_ENTRY_HPP_
+#ifndef RUNWAY_CODEGEN_SYMTABLEENTRY
+#define RUNWAY_CODEGEN_SYMTABLEENTRY
 
 #include <llvm/IR/Value.h>
 
@@ -25,4 +25,4 @@ class rw_symtable_entry {
   ~rw_symtable_entry();   //destructor
 };
 
-#endif /* defined(CODEGEN_RW_SYMTABLE_ENTRY_HPP) */
+#endif /* defined(RUNWAY_CODEGEN_SYMTABLEENTRY) */

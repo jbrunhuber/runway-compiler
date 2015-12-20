@@ -25,4 +25,4 @@ class scope_block {
   rw_symtable_entry *get(std::string);
 };
 
-#endif /* RUNWAY_CODEGEN_SCOPEBLOCK_HPP */
+#endif /* defined(RUNWAY_CODEGEN_SCOPEBLOCK_HPP) */

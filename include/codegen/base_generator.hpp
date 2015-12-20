@@ -27,6 +27,7 @@
 #include <parser/Nodes.hpp>
 #include <parser/Parser.hpp>
 #include <codegen/scope_block.hpp>
+#include <tools/codegen_datatypes.hpp>
 
 enum class ExpressionType;
 class scope_block;

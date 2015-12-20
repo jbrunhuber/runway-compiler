@@ -11,8 +11,8 @@
 #include <sstream>
 #include <memory>
 
-#include "../include/tokenizer/Tokenizer.hpp"
-#include "../include/parser/Parser.hpp"
+#include <tokenizer/Tokenizer.hpp>
+#include <parser/Parser.hpp>
 
 std::string getSourceCode(std::string path);
 
@@ -33,27 +33,29 @@ int main(int argc, char **argv) {
   std::string runway_source_code = getSourceCode(runway_source_path + "Runway.rw");
 
   //create instances
-  std::unique_ptr<Tokenizer> tokenizer(new Tokenizer(runway_source_code));
-  std::unique_ptr<Parser> parser(new Parser(tokenizer.get()));
-  base_generator *gen = new base_generator;
+  Tokenizer *tokenizer = new Tokenizer(runway_source_code);
+  Parser *parser = new Parser(tokenizer);
+  base_generator *base_code_generator = new base_generator;
 
   //parse and emit the code
-  gen->construct();
+  base_code_generator->construct();
 
-  Statement *super_node = 0;
+  Statement *super_node = nullptr;
   while (parser->parseStatement(&super_node)) {
-    super_node->emit(gen);
+    super_node->emit(base_code_generator);
   }
 
-  gen->finalize();
+  base_code_generator->finalize();
 
   //write the emitted code as llvm assembly
   std::ofstream ir_file;
   ir_file.open(runway_source_path + "out.ll", std::ios::out | std::ios::trunc);
-  ir_file << gen->getIR();
+  ir_file << base_code_generator->getIR();
   ir_file.close();
 
-  delete gen;
+  delete base_code_generator;
+  delete parser;
+  delete tokenizer;
 
   std::cout << "Your outputfile has been created on " << runway_source_path << "out.ll" << std::endl;
   std::cout << "Have a nice day/night" << std::endl;
