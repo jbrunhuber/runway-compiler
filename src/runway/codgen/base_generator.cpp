@@ -11,7 +11,8 @@
 /**
  * Creates the module and the IRBuilder
  */
-base_generator::base_generator() : _insert_point(nullptr){
+base_generator::base_generator()
+    : _insert_point(nullptr) {
 
   _module = new llvm::Module("runway", llvm::getGlobalContext());
   _builder = new llvm::IRBuilder<>(_module->getContext());
@@ -96,10 +97,8 @@ void base_generator::createPrintFunction(Expression *parameter_expr, bool new_li
   if (llvm_print_func == nullptr) {
     std::vector<llvm::Type *> printf_arg_types;
     printf_arg_types.push_back(llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
-    llvm::FunctionType *llvm_printf_type =
-        llvm::FunctionType::get(llvm::Type::getInt32Ty(llvm::getGlobalContext()), printf_arg_types, true);
-    llvm_print_func =
-        llvm::Function::Create(llvm_printf_type, llvm::Function::ExternalLinkage, const_function_name, _module);
+    llvm::FunctionType *llvm_printf_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(llvm::getGlobalContext()), printf_arg_types, true);
+    llvm_print_func = llvm::Function::Create(llvm_printf_type, llvm::Function::ExternalLinkage, const_function_name, _module);
     llvm_print_func->setCallingConv(llvm::CallingConv::C);
     _functions[const_function_name] = llvm_print_func;
   }
@@ -204,8 +203,7 @@ llvm::Value *base_generator::emitAssignmentExpression(AssignmentExpression *assi
 
   llvm::Value *llvm_emitted_assignment_value = assignment_expr->expression_to_assign->emit(this);
 
-  if ((declared_type == ExpressionType::FLOAT || declared_type == ExpressionType::DOUBLE)
-      && assigned_type == ExpressionType::INTEGER) {
+  if ((declared_type == ExpressionType::FLOAT || declared_type == ExpressionType::DOUBLE) && assigned_type == ExpressionType::INTEGER) {
     //cast from int to float/double
     llvm::ConstantInt *integer_value = (llvm::ConstantInt *) llvm_emitted_assignment_value;
     llvm_emitted_assignment_value = createLlvmFpValue(integer_value->getSExtValue(), declared_type);
@@ -262,8 +260,7 @@ llvm::Value *base_generator::emitAdditiveExpression(AdditiveExpression *expr) {
 
   llvm::Value *llvm_result_value = nullptr;
 
-  bool floating_point =
-      llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
+  bool floating_point = llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
 
   if (expr->additive_operator == Operator::SUM) {
     if (floating_point) {
@@ -296,8 +293,7 @@ llvm::Value *base_generator::emitMultiplicativeExpression(MultiplicativeExpressi
 
   llvm::Value *llvm_result_value = nullptr;
 
-  bool floating_point =
-      llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
+  bool floating_point = llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
 
   if (expr->multiplicative_operator == Operator::MUL) {
     if (floating_point) {
@@ -424,10 +420,12 @@ void base_generator::construct() {
 
   // create main function
   llvm::FunctionType *main_function_type = llvm::FunctionType::get(_builder->getVoidTy(), false);
-  llvm::Function
-      *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", _module);
+  llvm::Function *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", _module);
 
   _functions["main"] = main_function;
+
+  _insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
+  _builder->SetInsertPoint(_insert_point);
 
   // create a scope block for member symbols and functions
   scope_block *global_scope = new scope_block;
@@ -467,8 +465,7 @@ std::string base_generator::getIR() {
  */
 void base_generator::emitForStatement(ForStatement *for_statment) {
 
-  llvm::BasicBlock *for_instructions =
-      llvm::BasicBlock::Create(llvm::getGlobalContext(), "forinst", _functions["main"], _insert_point);
+  llvm::BasicBlock *for_instructions = llvm::BasicBlock::Create(llvm::getGlobalContext(), "forinst", _functions["main"], _insert_point);
 
 }
 
@@ -479,8 +476,7 @@ void base_generator::emitIfStatement(IfStatement *if_statement) {
 
   llvm::Value *expr = if_statement->condition->emit(this);
   // Convert condition to a bool by comparing equal to 0.0.
-  llvm::Value *condition = _builder->CreateFCmpONE(
-      expr, llvm::ConstantFP::get(llvm::getGlobalContext(), llvm::APFloat(0.0)), "ifcond");
+  llvm::Value *condition = _builder->CreateFCmpONE(expr, llvm::ConstantFP::get(llvm::getGlobalContext(), llvm::APFloat(0.0)), "ifcond");
 
   /*
    * then
