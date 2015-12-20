@@ -6,12 +6,12 @@
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
-#include "codegen/rw_symtable_entry.hpp"
+#include "symtable_entry.hpp"
 
 /**
  * Release memory for llvm_ptr
  */
-rw_symtable_entry::~rw_symtable_entry() {
+rw_symtable_entry::~symtable_entry() {
 
   delete llvm_ptr;
 }
