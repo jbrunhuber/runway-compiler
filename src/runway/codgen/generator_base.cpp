@@ -1,5 +1,5 @@
 //
-// Generator.cpp
+// generator_base.cpp
 // Code generation implementation
 //
 // Created by Joshua Brunhuber on 10.09.2015
@@ -15,7 +15,7 @@
 /**
  * Creates the module and the IRBuilder
  */
-Generator::Generator() {
+Generator::generator_base() {
 
   _module = new llvm::Module("runway", llvm::getGlobalContext());
   _builder = new llvm::IRBuilder<>(_module->getContext());
@@ -24,7 +24,7 @@ Generator::Generator() {
 /**
  * Free up memory
  */
-Generator::~Generator() {
+Generator::~generator_base() {
 
   delete _module;
   delete _builder;
