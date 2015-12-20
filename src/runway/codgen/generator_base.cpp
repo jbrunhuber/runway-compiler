@@ -1,5 +1,5 @@
 //
-// generator_base.cpp
+// base_generator.cpp
 // Code generation implementation
 //
 // Created by Joshua Brunhuber on 10.09.2015
@@ -15,7 +15,7 @@
 /**
  * Creates the module and the IRBuilder
  */
-Generator::generator_base() {
+base_generator::base_generator() {
 
   _module = new llvm::Module("runway", llvm::getGlobalContext());
   _builder = new llvm::IRBuilder<>(_module->getContext());
@@ -24,7 +24,7 @@ Generator::generator_base() {
 /**
  * Free up memory
  */
-Generator::~generator_base() {
+base_generator::~base_generator() {
 
   delete _module;
   delete _builder;
@@ -33,7 +33,7 @@ Generator::~generator_base() {
 /**
  * Identifier
  */
-llvm::Value *Generator::emitIdentifierPrimaryExpression(Expression *expr) {
+llvm::Value *base_generator::emitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
   rw_symtable_entry *value = _values[identifier->string_value];
@@ -51,7 +51,7 @@ llvm::Value *Generator::emitIdentifierPrimaryExpression(Expression *expr) {
 /**
  * Emits code for a function call statement
  */
-llvm::Value *Generator::emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *func_call_expr) {
+llvm::Value *base_generator::emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *func_call_expr) {
 
   std::string identifier = func_call_expr->identifier->string_value;
   if (!identifier.compare("print")) {
@@ -69,7 +69,7 @@ llvm::Value *Generator::emitFunctionCallPostFixExpression(FunctionCallPostfixExp
  * param: parameter expression
  * param: true, if the function should make a line break
  */
-void Generator::createPrintFunction(Expression *parameter_expr, bool new_line) {
+void base_generator::createPrintFunction(Expression *parameter_expr, bool new_line) {
 
   const std::string const_function_name = "printf";
   const std::string const_form_string_arg = "%s";
@@ -134,7 +134,7 @@ void Generator::createPrintFunction(Expression *parameter_expr, bool new_line) {
  *
  * param: the parsed variable declaration statement
  */
-void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *var_decl_stmt) {
+void base_generator::emitVariableDeclarationStatement(VariableDeclarationStatement *var_decl_stmt) {
 
   std::string identifier = var_decl_stmt->identifier->string_value;
 
@@ -184,7 +184,7 @@ void Generator::emitVariableDeclarationStatement(VariableDeclarationStatement *v
  * param: the parsed assignment expression
  * return: the pointer to the new assigned value
  */
-llvm::Value *Generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
+llvm::Value *base_generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
   std::string identifier = assignment_expr->identifier->string_value;
 
@@ -226,7 +226,7 @@ llvm::Value *Generator::emitAssignmentExpression(AssignmentExpression *assignmen
  *
  * param: logical or expression
  */
-llvm::Value *Generator::emitLogicalOrExpression(LogicalOrExpression *expr) {
+llvm::Value *base_generator::emitLogicalOrExpression(LogicalOrExpression *expr) {
 
   llvm::Value *lhs_value = expr->lhs_logical_and_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
@@ -239,7 +239,7 @@ llvm::Value *Generator::emitLogicalOrExpression(LogicalOrExpression *expr) {
  *
  * param: logical and expression
  */
-llvm::Value *Generator::emitLogicalAndExpression(LogicalAndExpression *expr) {
+llvm::Value *base_generator::emitLogicalAndExpression(LogicalAndExpression *expr) {
 
   llvm::Value *lhs_value = expr->lhs_equality_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
@@ -250,7 +250,7 @@ llvm::Value *Generator::emitLogicalAndExpression(LogicalAndExpression *expr) {
 /**
  *
  */
-llvm::Value *Generator::emitAdditiveExpression(AdditiveExpression *expr) {
+llvm::Value *base_generator::emitAdditiveExpression(AdditiveExpression *expr) {
 
   llvm::Value *llvm_lhs_value = expr->lhs_multiplicative_expression->emit(this);
   llvm::Value *llvm_rhs_value = expr->rhs_additive_expression->emit(this);
@@ -284,7 +284,7 @@ llvm::Value *Generator::emitAdditiveExpression(AdditiveExpression *expr) {
 /**
  *
  */
-llvm::Value *Generator::emitMultiplicativeExpression(MultiplicativeExpression *expr) {
+llvm::Value *base_generator::emitMultiplicativeExpression(MultiplicativeExpression *expr) {
 
   llvm::Value *llvm_lhs_value = expr->lhs_unary_expression->emit(this);
   llvm::Value *llvm_rhs_value = expr->rhs_additive_expression->emit(this);
@@ -323,7 +323,7 @@ llvm::Value *Generator::emitMultiplicativeExpression(MultiplicativeExpression *e
  *
  * CASES: BOOL, NUM, STRING, EXPR
  */
-llvm::Value *Generator::emitPrimaryExpression(PrimaryExpression *expr) {
+llvm::Value *base_generator::emitPrimaryExpression(PrimaryExpression *expr) {
 
   //determine the type of the declared expression
   ExpressionType expr_type = expr->type;
@@ -350,7 +350,7 @@ llvm::Value *Generator::emitPrimaryExpression(PrimaryExpression *expr) {
 /**
  *
  */
-llvm::Value *Generator::emitEqualityExpression(EqualityExpression *expr) {
+llvm::Value *base_generator::emitEqualityExpression(EqualityExpression *expr) {
 
   Expression *lhs_expr = expr->lhs_relational_expr;
   Expression *rhs_expr = expr->rhs_equality_expr;
@@ -388,7 +388,7 @@ llvm::Value *Generator::emitEqualityExpression(EqualityExpression *expr) {
 /**
  *
  */
-llvm::Value *Generator::emitUnaryExpression(UnaryExpression *expr) {
+llvm::Value *base_generator::emitUnaryExpression(UnaryExpression *expr) {
 
   PostFixExpression *lhs_expr = expr->postfix_expr;
 
@@ -415,7 +415,7 @@ llvm::Value *Generator::emitUnaryExpression(UnaryExpression *expr) {
 /**
  * Constructs the main function and the insert point
  */
-void Generator::construct() {
+void base_generator::construct() {
 
   llvm::FunctionType *main_function_type = llvm::FunctionType::get(_builder->getVoidTy(), false);
   llvm::Function
@@ -427,7 +427,7 @@ void Generator::construct() {
 /**
  * Creates a void return statement
  */
-void Generator::finalize() {
+void base_generator::finalize() {
 
   _builder->CreateRetVoid();
 }
@@ -435,7 +435,7 @@ void Generator::finalize() {
 /**
  *
  */
-void Generator::emitExpressionStatement(ExpressionStatement *expr_stmt) {
+void base_generator::emitExpressionStatement(ExpressionStatement *expr_stmt) {
 
   Expression *expression = expr_stmt->expression;
   expression->emit(this);
@@ -444,7 +444,7 @@ void Generator::emitExpressionStatement(ExpressionStatement *expr_stmt) {
 /**
  * returns the llvm bytecode as string value
  */
-std::string Generator::getIR() {
+std::string base_generator::getIR() {
 
   std::string str;
   llvm::raw_string_ostream rso(str);
@@ -455,7 +455,7 @@ std::string Generator::getIR() {
 /**
  * Emits code for a for-loop
  */
-void Generator::emitForStatement(ForStatement *for_statment) {
+void base_generator::emitForStatement(ForStatement *for_statment) {
 
   llvm::BasicBlock *for_instructions =
       llvm::BasicBlock::Create(llvm::getGlobalContext(), "forinst", _functions["main"], _insert_point);
@@ -465,7 +465,7 @@ void Generator::emitForStatement(ForStatement *for_statment) {
 /**
  * code explanation http://llvm.org/docs/tutorial/LangImpl5.html
  */
-void Generator::emitIfStatement(IfStatement *if_statement) {
+void base_generator::emitIfStatement(IfStatement *if_statement) {
 
   llvm::Value *expr = if_statement->condition->emit(this);
   // Convert condition to a bool by comparing equal to 0.0.
@@ -515,7 +515,7 @@ void Generator::emitIfStatement(IfStatement *if_statement) {
 /**
  *
  */
-void Generator::emitBodyStatement(BodyStatement *body_statement) {
+void base_generator::emitBodyStatement(BodyStatement *body_statement) {
 
   for (int i = 0; i < body_statement->statements.size(); ++i) {
     Statement *stmt = body_statement->statements.at(i);

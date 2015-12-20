@@ -1,5 +1,5 @@
 //
-// Generator.hpp
+// base_generator.hpp
 // code generation visitor
 //
 // Created by Joshua Brunhuber on 10.09.2015
@@ -29,13 +29,13 @@
 class rw_symtable_entry;
 enum class ExpressionType;
 
-class Generator {
+class base_generator {
  public:
 
-  Generator();
-  Generator(llvm::Module *, llvm::IRBuilder<> *, llvm::BasicBlock *);
+  base_generator();
+  base_generator(llvm::Module *, llvm::IRBuilder<> *, llvm::BasicBlock *);
 
-  ~Generator();
+  ~base_generator();
 
   /**
    * Generates LLVM-IR for expressions

@@ -35,23 +35,25 @@ int main(int argc, char **argv) {
   //create instances
   std::unique_ptr<Tokenizer> tokenizer(new Tokenizer(runway_source_code));
   std::unique_ptr<Parser> parser(new Parser(tokenizer.get()));
-  std::unique_ptr<Generator> generator(new Generator());
+  base_generator *gen = new base_generator;
 
   //parse and emit the code
-  generator->construct();
+  gen->construct();
 
   Statement *super_node = 0;
   while (parser->parseStatement(&super_node)) {
-    super_node->emit(generator.get());
+    super_node->emit(gen);
   }
 
-  generator->finalize();
+  gen->finalize();
 
   //write the emitted code as llvm assembly
   std::ofstream ir_file;
   ir_file.open(runway_source_path + "out.ll", std::ios::out | std::ios::trunc);
-  ir_file << generator->getIR();
+  ir_file << gen->getIR();
   ir_file.close();
+
+  delete gen;
 
   std::cout << "Your outputfile has been created on " << runway_source_path << "out.ll" << std::endl;
   std::cout << "Have a nice day/night" << std::endl;
