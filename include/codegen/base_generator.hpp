@@ -25,9 +25,11 @@
 
 #include <logger.h>
 #include <parser/Nodes.hpp>
+#include <parser/Parser.hpp>
 #include <codegen/scope_block.hpp>
 
 enum class ExpressionType;
+class scope_block;
 
 class base_generator {
  public:
@@ -88,7 +90,7 @@ class base_generator {
 
   std::string getIR();
 
- protected:
+ private:
   llvm::Module *_module;
   llvm::IRBuilder<> *_builder;
   llvm::BasicBlock *_insert_point;

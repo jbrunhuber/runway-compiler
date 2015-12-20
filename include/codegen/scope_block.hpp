@@ -18,7 +18,6 @@ class scope_block {
   std::map<std::string, rw_symtable_entry *> _symtable;
 
  public:
-
   //adds a new symbol to the symbol table if no one exists, otherwise changes the value
   void set(std::string, rw_symtable_entry *);
 
