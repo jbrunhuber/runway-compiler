@@ -91,7 +91,8 @@ class base_generator {
 
   std::string getIR();
 
- private:
+protected:
+  llvm::Value *doAssignment(AssignmentExpression *assignment_expr);
   llvm::Module *_module;
   llvm::IRBuilder<> *_builder;
   llvm::BasicBlock *_insert_point;

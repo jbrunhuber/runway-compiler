@@ -9,7 +9,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <memory>
 
 #include <tokenizer/Tokenizer.hpp>
 #include <parser/Parser.hpp>
