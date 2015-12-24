@@ -31,8 +31,7 @@ bool Parser::parseStatement(Statement **stmt) {
   }
 
   if (IS_PUNCTUATOR("{")) {
-    nextToken();  //step '{'
-    BodyStatement *body_stmt = 0;
+    BodyStatement *body_stmt = nullptr;
     parseBodyStatement(&body_stmt);
     *stmt = body_stmt;
     return true;
@@ -53,13 +52,6 @@ bool Parser::parseStatement(Statement **stmt) {
     ForStatement *for_statement = 0;
     parseForStatement(&for_statement);
     *stmt = for_statement;
-    return true;
-
-  } else if (IS_KEYWORD("else")) {
-    nextToken(); //step 'else' and parse if
-    Statement *statement = nullptr;
-    parseStatement(&statement);
-    *stmt = statement;
     return true;
   }
 
@@ -153,6 +145,8 @@ bool Parser::parseIfStatement(IfStatement **if_statement) {
   (*if_statement)->statement = statement;
 
   if (IS_KEYWORD("else")) {
+
+    nextToken();
 
     Statement *else_statement = nullptr;
     parseStatement(&else_statement);
@@ -260,6 +254,7 @@ bool Parser::parseBodyStatement(BodyStatement **body_statement) {
   while (!(IS_PUNCTUATOR("}"))) {
     parseStatement(&stmt);
     statements.push_back(statement);
+    std::cout << "current token: " << _current_token.textual_content << std::endl;
   }
   nextToken();  //step '}'
 
@@ -734,7 +729,7 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
     primary_expr->expression = logical_or_expr;
     nextToken();  // eat ')'
   } else {
-    ERROR_PRINT("invalid expression type");
+    ERROR_PRINT("invalid expression type " << _current_token.textual_content);
   }
   return true;
 }
