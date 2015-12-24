@@ -477,40 +477,57 @@ void base_generator::emitForStatement(ForStatement *for_statment) {
 
 void base_generator::emitIfStatement(IfStatement *if_statement) {
 
-  //condition
-  llvm::Value *condition_expr_value = if_statement->condition->emit(this);
-  llvm::Value *zeroVal = createLlvmFpValue(0.0, ExpressionType::DOUBLE);
-
-  llvm::Value *result = _builder->CreateFCmpONE(condition_expr_value, zeroVal);
+  llvm::Value *cond_val = if_statement->condition->emit(this);
+  llvm::Value *zero_val = createLlvmFpValue(0.0, ExpressionType::DOUBLE);
+  cond_val = _builder->CreateFCmpONE(cond_val, zero_val, "condition");
 
   llvm::Function *the_function = _builder->GetInsertBlock()->getParent();
 
-  llvm::BasicBlock *then = llvm::BasicBlock::Create(llvm::getGlobalContext(), "thenBB");
-  llvm::BasicBlock *else_b = llvm::BasicBlock::Create(llvm::getGlobalContext(), "elseBB");
-  llvm::BasicBlock *merge_b = llvm::BasicBlock::Create(llvm::getGlobalContext(), "merge");
+  llvm::BasicBlock *then_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "then_block", the_function);
+  llvm::BasicBlock *else_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "else_block");
+  llvm::BasicBlock *merge_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "merge_block");
 
-  _builder->CreateCondBr(result, then, else_b);
+  _builder->CreateCondBr(cond_val, then_block, else_block);
 
-  phi_generator *phi_gen = new phi_generator(_insert_point, _builder, _module);
+  /**
+   * then
+   */
 
+  _builder->SetInsertPoint(then_block);
+
+  phi_generator *phi_gen = new phi_generator(then_block, _builder, _module);
   if_statement->statement->emit(phi_gen);
+  _builder->CreateBr(merge_block);
+  then_block = _builder->GetInsertBlock();
 
-  _builder->CreateBr(merge_b);
-  then = _builder->GetInsertBlock();
+  /**
+   * else
+   */
 
-  if (if_statement->else_stmt != nullptr) {
-    _insert_point = else_b;
-    if_statement->else_stmt->emit(this);
-  }
+  the_function->getBasicBlockList().push_back(else_block);
+  _builder->SetInsertPoint(else_block);
+  phi_gen->_insert_point = else_block;
+
+  if_statement->else_stmt->emit(phi_gen);
+
+  _builder->CreateBr(merge_block);
+  else_block = _builder->GetInsertBlock();
+
+  /**
+   * merge
+   */
+
+  the_function->getBasicBlockList().push_back(merge_block);
+  _builder->SetInsertPoint(merge_block);
 
   for (int i = 0; i < phi_gen->phi_entries_table.size(); ++i) {
-    llvm::PHINode *PN =
-        _builder->CreatePHI(llvm::Type::getDoubleTy(llvm::getGlobalContext()), 2, "iftmp");
-
     phi_entry *entry = phi_gen->phi_entries_table.at(i);
-    PN->addIncoming(entry->first_value, entry->first_block);
-    PN->addIncoming(entry->second_value, entry->second_block);
+
+    llvm::PHINode *phi_node = _builder->CreatePHI(entry->first_value->getType(), 2, "phival " + i);
+    phi_node->addIncoming(entry->first_value, entry->first_block);
+    phi_node->addIncoming(entry->second_value, entry->second_block);
   }
+
 }
 
 /**
