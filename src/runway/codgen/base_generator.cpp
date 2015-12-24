@@ -481,7 +481,7 @@ void base_generator::emitIfStatement(IfStatement *if_statement) {
   llvm::Value *condition_expr_value = if_statement->condition->emit(this);
   llvm::Value *zeroVal = createLlvmFpValue(0.0, ExpressionType::DOUBLE);
 
-  llvm::Value *comparision_result = _builder->CreateFCmpONE(condition_expr_value, zeroVal);
+  llvm::Value *result = _builder->CreateFCmpONE(condition_expr_value, zeroVal);
 
   llvm::Function *the_function = _builder->GetInsertBlock()->getParent();
 
@@ -489,7 +489,7 @@ void base_generator::emitIfStatement(IfStatement *if_statement) {
   llvm::BasicBlock *else_b = llvm::BasicBlock::Create(llvm::getGlobalContext(), "elseBB");
   llvm::BasicBlock *merge_b = llvm::BasicBlock::Create(llvm::getGlobalContext(), "merge");
 
-  _builder->CreateCondBr(comparision_result, then, else_b);
+  _builder->CreateCondBr(result, then, else_b);
 
   phi_generator *phi_gen = new phi_generator(_insert_point, _builder, _module);
 
