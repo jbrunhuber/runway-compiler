@@ -62,7 +62,7 @@ class base_generator {
 
   llvm::Value *emitPostFixExpression(PostFixExpression *);
 
-  llvm::Value *emitAssignmentExpression(AssignmentExpression *);
+  virtual llvm::Value *emitAssignmentExpression(AssignmentExpression *);
 
   llvm::Value *emitIdentifierPrimaryExpression(Expression *);
 

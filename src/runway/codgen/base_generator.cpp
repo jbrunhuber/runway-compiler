@@ -187,7 +187,6 @@ void base_generator::emitVariableDeclarationStatement(VariableDeclarationStateme
 
 llvm::Value *base_generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
-  std::cout << "base assignment codegen " << std::endl;
   return doAssignment(assignment_expr);
 }
 
@@ -232,7 +231,7 @@ llvm::Value *base_generator::doAssignment(AssignmentExpression *assignment_expr)
   new llvm::StoreInst(llvm_emitted_assignment_value, symbol->llvm_ptr, false, _insert_point);
 
   delete assignment_expr;
-  return symbol->llvm_ptr;
+  return llvm_emitted_assignment_value;
 }
 
 /**
@@ -527,6 +526,7 @@ void base_generator::emitIfStatement(IfStatement *if_statement) {
     phi_entry *entry = phi_gen->phi_entries_table.at(i);
 
     llvm::PHINode *phi_node = _builder->CreatePHI(entry->first_value->getType(), 2, "phival ");
+
     phi_node->addIncoming(entry->first_value, entry->first_block);
     phi_node->addIncoming(entry->second_value, entry->second_block);
   }

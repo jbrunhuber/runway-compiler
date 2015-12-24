@@ -22,8 +22,6 @@ llvm::Value *phi_generator::emitAssignmentExpression(AssignmentExpression *assig
   //determine symbols name as identifier for the phi table
   std::string identifier = assignment_expr->identifier->string_value;
 
-  std::cout << " phi gen " << std::endl;
-
   //create a new phi entry for the symbol
   phi_entry *phi_e = get(identifier);
   if (phi_e == nullptr) {
@@ -47,7 +45,7 @@ phi_entry *phi_generator::get(std::string identifier) {
 
   for (int i = 0; i < phi_entries_table.size(); ++i) {
     phi_entry *entry = phi_entries_table.at(i);
-    if (entry->identifier.compare(identifier) != 0) {
+    if (entry->identifier.compare(identifier) == 0) {
       return entry;
     }
   }
