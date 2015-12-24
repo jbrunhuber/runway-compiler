@@ -98,7 +98,7 @@ protected:
   llvm::Module *_module;
   llvm::IRBuilder<> *_builder;
   std::map<std::string, llvm::Function *> _functions;
-  std::stack<scope_block *> _block_stack;
+  std::stack<scope_block *> *_block_stack;
 };
 
 #endif /* defined (RUNWAY_CODEGEN_GENERATOR_HPP) */

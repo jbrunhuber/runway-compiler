@@ -20,6 +20,7 @@ class phi_generator : public base_generator {
   std::vector<phi_entry *> phi_entries_table;
   llvm::Value *emitAssignmentExpression(AssignmentExpression *);
   phi_entry *get(std::string);
+  void setSymtable(std::stack<scope_block *> *stack);
 };
 
 #endif /* defined (RUNWAY_CODEGEN_PHI_GENERATOR_HPP) */

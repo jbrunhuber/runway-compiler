@@ -53,3 +53,9 @@ phi_entry *phi_generator::get(std::string identifier) {
   }
   return nullptr;
 }
+
+
+void phi_generator::setSymtable(std::stack<scope_block *> *stack) {
+
+  _block_stack = stack;
+}

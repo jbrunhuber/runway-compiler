@@ -115,7 +115,7 @@ void VariableDeclarationStatement::emit(base_generator *generator) {
 
 void BodyStatement::emit(base_generator *generator) {
 
-  //TODO impl
+  generator->emitBodyStatement(this);
 }
 
 void ExpressionStatement::emit(base_generator *generator) {

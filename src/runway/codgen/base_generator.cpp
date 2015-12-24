@@ -42,7 +42,7 @@ llvm::Value *base_generator::emitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
 
-  scope_block *block = _block_stack.top();
+  scope_block *block = _block_stack->top();
   rw_symtable_entry *value = block->get(identifier->string_value);
 
   delete identifier;
@@ -174,7 +174,7 @@ void base_generator::emitVariableDeclarationStatement(VariableDeclarationStateme
   variable_declaration_entry->llvm_ptr = llvm_alloca_inst;
   variable_declaration_entry->type = expression_type;
 
-  scope_block *block = _block_stack.top();
+  scope_block *block = _block_stack->top();
   block->set(identifier, variable_declaration_entry);
 
   //if there's a assignment beside the variable declaration, emit the rhs assignment value
@@ -187,6 +187,7 @@ void base_generator::emitVariableDeclarationStatement(VariableDeclarationStateme
 
 llvm::Value *base_generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
+  std::cout << "base assignment codegen " << std::endl;
   return doAssignment(assignment_expr);
 }
 
@@ -201,7 +202,7 @@ llvm::Value *base_generator::doAssignment(AssignmentExpression *assignment_expr)
   std::string identifier = assignment_expr->identifier->string_value;
 
   //check if the type in assignment expression matches the allocated type
-  scope_block *block = _block_stack.top();
+  scope_block *block = _block_stack->top();
   rw_symtable_entry *symbol = block->get(identifier);
 
   ExpressionType declared_type = symbol->type;
@@ -434,8 +435,9 @@ void base_generator::construct() {
   _builder->SetInsertPoint(_insert_point);
 
   // create a scope block for member symbols and functions
+  _block_stack = new std::stack<scope_block *>;
   scope_block *global_scope = new scope_block;
-  _block_stack.push(global_scope);
+  _block_stack->push(global_scope);
 }
 
 /**
@@ -496,6 +498,7 @@ void base_generator::emitIfStatement(IfStatement *if_statement) {
   _builder->SetInsertPoint(then_block);
 
   phi_generator *phi_gen = new phi_generator(then_block, _builder, _module);
+  phi_gen->setSymtable(_block_stack);
   if_statement->statement->emit(phi_gen);
   _builder->CreateBr(merge_block);
   then_block = _builder->GetInsertBlock();
@@ -523,11 +526,11 @@ void base_generator::emitIfStatement(IfStatement *if_statement) {
   for (int i = 0; i < phi_gen->phi_entries_table.size(); ++i) {
     phi_entry *entry = phi_gen->phi_entries_table.at(i);
 
-    llvm::PHINode *phi_node = _builder->CreatePHI(entry->first_value->getType(), 2, "phival " + i);
+    llvm::PHINode *phi_node = _builder->CreatePHI(entry->first_value->getType(), 2, "phival ");
     phi_node->addIncoming(entry->first_value, entry->first_block);
     phi_node->addIncoming(entry->second_value, entry->second_block);
   }
-
+  merge_block = _builder->GetInsertBlock();
 }
 
 /**
