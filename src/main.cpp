@@ -18,7 +18,7 @@ std::string getSourceCode(std::string path);
 /**
  * for testing
  */
-const char *DEFAULT_DEBUG_PATH = "/home/josh/Dokumente/";
+const char *DEFAULT_DEBUG_PATH = "/Users/josh/Documents/";
 
 /**
  *

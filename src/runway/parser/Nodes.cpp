@@ -88,7 +88,8 @@ llvm::Value *PrimaryExpression::emit(base_generator *generator) {
 }
 
 void IfStatement::emit(base_generator *generator) {
-  //TODO impl
+
+  generator->emitIfStatement(this);
 }
 
 void ForStatement::emit(base_generator *generator) {

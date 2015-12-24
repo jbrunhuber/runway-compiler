@@ -7,6 +7,7 @@
 //
 
 #include <codegen/base_generator.hpp>
+#include <codegen/phi_generator.hpp>
 
 /**
  * Creates the module and the IRBuilder
@@ -184,13 +185,18 @@ void base_generator::emitVariableDeclarationStatement(VariableDeclarationStateme
   delete var_decl_stmt;
 }
 
+llvm::Value *base_generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
+
+  return doAssignment(assignment_expr);
+}
+
 /**
  * Stores the rhs of an assignment expression
  *
  * param: the parsed assignment expression
  * return: the pointer to the new assigned value
  */
-llvm::Value *base_generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
+llvm::Value *base_generator::doAssignment(AssignmentExpression *assignment_expr) {
 
   std::string identifier = assignment_expr->identifier->string_value;
 
@@ -469,53 +475,33 @@ void base_generator::emitForStatement(ForStatement *for_statment) {
 
 }
 
-/**
- * code explanation http://llvm.org/docs/tutorial/LangImpl5.html
- */
 void base_generator::emitIfStatement(IfStatement *if_statement) {
 
-  llvm::Value *expr = if_statement->condition->emit(this);
-  // Convert condition to a bool by comparing equal to 0.0.
-  llvm::Value *condition = _builder->CreateFCmpONE(expr, llvm::ConstantFP::get(llvm::getGlobalContext(), llvm::APFloat(0.0)), "ifcond");
+  //condition
+  llvm::Value *condition_expr_value = if_statement->condition->emit(this);
+  llvm::Value *zeroVal = createLlvmFpValue(0.0, ExpressionType::DOUBLE);
 
-  /*
-   * then
-   */
+  llvm::Value *comparision_result = _builder->CreateFCmpONE(condition_expr_value, zeroVal);
 
-  llvm::Function *parent_func = _builder->GetInsertBlock()->getParent();
+  llvm::Function *the_function = _builder->GetInsertBlock()->getParent();
 
-  //if true
-  llvm::BasicBlock *then_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "then", parent_func);
+  llvm::BasicBlock *then = llvm::BasicBlock::Create(llvm::getGlobalContext(), "thenBB");
+  llvm::BasicBlock *else_b = llvm::BasicBlock::Create(llvm::getGlobalContext(), "elseBB");
+  llvm::BasicBlock *merge_b = llvm::BasicBlock::Create(llvm::getGlobalContext(), "merge");
 
-  //if false
-  llvm::BasicBlock *else_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "else");
-  llvm::BasicBlock *merge = llvm::BasicBlock::Create(llvm::getGlobalContext(), "merge");
+  _builder->CreateCondBr(comparision_result, then, else_b);
 
-  _builder->CreateCondBr(condition, then_block, else_block);
-  _builder->SetInsertPoint(then_block);
+  phi_generator *phi_gen = new phi_generator(_insert_point, _builder, _module);
 
-  if_statement->body->emit(this);
+  if_statement->body->emit(phi_gen);
 
-  /*
-   * else
-   */
+  _builder->CreateBr(merge_b);
+  then = _builder->GetInsertBlock();
 
-  _builder->CreateBr(merge);
-
-  then_block = _builder->GetInsertBlock();
-  parent_func->getBasicBlockList().push_back(else_block);
-  _builder->SetInsertPoint(else_block);
-
-  //Todo else branch code generation
-
-  _builder->CreateBr(else_block);
-  else_block = _builder->GetInsertBlock();
-
-  /*
-   * merge
-   */
-  parent_func->getBasicBlockList().push_back(merge);
-  _builder->SetInsertPoint(merge);
+  if (if_statement->elseif != nullptr) {
+    _insert_point = else_b;
+    if_statement->elseif->emit(this);
+  }
 }
 
 /**

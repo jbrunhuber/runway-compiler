@@ -15,6 +15,9 @@
 class phi_generator : public base_generator {
 
  public:
+
+  phi_generator(llvm::BasicBlock *, llvm::IRBuilder<> *, llvm::Module *);
+
   std::map<std::string, phi_entry *> phi_entries_table;
 
   llvm::Value *emitAssignmentExpression(AssignmentExpression *);
