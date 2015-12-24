@@ -136,20 +136,29 @@ bool Parser::parseIfStatement(IfStatement **if_statement) {
   }
 
   //parse the condition expression
-  Expression *condition_expr = 0;
+  Expression *condition_expr = nullptr;
   parseExpression(&condition_expr);
   (*if_statement)->condition = condition_expr;
 
   nextToken();  //eat ')'
 
+  Statement *statement = nullptr;
   if (IS_PUNCTUATOR("{")) {
-
-    BodyStatement *body = nullptr;
-    parseBodyStatement(&body);
-    (*if_statement)->body = body;
+    BodyStatement *body_statement = new BodyStatement;
+    parseBodyStatement(&body_statement);
+    statement = body_statement;
+  } else {
+    parseStatement(&statement);
   }
+  (*if_statement)->statement = statement;
 
-  return false;
+  if (IS_KEYWORD("else")) {
+
+    Statement *else_statement = nullptr;
+    parseStatement(&else_statement);
+    (*if_statement)->else_stmt = else_statement;
+  }
+  return true;
 }
 
 /**

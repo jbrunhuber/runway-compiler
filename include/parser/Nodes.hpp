@@ -251,10 +251,6 @@ class BodyStatement: public Statement {
   std::vector<Statement *> statements;
 };
 
-enum class ConditionType {
-  IF, ELSE_IF, ELSE
-};
-
 /**
  * If condition
  */
@@ -262,9 +258,8 @@ class IfStatement: public Statement {
  public:
   void emit(base_generator *);
   Expression *condition;
-  BodyStatement *body;
-  IfStatement *elseif;
-  ConditionType type;
+  Statement *statement;
+  Statement *else_stmt;
 };
 
 /**
