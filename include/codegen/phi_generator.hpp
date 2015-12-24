@@ -17,10 +17,9 @@ class phi_generator : public base_generator {
  public:
 
   phi_generator(llvm::BasicBlock *, llvm::IRBuilder<> *, llvm::Module *);
-
-  std::map<std::string, phi_entry *> phi_entries_table;
-
+  std::vector<phi_entry *> phi_entries_table;
   llvm::Value *emitAssignmentExpression(AssignmentExpression *);
+  phi_entry *get(std::string);
 };
 
 #endif /* defined (RUNWAY_CODEGEN_PHI_GENERATOR_HPP) */

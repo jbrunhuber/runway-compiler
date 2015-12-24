@@ -25,11 +25,31 @@ llvm::Value *phi_generator::emitAssignmentExpression(AssignmentExpression *assig
   std::cout << " phi gen " << std::endl;
 
   //create a new phi entry for the symbol
-  phi_entry *phi_e = phi_entries_table[identifier];
-  phi_e->phi_table[_insert_point] = assignment;
+  phi_entry *phi_e = get(identifier);
+  if (phi_e == nullptr) {
+    phi_e = new phi_entry;
+    phi_e->first_value = assignment;
+    phi_e->first_block = _insert_point;
+  } else {
+    phi_e->second_value = assignment;
+    phi_e->second_block = _insert_point;
+  }
+
+  phi_e->identifier = identifier;
 
   //write the phi entry in the phi table
-  phi_entries_table[identifier] = phi_e;
+  phi_entries_table.push_back(phi_e);
 
   return assignment;
-};
+}
+
+phi_entry *phi_generator::get(std::string identifier) {
+
+  for (int i = 0; i < phi_entries_table.size(); ++i) {
+    phi_entry *entry = phi_entries_table.at(i);
+    if (entry->identifier.compare(identifier) != 0) {
+      return entry;
+    }
+  }
+  return nullptr;
+}

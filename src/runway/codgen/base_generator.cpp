@@ -493,14 +493,23 @@ void base_generator::emitIfStatement(IfStatement *if_statement) {
 
   phi_generator *phi_gen = new phi_generator(_insert_point, _builder, _module);
 
-  if_statement->body->emit(phi_gen);
+  if_statement->statement->emit(phi_gen);
 
   _builder->CreateBr(merge_b);
   then = _builder->GetInsertBlock();
 
-  if (if_statement->elseif != nullptr) {
+  if (if_statement->else_stmt != nullptr) {
     _insert_point = else_b;
-    if_statement->elseif->emit(this);
+    if_statement->else_stmt->emit(this);
+  }
+
+  for (int i = 0; i < phi_gen->phi_entries_table.size(); ++i) {
+    llvm::PHINode *PN =
+        _builder->CreatePHI(llvm::Type::getDoubleTy(llvm::getGlobalContext()), 2, "iftmp");
+
+    phi_entry *entry = phi_gen->phi_entries_table.at(i);
+    PN->addIncoming(entry->first_value, entry->first_block);
+    PN->addIncoming(entry->second_value, entry->second_block);
   }
 }
 

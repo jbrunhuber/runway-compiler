@@ -16,8 +16,15 @@
 class phi_entry {
 
  public:
-  std::string symbol_identifier;
-  std::map<llvm::BasicBlock *, llvm::Value *> phi_table;
+  //first
+  llvm::BasicBlock *first_block;
+  llvm::Value *first_value;
+
+  //second
+  llvm::BasicBlock *second_block;
+  llvm::Value *second_value;
+
+  std::string identifier;
 };
 
 #endif /* INCLUDE_CODEGEN_PHI_ENTRY_HPP_ */

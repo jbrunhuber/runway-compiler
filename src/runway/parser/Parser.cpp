@@ -157,6 +157,8 @@ bool Parser::parseIfStatement(IfStatement **if_statement) {
     Statement *else_statement = nullptr;
     parseStatement(&else_statement);
     (*if_statement)->else_stmt = else_statement;
+  } else {
+    (*if_statement)->else_stmt = nullptr;
   }
   return true;
 }
