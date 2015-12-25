@@ -241,6 +241,8 @@ llvm::Value *base_generator::emitLogicalOrExpression(LogicalOrExpression *expr) 
 
   llvm::Value *lhs_value = expr->lhs_logical_and_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
+
+  return nullptr;
 }
 
 /**
@@ -252,6 +254,8 @@ llvm::Value *base_generator::emitLogicalAndExpression(LogicalAndExpression *expr
 
   llvm::Value *lhs_value = expr->lhs_equality_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
+
+  return nullptr;
 }
 
 /**
@@ -476,13 +480,17 @@ void base_generator::emitForStatement(ForStatement *for_statment) {
 
 void base_generator::emitIfStatement(IfStatement *if_statement) {
 
+  // emit the condition and cast it to a floating point value
   llvm::Value *cond_val = if_statement->condition->emit(this);
   cond_val = _builder->CreateUIToFP(cond_val, llvm::Type::getDoubleTy(llvm::getGlobalContext()), "bool_convert");
 
+  // create a floating point value for the comparison
   llvm::Value *zero_val = createLlvmFpValue(0.0, ExpressionType::DOUBLE);
 
+  // convert condition to a boolean by comparing equal to 0.0
   cond_val = _builder->CreateFCmpONE(cond_val, zero_val, "condition");
 
+  // create the blocks for the condition branches
   llvm::Function *the_function = _builder->GetInsertBlock()->getParent();
 
   llvm::BasicBlock *then_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "then_block", the_function);
@@ -496,7 +504,6 @@ void base_generator::emitIfStatement(IfStatement *if_statement) {
    */
 
   _builder->SetInsertPoint(then_block);
-
   phi_generator *phi_gen = new phi_generator(then_block, _builder, _module);
   phi_gen->setSymtable(_block_stack);
   if_statement->statement->emit(phi_gen);
@@ -510,9 +517,7 @@ void base_generator::emitIfStatement(IfStatement *if_statement) {
   the_function->getBasicBlockList().push_back(else_block);
   _builder->SetInsertPoint(else_block);
   phi_gen->_insert_point = else_block;
-
   if_statement->else_stmt->emit(phi_gen);
-
   _builder->CreateBr(merge_block);
   else_block = _builder->GetInsertBlock();
 
@@ -523,13 +528,17 @@ void base_generator::emitIfStatement(IfStatement *if_statement) {
   the_function->getBasicBlockList().push_back(merge_block);
   _builder->SetInsertPoint(merge_block);
 
+  // emit the phi nodes
   for (int i = 0; i < phi_gen->phi_entries_table.size(); ++i) {
     phi_entry *entry = phi_gen->phi_entries_table.at(i);
 
-    llvm::PHINode *phi_node = _builder->CreatePHI(entry->first_value->getType(), 2, "phival ");
+    llvm::PHINode *phi_node = _builder->CreatePHI(entry->first_value->getType(), entry->phi_count, "phival");
 
     phi_node->addIncoming(entry->first_value, entry->first_block);
-    phi_node->addIncoming(entry->second_value, entry->second_block);
+
+    if (entry->phi_count > 1) {
+      phi_node->addIncoming(entry->second_value, entry->second_block);
+    }
   }
   merge_block = _builder->GetInsertBlock();
 }

@@ -25,6 +25,8 @@ class phi_entry {
   llvm::Value *second_value;
 
   std::string identifier;
+
+  int phi_count = 0;
 };
 
 #endif /* INCLUDE_CODEGEN_PHI_ENTRY_HPP_ */

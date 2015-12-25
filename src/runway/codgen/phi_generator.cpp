@@ -28,9 +28,11 @@ llvm::Value *phi_generator::emitAssignmentExpression(AssignmentExpression *assig
     phi_e = new phi_entry;
     phi_e->first_value = assignment;
     phi_e->first_block = _insert_point;
+    phi_e->phi_count = 1;
   } else {
     phi_e->second_value = assignment;
     phi_e->second_block = _insert_point;
+    phi_e->phi_count = 2;
   }
 
   phi_e->identifier = identifier;
