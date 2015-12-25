@@ -3,17 +3,17 @@
 
 BaseGenerator::BaseGenerator() : insert_point(nullptr) {
 
-  module = new llvm::Module("runway", llvm::getGlobalContext());
-  builder = new llvm::IRBuilder<>(module->getContext());
-  block_stack = new std::stack<ScopeBlock *>;
+  this->module = new llvm::Module("runway", llvm::getGlobalContext());
+  this->builder = new llvm::IRBuilder<>(module->getContext());
+  this->block_stack = new std::stack<ScopeBlock *>;
 }
 
 BaseGenerator::BaseGenerator(llvm::Module *llvm_module, llvm::IRBuilder<> *llvm_builder, llvm::BasicBlock *insert) {
 
-  module = llvm_module;
-  builder = llvm_builder;
-  insert_point = insert;
-  block_stack = new std::stack<ScopeBlock *>;
+  this->module = llvm_module;
+  this->builder = llvm_builder;
+  this->insert_point = insert;
+  this->block_stack = new std::stack<ScopeBlock *>;
 }
 
 BaseGenerator::~BaseGenerator() {
@@ -118,15 +118,15 @@ void BaseGenerator::emitVariableDeclarationStatement(VariableDeclarationStatemen
   ExpressionType expression_type = var_decl_stmt->type->type;
 
   //set the llvm type
-  if(expression_type == ExpressionType::BOOL) {
+  if (expression_type == ExpressionType::BOOL) {
     llvm_variable_type = llvm::Type::getInt1Ty(llvm::getGlobalContext());
-  } else if(expression_type == ExpressionType::FLOAT) {
+  } else if (expression_type == ExpressionType::FLOAT) {
     llvm_variable_type = llvm::Type::getFloatTy(llvm::getGlobalContext());
-  } else if(expression_type == ExpressionType::DOUBLE) {
+  } else if (expression_type == ExpressionType::DOUBLE) {
     llvm_variable_type = llvm::Type::getDoubleTy(llvm::getGlobalContext());
-  } else if(expression_type == ExpressionType::INTEGER) {
+  } else if (expression_type == ExpressionType::INTEGER) {
     llvm_variable_type = llvm::Type::getInt32Ty(llvm::getGlobalContext());
-  } else if(expression_type == ExpressionType::STRING) {
+  } else if (expression_type == ExpressionType::STRING) {
     llvm_variable_type = llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
   }
 
@@ -164,7 +164,7 @@ llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) 
   SymtableEntry *symbol = block->get(identifier);
   //when there's no value in symbol table print error
   if (symbol == nullptr) {
-    ERR_PRINTLN("Use of undeclared identifier " << " " << identifier);
+    ERR_PRINTLN("Use of undeclared identifier " << identifier);
     return nullptr;
   }
 
@@ -197,7 +197,7 @@ llvm::Value *BaseGenerator::emitLogicalOrExpression(LogicalOrExpression *expr) {
 
   llvm::Value *lhs_value = expr->lhs_logical_and_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
-
+  //TODO
   return nullptr;
 }
 
@@ -205,7 +205,7 @@ llvm::Value *BaseGenerator::emitLogicalAndExpression(LogicalAndExpression *expr)
 
   llvm::Value *lhs_value = expr->lhs_equality_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
-
+  //TODO
   return nullptr;
 }
 
@@ -454,7 +454,7 @@ void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
   for (int i = 0; i < phi_gen->phi_entries_table.size(); ++i) {
     PhiEntry *entry = phi_gen->phi_entries_table.at(i);
 
-    if(entry->phi_count < 2) continue;
+    if (entry->phi_count < 2) continue;
     llvm::PHINode *phi_node = builder->CreatePHI(entry->first_value->getType(), entry->phi_count, "phival");
 
     phi_node->addIncoming(entry->first_value, entry->first_block);

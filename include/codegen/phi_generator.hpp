@@ -12,7 +12,7 @@
 #include <codegen/base_generator.hpp>
 #include <codegen/phi_entry.hpp>
 
-class PhiGenerator : public BaseGenerator {
+class PhiGenerator: public BaseGenerator {
 
  public:
 

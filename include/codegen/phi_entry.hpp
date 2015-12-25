@@ -26,7 +26,6 @@ class PhiEntry {
   llvm::Value *second_value;
 
   std::string identifier;
-
   int phi_count = 0;
 };
 
