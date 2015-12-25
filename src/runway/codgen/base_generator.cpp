@@ -197,16 +197,16 @@ llvm::Value *BaseGenerator::emitLogicalOrExpression(LogicalOrExpression *expr) {
 
   llvm::Value *lhs_value = expr->lhs_logical_and_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
-  //TODO
-  return nullptr;
+
+  return builder->CreateOr(lhs_value, rhs_value, "or");
 }
 
 llvm::Value *BaseGenerator::emitLogicalAndExpression(LogicalAndExpression *expr) {
 
   llvm::Value *lhs_value = expr->lhs_equality_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
-  //TODO
-  return nullptr;
+
+  return builder->CreateAnd(lhs_value, rhs_value, "and");
 }
 
 llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
