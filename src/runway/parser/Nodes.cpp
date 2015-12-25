@@ -8,117 +8,117 @@
 
 #include "parser/Nodes.hpp"
 
-llvm::Value *AdditiveExpression::emit(base_generator *generator) {
+llvm::Value *AdditiveExpression::emit(BaseGenerator *generator) {
 
   return generator->emitAdditiveExpression(this);
 }
 
-llvm::Value *LogicalOrExpression::emit(base_generator *generator) {
+llvm::Value *LogicalOrExpression::emit(BaseGenerator *generator) {
 
   return generator->emitLogicalOrExpression(this);
 }
 
-llvm::Value *LogicalAndExpression::emit(base_generator *generator) {
+llvm::Value *LogicalAndExpression::emit(BaseGenerator *generator) {
 
   return generator->emitLogicalAndExpression(this);
 }
 
-llvm::Value *EqualityExpression::emit(base_generator *generator) {
+llvm::Value *EqualityExpression::emit(BaseGenerator *generator) {
 
   return generator->emitEqualityExpression(this);
 }
 
-llvm::Value *UnaryExpression::emit(base_generator *generator) {
+llvm::Value *UnaryExpression::emit(BaseGenerator *generator) {
 
   return generator->emitUnaryExpression(this);
 }
 
-llvm::Value *MultiplicativeExpression::emit(base_generator *generator) {
+llvm::Value *MultiplicativeExpression::emit(BaseGenerator *generator) {
 
   return generator->emitMultiplicativeExpression(this);
 }
 
-llvm::Value *IncrementPostFixExpression::emit(base_generator *generator) {
+llvm::Value *IncrementPostFixExpression::emit(BaseGenerator *generator) {
 
   //TODO impl
   return nullptr;
 }
 
-llvm::Value *FunctionCallPostfixExpression::emit(base_generator *generator) {
+llvm::Value *FunctionCallPostfixExpression::emit(BaseGenerator *generator) {
 
   return generator->emitFunctionCallPostFixExpression(this);
 }
 
-llvm::Value *ArrayPostFixExpression::emit(base_generator *generator) {
+llvm::Value *ArrayPostFixExpression::emit(BaseGenerator *generator) {
 
   //TODO impl
   return nullptr;
 }
 
-llvm::Value *FieldAccessPostFixExpression::emit(base_generator *generator) {
+llvm::Value *FieldAccessPostFixExpression::emit(BaseGenerator *generator) {
 
   //TODO impl
   return nullptr;
 }
 
-llvm::Value *IdentifierPrimaryExpression::emit(base_generator *generator) {
+llvm::Value *IdentifierPrimaryExpression::emit(BaseGenerator *generator) {
 
   return generator->emitIdentifierPrimaryExpression(this);
 }
 
-llvm::Value *ConditionalExpression::emit(base_generator *generator) {
+llvm::Value *ConditionalExpression::emit(BaseGenerator *generator) {
 
   //TODO impl
   return nullptr;
 }
-llvm::Value *AssignmentExpression::emit(base_generator *generator) {
+llvm::Value *AssignmentExpression::emit(BaseGenerator *generator) {
 
   return generator->emitAssignmentExpression(this);
 }
 
-llvm::Value *RelationalExpression::emit(base_generator *generator) {
+llvm::Value *RelationalExpression::emit(BaseGenerator *generator) {
 
   //TODO impl
   return nullptr;
 }
 
-llvm::Value *PrimaryExpression::emit(base_generator *generator) {
+llvm::Value *PrimaryExpression::emit(BaseGenerator *generator) {
 
   return generator->emitPrimaryExpression(this);
 }
 
-void IfStatement::emit(base_generator *generator) {
+void IfStatement::emit(BaseGenerator *generator) {
 
   generator->emitIfStatement(this);
 }
 
-void ForStatement::emit(base_generator *generator) {
+void ForStatement::emit(BaseGenerator *generator) {
   //TODO impl
 }
 
-void JumpStatement::emit(base_generator *generator) {
+void JumpStatement::emit(BaseGenerator *generator) {
   //TODO impl
 }
 
-void ReturnStatement::emit(base_generator *generator) {
+void ReturnStatement::emit(BaseGenerator *generator) {
   //TODO impl
 }
 
-void WhileLoopStatement::emit(base_generator *generator) {
+void WhileLoopStatement::emit(BaseGenerator *generator) {
   //TODO impl
 }
 
-void VariableDeclarationStatement::emit(base_generator *generator) {
+void VariableDeclarationStatement::emit(BaseGenerator *generator) {
 
   generator->emitVariableDeclarationStatement(this);
 }
 
-void BodyStatement::emit(base_generator *generator) {
+void BodyStatement::emit(BaseGenerator *generator) {
 
   generator->emitBodyStatement(this);
 }
 
-void ExpressionStatement::emit(base_generator *generator) {
+void ExpressionStatement::emit(BaseGenerator *generator) {
 
   generator->emitExpressionStatement(this);
 }

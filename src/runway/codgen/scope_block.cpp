@@ -8,12 +8,12 @@
 
 #include <codegen/scope_block.hpp>
 
-void scope_block::set(std::string identifier, rw_symtable_entry *symbol) {
+void ScopeBlock::set(std::string identifier, SymtableEntry *symbol) {
 
   _symtable[identifier] = symbol;
 }
 
-rw_symtable_entry *scope_block::get(std::string identifier) {
+SymtableEntry *ScopeBlock::get(std::string identifier) {
 
   return _symtable[identifier];
 }

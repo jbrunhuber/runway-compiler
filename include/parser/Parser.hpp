@@ -25,9 +25,9 @@
 
 #define ERROR_PRINT(action)                  (std::cerr << "Line " << _current_token.line_count << ": " << action << std::endl)
 
-#include "Nodes.hpp"
-
-#include "../tokenizer/Tokenizer.hpp"
+#include <parser/NodesForward.hpp>
+#include <parser/Nodes.hpp>
+#include <tokenizer/Tokenizer.hpp>
 
 class Parser {
  public:

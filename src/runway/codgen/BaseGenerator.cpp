@@ -12,14 +12,14 @@
 /**
  * Creates the module and the IRBuilder
  */
-BaseGenerator::BaseGenerator()
+base_generator::BaseGenerator()
     : _insert_point(nullptr) {
 
   _module = new llvm::Module("runway", llvm::getGlobalContext());
   _builder = new llvm::IRBuilder<>(_module->getContext());
 }
 
-BaseGenerator::BaseGenerator(llvm::Module *module, llvm::IRBuilder<> *builder, llvm::BasicBlock *insert) {
+base_generator::BaseGenerator(llvm::Module *module, llvm::IRBuilder<> *builder, llvm::BasicBlock *insert) {
 
   _module = module;
   _builder = builder;
@@ -29,7 +29,7 @@ BaseGenerator::BaseGenerator(llvm::Module *module, llvm::IRBuilder<> *builder, l
 /**
  * Free up memory
  */
-BaseGenerator::~BaseGenerator() {
+base_generator::~BaseGenerator() {
 
   delete _module;
   delete _builder;
@@ -38,12 +38,12 @@ BaseGenerator::~BaseGenerator() {
 /**
  * Identifier
  */
-llvm::Value *BaseGenerator::emitIdentifierPrimaryExpression(Expression *expr) {
+llvm::Value *base_generator::emitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
 
-  ScopeBlock *block = _block_stack->top();
-  SymtableEntry *symbol = block->get(identifier->string_value);
+  scope_block *block = _block_stack->top();
+  rw_symtable_entry *symbol = block->get(identifier->string_value);
 
   delete identifier;
 
@@ -57,7 +57,7 @@ llvm::Value *BaseGenerator::emitIdentifierPrimaryExpression(Expression *expr) {
 /**
  * Emits code for a function call statement
  */
-llvm::Value *BaseGenerator::emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *func_call_expr) {
+llvm::Value *base_generator::emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *func_call_expr) {
 
   std::string identifier = func_call_expr->identifier->string_value;
   if (!identifier.compare("print")) {
@@ -75,7 +75,7 @@ llvm::Value *BaseGenerator::emitFunctionCallPostFixExpression(FunctionCallPostfi
  * param: parameter expression
  * param: true, if the function should make a line break
  */
-void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_line) {
+void base_generator::createPrintFunction(Expression *parameter_expr, bool new_line) {
 
   const std::string const_function_name = "printf";
   const std::string const_form_string_arg = "%s";
@@ -140,7 +140,7 @@ void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_lin
  *
  * param: the parsed variable declaration statement
  */
-void BaseGenerator::emitVariableDeclarationStatement(VariableDeclarationStatement *var_decl_stmt) {
+void base_generator::emitVariableDeclarationStatement(VariableDeclarationStatement *var_decl_stmt) {
 
   std::string identifier = var_decl_stmt->identifier->string_value;
 
@@ -170,12 +170,12 @@ void BaseGenerator::emitVariableDeclarationStatement(VariableDeclarationStatemen
   llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(llvm_variable_type, identifier, _insert_point);
 
   //save the pointer of the value in the symbol table
-  SymtableEntry *variable_declaration_entry = new SymtableEntry;
+  rw_symtable_entry *variable_declaration_entry = new rw_symtable_entry;
 
   variable_declaration_entry->llvm_ptr = llvm_alloca_inst;
   variable_declaration_entry->type = expression_type;
 
-  ScopeBlock *block = _block_stack->top();
+  scope_block *block = _block_stack->top();
   block->set(identifier, variable_declaration_entry);
 
   //if there's a assignment beside the variable declaration, emit the rhs assignment value
@@ -186,7 +186,7 @@ void BaseGenerator::emitVariableDeclarationStatement(VariableDeclarationStatemen
   delete var_decl_stmt;
 }
 
-llvm::Value *BaseGenerator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
+llvm::Value *base_generator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
   return doAssignment(assignment_expr);
 }
@@ -197,13 +197,13 @@ llvm::Value *BaseGenerator::emitAssignmentExpression(AssignmentExpression *assig
  * param: the parsed assignment expression
  * return: the pointer to the new assigned value
  */
-llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) {
+llvm::Value *base_generator::doAssignment(AssignmentExpression *assignment_expr) {
 
   std::string identifier = assignment_expr->identifier->string_value;
 
   //check if the type in assignment expression matches the allocated type
-  ScopeBlock *block = _block_stack->top();
-  SymtableEntry *symbol = block->get(identifier);
+  scope_block *block = _block_stack->top();
+  rw_symtable_entry *symbol = block->get(identifier);
   //when there's no value in symbol table print error
   if (symbol == nullptr) {
     ERR_PRINTLN("Use of undeclared identifier " << " " << identifier);
@@ -240,7 +240,7 @@ llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) 
  *
  * param: logical or expression
  */
-llvm::Value *BaseGenerator::emitLogicalOrExpression(LogicalOrExpression *expr) {
+llvm::Value *base_generator::emitLogicalOrExpression(LogicalOrExpression *expr) {
 
   llvm::Value *lhs_value = expr->lhs_logical_and_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
@@ -253,7 +253,7 @@ llvm::Value *BaseGenerator::emitLogicalOrExpression(LogicalOrExpression *expr) {
  *
  * param: logical and expression
  */
-llvm::Value *BaseGenerator::emitLogicalAndExpression(LogicalAndExpression *expr) {
+llvm::Value *base_generator::emitLogicalAndExpression(LogicalAndExpression *expr) {
 
   llvm::Value *lhs_value = expr->lhs_equality_expr->emit(this);
   llvm::Value *rhs_value = expr->rhs_logical_or_expr->emit(this);
@@ -264,7 +264,7 @@ llvm::Value *BaseGenerator::emitLogicalAndExpression(LogicalAndExpression *expr)
 /**
  *
  */
-llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
+llvm::Value *base_generator::emitAdditiveExpression(AdditiveExpression *expr) {
 
   llvm::Value *llvm_lhs_value = expr->lhs_multiplicative_expression->emit(this);
   llvm::Value *llvm_rhs_value = expr->rhs_additive_expression->emit(this);
@@ -298,7 +298,7 @@ llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
 /**
  *
  */
-llvm::Value *BaseGenerator::emitMultiplicativeExpression(MultiplicativeExpression *expr) {
+llvm::Value *base_generator::emitMultiplicativeExpression(MultiplicativeExpression *expr) {
 
   llvm::Value *llvm_lhs_value = expr->lhs_unary_expression->emit(this);
   llvm::Value *llvm_rhs_value = expr->rhs_additive_expression->emit(this);
@@ -337,7 +337,7 @@ llvm::Value *BaseGenerator::emitMultiplicativeExpression(MultiplicativeExpressio
  *
  * CASES: BOOL, NUM, STRING, EXPR
  */
-llvm::Value *BaseGenerator::emitPrimaryExpression(PrimaryExpression *expr) {
+llvm::Value *base_generator::emitPrimaryExpression(PrimaryExpression *expr) {
 
   //determine the type of the declared expression
   ExpressionType expr_type = expr->type;
@@ -364,7 +364,7 @@ llvm::Value *BaseGenerator::emitPrimaryExpression(PrimaryExpression *expr) {
 /**
  *
  */
-llvm::Value *BaseGenerator::emitEqualityExpression(EqualityExpression *expr) {
+llvm::Value *base_generator::emitEqualityExpression(EqualityExpression *expr) {
 
   Expression *lhs_expr = expr->lhs_relational_expr;
   Expression *rhs_expr = expr->rhs_equality_expr;
@@ -402,7 +402,7 @@ llvm::Value *BaseGenerator::emitEqualityExpression(EqualityExpression *expr) {
 /**
  *
  */
-llvm::Value *BaseGenerator::emitUnaryExpression(UnaryExpression *expr) {
+llvm::Value *base_generator::emitUnaryExpression(UnaryExpression *expr) {
 
   PostFixExpression *lhs_expr = expr->postfix_expr;
 
@@ -429,7 +429,7 @@ llvm::Value *BaseGenerator::emitUnaryExpression(UnaryExpression *expr) {
 /**
  * Constructs the main function and the insert point
  */
-void BaseGenerator::construct() {
+void base_generator::construct() {
 
   // create main function
   llvm::FunctionType *main_function_type = llvm::FunctionType::get(_builder->getVoidTy(), false);
@@ -442,15 +442,15 @@ void BaseGenerator::construct() {
   _builder->SetInsertPoint(_insert_point);
 
   // create a scope block for member symbols and functions
-  _block_stack = new std::stack<ScopeBlock *>;
-  ScopeBlock *global_scope = new ScopeBlock;
+  _block_stack = new std::stack<scope_block *>;
+  scope_block *global_scope = new scope_block;
   _block_stack->push(global_scope);
 }
 
 /**
  * Creates a void return statement
  */
-void BaseGenerator::finalize() {
+void base_generator::finalize() {
 
   _builder->CreateRetVoid();
 }
@@ -458,7 +458,7 @@ void BaseGenerator::finalize() {
 /**
  *
  */
-void BaseGenerator::emitExpressionStatement(ExpressionStatement *expr_stmt) {
+void base_generator::emitExpressionStatement(ExpressionStatement *expr_stmt) {
 
   Expression *expression = expr_stmt->expression;
   expression->emit(this);
@@ -467,7 +467,7 @@ void BaseGenerator::emitExpressionStatement(ExpressionStatement *expr_stmt) {
 /**
  * returns the llvm bytecode as string value
  */
-std::string BaseGenerator::getIR() {
+std::string base_generator::getIR() {
 
   std::string str;
   llvm::raw_string_ostream rso(str);
@@ -478,14 +478,14 @@ std::string BaseGenerator::getIR() {
 /**
  * Emits code for a for-loop
  */
-void BaseGenerator::emitForStatement(ForStatement *for_statment) {
+void base_generator::emitForStatement(ForStatement *for_statment) {
 
   llvm::BasicBlock *for_instructions =
       llvm::BasicBlock::Create(llvm::getGlobalContext(), "forinst", _functions["main"], _insert_point);
 
 }
 
-void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
+void base_generator::emitIfStatement(IfStatement *if_statement) {
 
   // emit the condition and cast it to a floating point value
   llvm::Value *cond_val = if_statement->condition->emit(this);
@@ -510,7 +510,7 @@ void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
    * then
    */
 
-  PhiGenerator *phi_gen = new PhiGenerator(then_block, _builder, _module);
+  phi_generator *phi_gen = new phi_generator(then_block, _builder, _module);
   phi_gen->setInsertPoint(then_block);
 
   phi_gen->setSymtable(_block_stack);
@@ -537,7 +537,7 @@ void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
 
   // emit the phi nodes
   for (int i = 0; i < phi_gen->phi_entries_table.size(); ++i) {
-    PhiEntry *entry = phi_gen->phi_entries_table.at(i);
+    phi_entry *entry = phi_gen->phi_entries_table.at(i);
 
     if(entry->phi_count < 2) continue;
     llvm::PHINode *phi_node = _builder->CreatePHI(entry->first_value->getType(), entry->phi_count, "phival");
@@ -548,7 +548,7 @@ void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
   merge_block = _builder->GetInsertBlock();
 }
 
-void BaseGenerator::setInsertPoint(llvm::BasicBlock *insert) {
+void base_generator::setInsertPoint(llvm::BasicBlock *insert) {
 
   _insert_point = insert;
   _builder->SetInsertPoint(insert);
@@ -557,7 +557,7 @@ void BaseGenerator::setInsertPoint(llvm::BasicBlock *insert) {
 /**
  *
  */
-void BaseGenerator::emitBodyStatement(BodyStatement *body_statement) {
+void base_generator::emitBodyStatement(BodyStatement *body_statement) {
 
   for (int i = 0; i < body_statement->statements.size(); ++i) {
     Statement *stmt = body_statement->statements.at(i);

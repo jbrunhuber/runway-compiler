@@ -31,7 +31,7 @@ TEST(CODEGEN, MULTIPLICATIVE_INT) {
   node->rhs_additive_expression = number2;
   node->multiplicative_operator = Operator::MUL;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
   llvm::ConstantInt *llvm_int = (
@@ -88,7 +88,7 @@ TEST(CODEGEN, MULTIPLICATIVE_FP) {
 
   decl->expression_to_assign = assignment_expr;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
   decl->emit(generator);

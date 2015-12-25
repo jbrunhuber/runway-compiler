@@ -17,12 +17,12 @@ enum class ExpressionType;
 /**
  * Manages symbol table entries and stores information to it
  */
-class rw_symtable_entry {
+class SymtableEntry {
 
  public:
   ExpressionType type;    //the stored type
   llvm::Value *llvm_ptr;  //the llvm pointer to the value
-  ~rw_symtable_entry();   //destructor
+  ~SymtableEntry();   //destructor
 };
 
 #endif /* defined(RUNWAY_CODEGEN_SYMTABLEENTRY) */

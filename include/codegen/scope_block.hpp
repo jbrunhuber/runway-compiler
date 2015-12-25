@@ -10,14 +10,15 @@
 #define RUNWAY_CODEGEN_SCOPEBLOCK_HPP
 
 #include <codegen/symtable_entry.hpp>
+#include <map>
 
-class rw_symtable_entry;
+class SymtableEntry;
 
-class scope_block {
+class ScopeBlock {
 
  private:
-  std::map<std::string, rw_symtable_entry *> _symtable;
-  std::map<std::string, rw_symtable_entry *> _phi_values;
+  std::map<std::string, SymtableEntry *> _symtable;
+  std::map<std::string, SymtableEntry *> _phi_values;
 
  public:
 
@@ -30,7 +31,7 @@ class scope_block {
    * @param the symbol identifier
    * @param the symboltable entry
    */
-  void set(std::string, rw_symtable_entry *);
+  void set(std::string, SymtableEntry *);
 
   /*
    * Returns a symboltable entry
@@ -38,7 +39,7 @@ class scope_block {
    * @param		symbol identifier
    * @return  rw_symtable_entry
    */
-  rw_symtable_entry *get(std::string);
+  SymtableEntry *get(std::string);
 
   /*
    * Adds a new phi entry to the current scope if it doesn't exists,
@@ -47,7 +48,7 @@ class scope_block {
    * @param   the symbol identifier
    * @param   the symboltable entry
    */
-  void setPhi(std::string, rw_symtable_entry *);
+  void setPhi(std::string, SymtableEntry *);
 
   /*
    * Returns a phi entry
@@ -55,14 +56,14 @@ class scope_block {
    * @param   phi symbol identifier
    * @return  rw_symtable_entry
    */
-  rw_symtable_entry *getPhi(std::string);
+  SymtableEntry *getPhi(std::string);
 
   /*
    * Returns a map with all registered phi values
    *
    * @return  phi map
    */
-  std::map<std::string, rw_symtable_entry *> getPhiMap();
+  std::map<std::string, SymtableEntry *> getPhiMap();
 };
 
 #endif /* defined(RUNWAY_CODEGEN_SCOPEBLOCK_HPP) */

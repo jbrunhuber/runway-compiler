@@ -11,7 +11,7 @@
 /**
  * Release memory for llvm_ptr
  */
-rw_symtable_entry::~rw_symtable_entry() {
+SymtableEntry::~SymtableEntry() {
 
   delete llvm_ptr;
 }

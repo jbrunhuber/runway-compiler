@@ -37,7 +37,7 @@ TEST(CODEGEN, DECLARATION_DOUBLE) {
   variable_declaration_statement->identifier = identifier_primary_expression;
   variable_declaration_statement->expression_to_assign = nullptr;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
   variable_declaration_statement->emit(generator);
@@ -85,7 +85,7 @@ TEST(CODEGEN, ASSIGNMENT_DOUBLE) {
   variable_declaration_statement->identifier = identifier_primary_expression;
   variable_declaration_statement->expression_to_assign = assignment_expr;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
   variable_declaration_statement->emit(generator);
@@ -121,7 +121,7 @@ TEST(CODEGEN, DECLARATION_FLOAT) {
   variable_declaration_statement->identifier = identifier_primary_expression;
   variable_declaration_statement->expression_to_assign = nullptr;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
   variable_declaration_statement->emit(generator);
@@ -169,7 +169,7 @@ TEST(CODEGEN, ASSIGNMENT_FLOAT) {
   variable_declaration_statement->identifier = identifier_primary_expression;
   variable_declaration_statement->expression_to_assign = assignment_expr;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
   variable_declaration_statement->emit(generator);
@@ -217,7 +217,7 @@ TEST(CODEGEN, ASSIGNMENT_INT_TO_DOUBLE) {
   variable_declaration_statement->identifier = identifier_primary_expression;
   variable_declaration_statement->expression_to_assign = assignment_expr;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
   variable_declaration_statement->emit(generator);
@@ -265,7 +265,7 @@ TEST(CODEGEN, ASSIGNMENT_FLOAT_TO_DOUBLE) {
   variable_declaration_statement->identifier = identifier_primary_expression;
   variable_declaration_statement->expression_to_assign = assignment_expr;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
   variable_declaration_statement->emit(generator);
@@ -302,7 +302,7 @@ TEST(CODEGEN, DECLARATION_INTEGER) {
   variable_declaration_statement->identifier = identifier_primary_expression;
   variable_declaration_statement->expression_to_assign = nullptr;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
   variable_declaration_statement->emit(generator);
@@ -350,7 +350,7 @@ TEST(CODEGEN, ASSIGNMENT_INTEGER) {
   variable_declaration_statement->identifier = identifier_primary_expression;
   variable_declaration_statement->expression_to_assign = assignment_expr;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
   variable_declaration_statement->emit(generator);

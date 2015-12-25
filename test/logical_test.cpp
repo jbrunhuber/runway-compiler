@@ -52,7 +52,7 @@ TEST(CODEGEN, LOGICAL_OR) {
 
   assignment_expr->identifier = identifier;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
 
   generator->construct();
 
@@ -104,7 +104,7 @@ TEST(CODEGEN, LOGICAL_AND) {
 
   assignment_expr->identifier = identifier;
 
-  base_generator *generator = new base_generator;
+  BaseGenerator *generator = new BaseGenerator;
 
   generator->construct();
 

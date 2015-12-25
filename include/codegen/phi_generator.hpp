@@ -9,18 +9,18 @@
 #ifndef RUNWAY_CODEGEN_PHI_GENERATOR_HPP
 #define RUNWAY_CODEGEN_PHI_GENERATOR_HPP
 
-#include "base_generator.hpp"
-#include "phi_entry.hpp"
+#include <codegen/base_generator.hpp>
+#include <codegen/phi_entry.hpp>
 
-class phi_generator : public base_generator {
+class PhiGenerator : public BaseGenerator {
 
  public:
 
-  phi_generator(llvm::BasicBlock *, llvm::IRBuilder<> *, llvm::Module *);
-  std::vector<phi_entry *> phi_entries_table;
+  PhiGenerator(llvm::BasicBlock *, llvm::IRBuilder<> *, llvm::Module *);
+  std::vector<PhiEntry *> phi_entries_table;
   llvm::Value *emitAssignmentExpression(AssignmentExpression *) override;
-  phi_entry *get(std::string);
-  void setSymtable(std::stack<scope_block *> *stack);
+  PhiEntry *get(std::string);
+  void setSymtable(std::stack<ScopeBlock *> *stack);
 };
 
 #endif /* defined (RUNWAY_CODEGEN_PHI_GENERATOR_HPP) */

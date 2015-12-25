@@ -9,6 +9,7 @@
 #ifndef RUNWAY_CODEGEN_GENERATOR_HPP
 #define RUNWAY_CODEGEN_GENERATOR_HPP
 
+#include <codegen/scope_block.hpp>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
@@ -26,23 +27,19 @@
 #include <logger.h>
 #include <parser/Nodes.hpp>
 #include <parser/Parser.hpp>
-#include <codegen/scope_block.hpp>
 #include <tools/codegen_datatypes.hpp>
 
 enum class ExpressionType;
-class scope_block;
+class ScopeBlock;
 
-class base_generator {
+class BaseGenerator {
  public:
 
-  base_generator();
-  base_generator(llvm::Module *, llvm::IRBuilder<> *, llvm::BasicBlock *);
+  BaseGenerator();
+  BaseGenerator(llvm::Module *, llvm::IRBuilder<> *, llvm::BasicBlock *);
 
-  ~base_generator();
+  ~BaseGenerator();
 
-  /**
-   * Generates LLVM-IR for expressions
-   */
 
   llvm::Value *emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *);
 
@@ -84,7 +81,6 @@ class base_generator {
 
   void emitBodyStatement(BodyStatement *);
 
-  // creates base construct
   void construct();
 
   void finalize();
@@ -93,12 +89,14 @@ class base_generator {
 
   llvm::BasicBlock *_insert_point;
 
+  virtual void setInsertPoint(llvm::BasicBlock *);
+
 protected:
   llvm::Value *doAssignment(AssignmentExpression *assignment_expr);
   llvm::Module *_module;
   llvm::IRBuilder<> *_builder;
   std::map<std::string, llvm::Function *> _functions;
-  std::stack<scope_block *> *_block_stack;
+  std::stack<ScopeBlock *> *_block_stack;
 };
 
 #endif /* defined (RUNWAY_CODEGEN_GENERATOR_HPP) */

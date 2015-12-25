@@ -1,19 +1,20 @@
-/*
- * phi_entry.hpp
- *
- *  Created on: 21.12.2015
- *      Author: josh
- */
+//
+// phi_entry.hpp
+// Wrapper to store the phi value and its containing block
+//
+// Created by Joshua Brunhuber on 21.12.2015
+// Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
+//
 
-#ifndef INCLUDE_CODEGEN_PHI_ENTRY_HPP_
-#define INCLUDE_CODEGEN_PHI_ENTRY_HPP_
+#ifndef RUNWAY_CODEGEN_PHIENTRY_HPP
+#define RUNWAY_CODEGEN_PHIENTRY_HPP
 
 #include <string>
 #include <map>
 
 #include <llvm/IR/Value.h>
 
-class phi_entry {
+class PhiEntry {
 
  public:
   //first
@@ -29,4 +30,4 @@ class phi_entry {
   int phi_count = 0;
 };
 
-#endif /* INCLUDE_CODEGEN_PHI_ENTRY_HPP_ */
+#endif /* defined (RUNWAY_CODEGEN_PHIENTRY_HPP) */

@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   //create instances
   Tokenizer *tokenizer = new Tokenizer(runway_source_code);
   Parser *parser = new Parser(tokenizer);
-  base_generator *base_code_generator = new base_generator;
+  BaseGenerator *base_code_generator = new BaseGenerator;
 
   //parse and emit the code
   base_code_generator->construct();
