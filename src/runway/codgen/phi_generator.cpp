@@ -1,11 +1,3 @@
-//
-// phi_generator.cpp
-// A code generator which counts the phi values in each block
-//
-// Created by Joshua Brunhuber on 21.12.2015
-// Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
-//
-
 #include <codegen/phi_generator.hpp>
 
 PhiGenerator::PhiGenerator(llvm::BasicBlock *insert_block, llvm::IRBuilder<> *builder, llvm::Module *module) {

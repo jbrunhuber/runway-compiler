@@ -1,17 +1,6 @@
-//
-// BaseGenerator.cpp
-// Code generation implementation
-//
-// Created by Joshua Brunhuber on 10.09.2015
-// Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
-//
-
 #include <codegen/base_generator.hpp>
 #include <codegen/phi_generator.hpp>
 
-/**
- * Creates the module and the IRBuilder
- */
 BaseGenerator::BaseGenerator() : insert_point(nullptr) {
 
   module = new llvm::Module("runway", llvm::getGlobalContext());
@@ -27,18 +16,12 @@ BaseGenerator::BaseGenerator(llvm::Module *llvm_module, llvm::IRBuilder<> *llvm_
   block_stack = new std::stack<ScopeBlock *>;
 }
 
-/**
- * Free up memory
- */
 BaseGenerator::~BaseGenerator() {
 
   delete module;
   delete builder;
 }
 
-/**
- * Identifier
- */
 llvm::Value *BaseGenerator::emitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
@@ -55,9 +38,6 @@ llvm::Value *BaseGenerator::emitIdentifierPrimaryExpression(Expression *expr) {
   return symbol->llvm_ptr;
 }
 
-/**
- * Emits code for a function call statement
- */
 llvm::Value *BaseGenerator::emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *func_call_expr) {
 
   std::string identifier = func_call_expr->identifier->string_value;
@@ -70,12 +50,6 @@ llvm::Value *BaseGenerator::emitFunctionCallPostFixExpression(FunctionCallPostfi
   return nullptr;
 }
 
-/**
- * Creates a print function
- *
- * param: parameter expression
- * param: true, if the function should make a line break
- */
 void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_line) {
 
   const std::string const_function_name = "printf";
@@ -136,11 +110,6 @@ void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_lin
   builder->CreateCall(llvm_print_func, llvm_func_arguments);
 }
 
-/**
- * Allocates stack space for a variable declaration statement and assign the value if there's an assignment available
- *
- * param: the parsed variable declaration statement
- */
 void BaseGenerator::emitVariableDeclarationStatement(VariableDeclarationStatement *var_decl_stmt) {
 
   std::string identifier = var_decl_stmt->identifier->string_value;
@@ -186,12 +155,6 @@ llvm::Value *BaseGenerator::emitAssignmentExpression(AssignmentExpression *assig
   return doAssignment(assignment_expr);
 }
 
-/**
- * Stores the rhs of an assignment expression
- *
- * param: the parsed assignment expression
- * return: the pointer to the new assigned value
- */
 llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) {
 
   std::string identifier = assignment_expr->identifier->string_value;
@@ -230,11 +193,6 @@ llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) 
   return llvm_emitted_assignment_value;
 }
 
-/**
- * Emits lhs and rhs and returns the compared result
- *
- * param: logical or expression
- */
 llvm::Value *BaseGenerator::emitLogicalOrExpression(LogicalOrExpression *expr) {
 
   llvm::Value *lhs_value = expr->lhs_logical_and_expr->emit(this);
@@ -243,11 +201,6 @@ llvm::Value *BaseGenerator::emitLogicalOrExpression(LogicalOrExpression *expr) {
   return nullptr;
 }
 
-/**
- * Emits lhs and rhs and returns the compared result
- *
- * param: logical and expression
- */
 llvm::Value *BaseGenerator::emitLogicalAndExpression(LogicalAndExpression *expr) {
 
   llvm::Value *lhs_value = expr->lhs_equality_expr->emit(this);
@@ -256,9 +209,6 @@ llvm::Value *BaseGenerator::emitLogicalAndExpression(LogicalAndExpression *expr)
   return nullptr;
 }
 
-/**
- *
- */
 llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
 
   llvm::Value *llvm_lhs_value = expr->lhs_multiplicative_expression->emit(this);
@@ -290,9 +240,6 @@ llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
   return llvm_result_value;
 }
 
-/**
- *
- */
 llvm::Value *BaseGenerator::emitMultiplicativeExpression(MultiplicativeExpression *expr) {
 
   llvm::Value *llvm_lhs_value = expr->lhs_unary_expression->emit(this);
@@ -327,11 +274,6 @@ llvm::Value *BaseGenerator::emitMultiplicativeExpression(MultiplicativeExpressio
   return llvm_result_value;
 }
 
-/**
- * PrimaryExpression
- *
- * CASES: BOOL, NUM, STRING, EXPR
- */
 llvm::Value *BaseGenerator::emitPrimaryExpression(PrimaryExpression *expr) {
 
   //determine the type of the declared expression
@@ -356,9 +298,6 @@ llvm::Value *BaseGenerator::emitPrimaryExpression(PrimaryExpression *expr) {
   return nullptr;
 }
 
-/**
- *
- */
 llvm::Value *BaseGenerator::emitEqualityExpression(EqualityExpression *expr) {
 
   Expression *lhs_expr = expr->lhs_relational_expr;
@@ -394,9 +333,6 @@ llvm::Value *BaseGenerator::emitEqualityExpression(EqualityExpression *expr) {
   return result_value;
 }
 
-/**
- *
- */
 llvm::Value *BaseGenerator::emitUnaryExpression(UnaryExpression *expr) {
 
   PostFixExpression *lhs_expr = expr->postfix_expr;
@@ -421,9 +357,6 @@ llvm::Value *BaseGenerator::emitUnaryExpression(UnaryExpression *expr) {
   return nullptr;
 }
 
-/**
- * Constructs the main function and the insert point
- */
 void BaseGenerator::construct() {
 
   // create main function
@@ -441,26 +374,17 @@ void BaseGenerator::construct() {
   block_stack->push(global_scope);
 }
 
-/**
- * Creates a void return statement
- */
 void BaseGenerator::finalize() {
 
   builder->CreateRetVoid();
 }
 
-/**
- *
- */
 void BaseGenerator::emitExpressionStatement(ExpressionStatement *expr_stmt) {
 
   Expression *expression = expr_stmt->expression;
   expression->emit(this);
 }
 
-/**
- * returns the llvm bytecode as string value
- */
 std::string BaseGenerator::getIR() {
 
   std::string str;
@@ -469,9 +393,6 @@ std::string BaseGenerator::getIR() {
   return str;
 }
 
-/**
- * Emits code for a for-loop
- */
 void BaseGenerator::emitForStatement(ForStatement *for_statment) {
 
   llvm::BasicBlock *for_instructions =
@@ -548,9 +469,6 @@ void BaseGenerator::setInsertPoint(llvm::BasicBlock *insert) {
   builder->SetInsertPoint(insert);
 }
 
-/**
- *
- */
 void BaseGenerator::emitBodyStatement(BodyStatement *body_statement) {
 
   for (int i = 0; i < body_statement->statements.size(); ++i) {

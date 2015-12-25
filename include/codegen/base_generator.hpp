@@ -67,6 +67,9 @@ class BaseGenerator {
 
   void emitForStatement(ForStatement *);
 
+  /**
+   * Emits a variable declaration statement
+   */
   void emitVariableDeclarationStatement(VariableDeclarationStatement *);
 
   void emitIfStatement(IfStatement *);
@@ -79,17 +82,33 @@ class BaseGenerator {
 
   void createPrintFunction(Expression *, bool);
 
+  /**
+   * Emits iterative statements until terminating '}' occur
+   */
   void emitBodyStatement(BodyStatement *);
 
+  /**
+   * Creates a main function and initializes required elements
+   */
   void construct();
 
+  /**
+   * creates a void return statement at the bottom of the parent function
+   */
   void finalize();
 
+  /**
+   * Sets the insert point for the builder
+   */
+  virtual void setInsertPoint(llvm::BasicBlock *);
+
+  /**
+   * Returns the emitted IR (llvm) as a string
+   */
   std::string getIR();
 
-  llvm::BasicBlock *insert_point;
 
-  virtual void setInsertPoint(llvm::BasicBlock *);
+  llvm::BasicBlock *insert_point;
 
 protected:
   llvm::Value *doAssignment(AssignmentExpression *assignment_expr);
