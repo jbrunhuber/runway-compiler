@@ -253,7 +253,6 @@ bool Parser::parseBodyStatement(BodyStatement **body_statement) {
   while (!(IS_PUNCTUATOR("}"))) {
     parseStatement(&statement);
     statements.push_back(statement);
-    std::cout << "current token: " << _current_token.textual_content << std::endl;
   }
   nextToken();  //step '}'
 
