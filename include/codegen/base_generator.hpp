@@ -38,7 +38,7 @@ class BaseGenerator {
   BaseGenerator();
   BaseGenerator(llvm::Module *, llvm::IRBuilder<> *, llvm::BasicBlock *);
 
-  ~BaseGenerator();
+  virtual ~BaseGenerator();
 
 
   llvm::Value *emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *);
@@ -87,16 +87,16 @@ class BaseGenerator {
 
   std::string getIR();
 
-  llvm::BasicBlock *_insert_point;
+  llvm::BasicBlock *insert_point;
 
   virtual void setInsertPoint(llvm::BasicBlock *);
 
 protected:
   llvm::Value *doAssignment(AssignmentExpression *assignment_expr);
-  llvm::Module *_module;
-  llvm::IRBuilder<> *_builder;
+  llvm::Module *module;
+  llvm::IRBuilder<> *builder;
   std::map<std::string, llvm::Function *> _functions;
-  std::stack<ScopeBlock *> *_block_stack;
+  std::stack<ScopeBlock *> *block_stack;
 };
 
 #endif /* defined (RUNWAY_CODEGEN_GENERATOR_HPP) */

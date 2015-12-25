@@ -12,18 +12,19 @@
 /**
  * Creates the module and the IRBuilder
  */
-BaseGenerator::BaseGenerator()
-    : _insert_point(nullptr) {
+BaseGenerator::BaseGenerator() : insert_point(nullptr) {
 
-  _module = new llvm::Module("runway", llvm::getGlobalContext());
-  _builder = new llvm::IRBuilder<>(_module->getContext());
+  module = new llvm::Module("runway", llvm::getGlobalContext());
+  builder = new llvm::IRBuilder<>(module->getContext());
+  block_stack = new std::stack<ScopeBlock *>;
 }
 
-BaseGenerator::BaseGenerator(llvm::Module *module, llvm::IRBuilder<> *builder, llvm::BasicBlock *insert) {
+BaseGenerator::BaseGenerator(llvm::Module *llvm_module, llvm::IRBuilder<> *llvm_builder, llvm::BasicBlock *insert) {
 
-  _module = module;
-  _builder = builder;
-  _insert_point = insert;
+  module = llvm_module;
+  builder = llvm_builder;
+  insert_point = insert;
+  block_stack = new std::stack<ScopeBlock *>;
 }
 
 /**
@@ -31,8 +32,8 @@ BaseGenerator::BaseGenerator(llvm::Module *module, llvm::IRBuilder<> *builder, l
  */
 BaseGenerator::~BaseGenerator() {
 
-  delete _module;
-  delete _builder;
+  delete module;
+  delete builder;
 }
 
 /**
@@ -42,7 +43,7 @@ llvm::Value *BaseGenerator::emitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
 
-  ScopeBlock *block = _block_stack->top();
+  ScopeBlock *block = block_stack->top();
   SymtableEntry *symbol = block->get(identifier->string_value);
 
   delete identifier;
@@ -87,7 +88,7 @@ void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_lin
 
   //when it's a pointer type load the value
   if (llvm_parameter_value->getType()->isPointerTy()) {
-    llvm_parameter_value = _builder->CreateLoad(llvm_parameter_value);
+    llvm_parameter_value = builder->CreateLoad(llvm_parameter_value);
   }
 
   /**
@@ -100,7 +101,7 @@ void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_lin
     llvm::FunctionType *llvm_printf_type =
         llvm::FunctionType::get(llvm::Type::getInt32Ty(llvm::getGlobalContext()), printf_arg_types, true);
     llvm_print_func =
-        llvm::Function::Create(llvm_printf_type, llvm::Function::ExternalLinkage, const_function_name, _module);
+        llvm::Function::Create(llvm_printf_type, llvm::Function::ExternalLinkage, const_function_name, module);
     llvm_print_func->setCallingConv(llvm::CallingConv::C);
     _functions[const_function_name] = llvm_print_func;
   }
@@ -124,7 +125,7 @@ void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_lin
   }
 
   std::vector<llvm::Value *> param_values;
-  param_values.push_back(_builder->CreateGlobalStringPtr(printf_parameter_format));
+  param_values.push_back(builder->CreateGlobalStringPtr(printf_parameter_format));
 
   param_values.push_back(llvm_parameter_value);
   llvm::ArrayRef<llvm::Value *> llvm_func_arguments(param_values);
@@ -132,7 +133,7 @@ void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_lin
   /**
    * Finally create the function call call
    */
-  _builder->CreateCall(llvm_print_func, llvm_func_arguments);
+  builder->CreateCall(llvm_print_func, llvm_func_arguments);
 }
 
 /**
@@ -148,26 +149,20 @@ void BaseGenerator::emitVariableDeclarationStatement(VariableDeclarationStatemen
   ExpressionType expression_type = var_decl_stmt->type->type;
 
   //set the llvm type
-  switch (expression_type) {
-    case ExpressionType::BOOL:
-      llvm_variable_type = llvm::Type::getInt1Ty(llvm::getGlobalContext());
-      break;
-    case ExpressionType::FLOAT:
-      llvm_variable_type = llvm::Type::getFloatTy(llvm::getGlobalContext());
-      break;
-    case ExpressionType::DOUBLE:
-      llvm_variable_type = llvm::Type::getDoubleTy(llvm::getGlobalContext());
-      break;
-    case ExpressionType::INTEGER:
-      llvm_variable_type = llvm::Type::getInt32Ty(llvm::getGlobalContext());
-      break;
-    case ExpressionType::STRING:
-      llvm_variable_type = llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
-      break;
+  if(expression_type == ExpressionType::BOOL) {
+    llvm_variable_type = llvm::Type::getInt1Ty(llvm::getGlobalContext());
+  } else if(expression_type == ExpressionType::FLOAT) {
+    llvm_variable_type = llvm::Type::getFloatTy(llvm::getGlobalContext());
+  } else if(expression_type == ExpressionType::DOUBLE) {
+    llvm_variable_type = llvm::Type::getDoubleTy(llvm::getGlobalContext());
+  } else if(expression_type == ExpressionType::INTEGER) {
+    llvm_variable_type = llvm::Type::getInt32Ty(llvm::getGlobalContext());
+  } else if(expression_type == ExpressionType::STRING) {
+    llvm_variable_type = llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
   }
 
   //allocate stack space
-  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(llvm_variable_type, identifier, _insert_point);
+  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(llvm_variable_type, identifier, insert_point);
 
   //save the pointer of the value in the symbol table
   SymtableEntry *variable_declaration_entry = new SymtableEntry;
@@ -175,7 +170,7 @@ void BaseGenerator::emitVariableDeclarationStatement(VariableDeclarationStatemen
   variable_declaration_entry->llvm_ptr = llvm_alloca_inst;
   variable_declaration_entry->type = expression_type;
 
-  ScopeBlock *block = _block_stack->top();
+  ScopeBlock *block = block_stack->top();
   block->set(identifier, variable_declaration_entry);
 
   //if there's a assignment beside the variable declaration, emit the rhs assignment value
@@ -202,7 +197,7 @@ llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) 
   std::string identifier = assignment_expr->identifier->string_value;
 
   //check if the type in assignment expression matches the allocated type
-  ScopeBlock *block = _block_stack->top();
+  ScopeBlock *block = block_stack->top();
   SymtableEntry *symbol = block->get(identifier);
   //when there's no value in symbol table print error
   if (symbol == nullptr) {
@@ -229,7 +224,7 @@ llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) 
     llvm_emitted_assignment_value = createLlvmFpValue(value, ExpressionType::DOUBLE);
   }
 
-  new llvm::StoreInst(llvm_emitted_assignment_value, symbol->llvm_ptr, false, _insert_point);
+  new llvm::StoreInst(llvm_emitted_assignment_value, symbol->llvm_ptr, false, insert_point);
 
   delete assignment_expr;
   return llvm_emitted_assignment_value;
@@ -276,15 +271,15 @@ llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
 
   if (expr->additive_operator == Operator::SUM) {
     if (floating_point) {
-      llvm_result_value = _builder->CreateFAdd(llvm_lhs_value, llvm_rhs_value);
+      llvm_result_value = builder->CreateFAdd(llvm_lhs_value, llvm_rhs_value);
     } else {
-      llvm_result_value = _builder->CreateAdd(llvm_lhs_value, llvm_rhs_value);
+      llvm_result_value = builder->CreateAdd(llvm_lhs_value, llvm_rhs_value);
     }
   } else if (expr->additive_operator == Operator::SUB) {
     if (floating_point) {
-      llvm_result_value = _builder->CreateFSub(llvm_lhs_value, llvm_rhs_value);
+      llvm_result_value = builder->CreateFSub(llvm_lhs_value, llvm_rhs_value);
     } else {
-      llvm_result_value = _builder->CreateSub(llvm_lhs_value, llvm_rhs_value);
+      llvm_result_value = builder->CreateSub(llvm_lhs_value, llvm_rhs_value);
     }
   } else {
     ERR_PRINTLN("undefined operator for additive operation");
@@ -310,17 +305,17 @@ llvm::Value *BaseGenerator::emitMultiplicativeExpression(MultiplicativeExpressio
 
   if (expr->multiplicative_operator == Operator::MUL) {
     if (floating_point) {
-      llvm_result_value = _builder->CreateFMul(llvm_lhs_value, llvm_rhs_value);
+      llvm_result_value = builder->CreateFMul(llvm_lhs_value, llvm_rhs_value);
     } else {
-      llvm_result_value = _builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
+      llvm_result_value = builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
     }
   } else if (expr->multiplicative_operator == Operator::DIV) {
     if (floating_point) {
-      llvm_result_value = _builder->CreateFMul(llvm_lhs_value, llvm_rhs_value);
+      llvm_result_value = builder->CreateFMul(llvm_lhs_value, llvm_rhs_value);
     } else {
-      llvm_result_value = _builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
+      llvm_result_value = builder->CreateMul(llvm_lhs_value, llvm_rhs_value);
     }
-    llvm_result_value = _builder->CreateExactSDiv(llvm_lhs_value, llvm_rhs_value);
+    llvm_result_value = builder->CreateExactSDiv(llvm_lhs_value, llvm_rhs_value);
   } else {
     ERR_PRINTLN("undefined operator for multiplicative operation");
   }
@@ -346,7 +341,7 @@ llvm::Value *BaseGenerator::emitPrimaryExpression(PrimaryExpression *expr) {
     return createBoolValue(expr->bool_value);
 
   } else if (expr_type == ExpressionType::STRING) {
-    return _builder->CreateGlobalStringPtr(expr->string_value);
+    return builder->CreateGlobalStringPtr(expr->string_value);
 
   } else if (expr_type == ExpressionType::FLOAT || expr_type == ExpressionType::DOUBLE) {
 
@@ -376,22 +371,22 @@ llvm::Value *BaseGenerator::emitEqualityExpression(EqualityExpression *expr) {
 
   Operator compare_operator = expr->compare_operator;
   if (compare_operator == Operator::COMPARE_EQUAL) {
-    result_value = _builder->CreateICmpEQ(lhs_value, rhs_value);
+    result_value = builder->CreateICmpEQ(lhs_value, rhs_value);
 
   } else if (compare_operator == Operator::COMPARE_GREATER) {
-    result_value = _builder->CreateICmpSGT(rhs_value, lhs_value);
+    result_value = builder->CreateICmpSGT(rhs_value, lhs_value);
 
   } else if (compare_operator == Operator::COMPARE_GREATER_OR_EQUAL) {
-    result_value = _builder->CreateICmpSGE(rhs_value, lhs_value);
+    result_value = builder->CreateICmpSGE(rhs_value, lhs_value);
 
   } else if (compare_operator == Operator::COMPARE_LESS) {
-    result_value = _builder->CreateICmpSLT(rhs_value, lhs_value);
+    result_value = builder->CreateICmpSLT(rhs_value, lhs_value);
 
   } else if (compare_operator == Operator::COMPARE_LESS_OR_EQUAL) {
-    result_value = _builder->CreateICmpSLE(rhs_value, lhs_value);
+    result_value = builder->CreateICmpSLE(rhs_value, lhs_value);
 
   } else if (compare_operator == Operator::COMPARE_UNEQUAL) {
-    result_value = _builder->CreateICmpNE(rhs_value, lhs_value);
+    result_value = builder->CreateICmpNE(rhs_value, lhs_value);
 
   } else {
     ERR_PRINTLN("INVALID COMPARE OPERATOR");
@@ -413,9 +408,9 @@ llvm::Value *BaseGenerator::emitUnaryExpression(UnaryExpression *expr) {
     return value.get();
 
   } else if (unary_operator == Operator::DECREMENT) {
-    llvm::LoadInst *load_instr = _builder->CreateLoad(value.get());
-    llvm::Value *dec = _builder->CreateSub(_builder->getInt8(1), load_instr);
-    llvm::StoreInst *store_instr = _builder->CreateStore(dec, load_instr);
+    llvm::LoadInst *load_instr = builder->CreateLoad(value.get());
+    llvm::Value *dec = builder->CreateSub(builder->getInt8(1), load_instr);
+    llvm::StoreInst *store_instr = builder->CreateStore(dec, load_instr);
     return value.get();
 
   } else if (unary_operator == Operator::NEGATE) {
@@ -432,19 +427,18 @@ llvm::Value *BaseGenerator::emitUnaryExpression(UnaryExpression *expr) {
 void BaseGenerator::construct() {
 
   // create main function
-  llvm::FunctionType *main_function_type = llvm::FunctionType::get(_builder->getVoidTy(), false);
+  llvm::FunctionType *main_function_type = llvm::FunctionType::get(builder->getVoidTy(), false);
   llvm::Function
-      *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", _module);
+      *main_function = llvm::Function::Create(main_function_type, llvm::Function::ExternalLinkage, "main", module);
 
   _functions["main"] = main_function;
 
-  _insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
-  _builder->SetInsertPoint(_insert_point);
+  insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
+  builder->SetInsertPoint(insert_point);
 
   // create a scope block for member symbols and functions
-  _block_stack = new std::stack<ScopeBlock *>;
   ScopeBlock *global_scope = new ScopeBlock;
-  _block_stack->push(global_scope);
+  block_stack->push(global_scope);
 }
 
 /**
@@ -452,7 +446,7 @@ void BaseGenerator::construct() {
  */
 void BaseGenerator::finalize() {
 
-  _builder->CreateRetVoid();
+  builder->CreateRetVoid();
 }
 
 /**
@@ -471,7 +465,7 @@ std::string BaseGenerator::getIR() {
 
   std::string str;
   llvm::raw_string_ostream rso(str);
-  _module->print(rso, nullptr);
+  module->print(rso, nullptr);
   return str;
 }
 
@@ -481,7 +475,7 @@ std::string BaseGenerator::getIR() {
 void BaseGenerator::emitForStatement(ForStatement *for_statment) {
 
   llvm::BasicBlock *for_instructions =
-      llvm::BasicBlock::Create(llvm::getGlobalContext(), "forinst", _functions["main"], _insert_point);
+      llvm::BasicBlock::Create(llvm::getGlobalContext(), "forinst", _functions["main"], insert_point);
 
 }
 
@@ -489,34 +483,34 @@ void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
 
   // emit the condition and cast it to a floating point value
   llvm::Value *cond_val = if_statement->condition->emit(this);
-  cond_val = _builder->CreateUIToFP(cond_val, llvm::Type::getDoubleTy(llvm::getGlobalContext()), "bool_convert");
+  cond_val = builder->CreateUIToFP(cond_val, llvm::Type::getDoubleTy(llvm::getGlobalContext()), "bool_convert");
 
   // create a floating point value for the comparison
   llvm::Value *zero_val = createLlvmFpValue(0.0, ExpressionType::DOUBLE);
 
   // convert condition to a boolean by comparing equal to 0.0
-  cond_val = _builder->CreateFCmpONE(cond_val, zero_val, "condition");
+  cond_val = builder->CreateFCmpONE(cond_val, zero_val, "condition");
 
   // create the blocks for the condition branches
-  llvm::Function *the_function = _builder->GetInsertBlock()->getParent();
+  llvm::Function *the_function = builder->GetInsertBlock()->getParent();
 
   llvm::BasicBlock *then_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "then_block", the_function);
   llvm::BasicBlock *else_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "else_block");
   llvm::BasicBlock *merge_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "merge_block");
 
-  _builder->CreateCondBr(cond_val, then_block, else_block);
+  builder->CreateCondBr(cond_val, then_block, else_block);
 
   /**
    * then
    */
 
-  PhiGenerator *phi_gen = new PhiGenerator(then_block, _builder, _module);
+  PhiGenerator *phi_gen = new PhiGenerator(then_block, builder, module);
   phi_gen->setInsertPoint(then_block);
 
-  phi_gen->setSymtable(_block_stack);
+  phi_gen->setSymtable(block_stack);
   if_statement->statement->emit(phi_gen);
-  _builder->CreateBr(merge_block);
-  then_block = _builder->GetInsertBlock();
+  builder->CreateBr(merge_block);
+  then_block = builder->GetInsertBlock();
 
   /**
    * else
@@ -525,33 +519,33 @@ void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
   the_function->getBasicBlockList().push_back(else_block);
   phi_gen->setInsertPoint(else_block);
   if_statement->else_stmt->emit(phi_gen);
-  _builder->CreateBr(merge_block);
-  else_block = _builder->GetInsertBlock();
+  builder->CreateBr(merge_block);
+  else_block = builder->GetInsertBlock();
 
   /**
    * merge
    */
 
   the_function->getBasicBlockList().push_back(merge_block);
-  _builder->SetInsertPoint(merge_block);
+  builder->SetInsertPoint(merge_block);
 
   // emit the phi nodes
   for (int i = 0; i < phi_gen->phi_entries_table.size(); ++i) {
     PhiEntry *entry = phi_gen->phi_entries_table.at(i);
 
     if(entry->phi_count < 2) continue;
-    llvm::PHINode *phi_node = _builder->CreatePHI(entry->first_value->getType(), entry->phi_count, "phival");
+    llvm::PHINode *phi_node = builder->CreatePHI(entry->first_value->getType(), entry->phi_count, "phival");
 
     phi_node->addIncoming(entry->first_value, entry->first_block);
     phi_node->addIncoming(entry->second_value, entry->second_block);
   }
-  merge_block = _builder->GetInsertBlock();
+  merge_block = builder->GetInsertBlock();
 }
 
 void BaseGenerator::setInsertPoint(llvm::BasicBlock *insert) {
 
-  _insert_point = insert;
-  _builder->SetInsertPoint(insert);
+  insert_point = insert;
+  builder->SetInsertPoint(insert);
 }
 
 /**

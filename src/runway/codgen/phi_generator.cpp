@@ -10,9 +10,9 @@
 
 PhiGenerator::PhiGenerator(llvm::BasicBlock *insert_block, llvm::IRBuilder<> *builder, llvm::Module *module) {
 
-  this->_insert_point = insert_block;
-  this->_builder = builder;
-  this->_module = module;
+  this->insert_point = insert_block;
+  this->builder = builder;
+  this->module = module;
 }
 
 llvm::Value *PhiGenerator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
@@ -28,11 +28,11 @@ llvm::Value *PhiGenerator::emitAssignmentExpression(AssignmentExpression *assign
   if (phi_e == nullptr) {
     phi_e = new PhiEntry;
     phi_e->first_value = assignment;
-    phi_e->first_block = _insert_point;
+    phi_e->first_block = insert_point;
     phi_e->phi_count = 1;
   } else {
     phi_e->second_value = assignment;
-    phi_e->second_block = _insert_point;
+    phi_e->second_block = insert_point;
     phi_e->phi_count = 2;
   }
 
@@ -58,5 +58,5 @@ PhiEntry *PhiGenerator::get(std::string identifier) {
 
 void PhiGenerator::setSymtable(std::stack<ScopeBlock *> *stack) {
 
-  _block_stack = stack;
+  block_stack = stack;
 }
