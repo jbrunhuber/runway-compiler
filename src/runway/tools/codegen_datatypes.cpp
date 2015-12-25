@@ -68,3 +68,13 @@ llvm::Value *createLlvmFpValue(double fp_value, ExpressionType type) {
     return llvm::ConstantFP::get(llvm::Type::getFloatTy(llvm::getGlobalContext()), fp_value);
   }
 }
+
+llvm::Value *createBoolValue(bool b) {
+
+  uint8_t integer_value = 0;
+  if (b) {
+    integer_value = 1;
+  }
+  return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt1Ty(llvm::getGlobalContext()),
+                                            llvm::APInt(1, integer_value));
+}

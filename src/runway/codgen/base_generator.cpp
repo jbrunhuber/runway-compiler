@@ -43,16 +43,15 @@ llvm::Value *base_generator::emitIdentifierPrimaryExpression(Expression *expr) {
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
 
   scope_block *block = _block_stack->top();
-  rw_symtable_entry *value = block->get(identifier->string_value);
+  rw_symtable_entry *symbol = block->get(identifier->string_value);
 
   delete identifier;
 
-  if (value == nullptr) {
+  if (symbol == nullptr) {
     std::cerr << "use of undeclared identifier " << identifier << std::endl;
     return nullptr;
   }
-
-  return value->llvm_ptr;
+  return symbol->llvm_ptr;
 }
 
 /**
@@ -203,6 +202,11 @@ llvm::Value *base_generator::doAssignment(AssignmentExpression *assignment_expr)
   //check if the type in assignment expression matches the allocated type
   scope_block *block = _block_stack->top();
   rw_symtable_entry *symbol = block->get(identifier);
+  //when there's no value in symbol table print error
+  if (symbol == nullptr) {
+    ERR_PRINTLN("Use of undeclared identifier " << " " << identifier);
+    return nullptr;
+  }
 
   ExpressionType declared_type = symbol->type;
   ExpressionType assigned_type = assignment_expr->expression_to_assign->type;
@@ -220,12 +224,6 @@ llvm::Value *base_generator::doAssignment(AssignmentExpression *assignment_expr)
     llvm::ConstantFP *fp_value = (llvm::ConstantFP *) llvm_emitted_assignment_value;
     double value = fp_value->getValueAPF().convertToFloat();
     llvm_emitted_assignment_value = createLlvmFpValue(value, ExpressionType::DOUBLE);
-  }
-
-  //when there's no value in symbol table print error
-  if (symbol == nullptr) {
-    ERR_PRINTLN("Use of undeclared identifier " << " " << identifier);
-    return nullptr;
   }
 
   new llvm::StoreInst(llvm_emitted_assignment_value, symbol->llvm_ptr, false, _insert_point);
@@ -334,9 +332,9 @@ llvm::Value *base_generator::emitPrimaryExpression(PrimaryExpression *expr) {
 
   //determine the type of the declared expression
   ExpressionType expr_type = expr->type;
+
   if (expr_type == ExpressionType::BOOL) {
-    uint8_t value = expr->bool_value;
-    return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt1Ty(llvm::getGlobalContext()), llvm::APInt(1, value));
+    return createBoolValue(expr->bool_value);
 
   } else if (expr_type == ExpressionType::STRING) {
     return _builder->CreateGlobalStringPtr(expr->string_value);
@@ -479,7 +477,10 @@ void base_generator::emitForStatement(ForStatement *for_statment) {
 void base_generator::emitIfStatement(IfStatement *if_statement) {
 
   llvm::Value *cond_val = if_statement->condition->emit(this);
+  cond_val = _builder->CreateUIToFP(cond_val, llvm::Type::getDoubleTy(llvm::getGlobalContext()), "bool_convert");
+
   llvm::Value *zero_val = createLlvmFpValue(0.0, ExpressionType::DOUBLE);
+
   cond_val = _builder->CreateFCmpONE(cond_val, zero_val, "condition");
 
   llvm::Function *the_function = _builder->GetInsertBlock()->getParent();
