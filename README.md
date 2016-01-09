@@ -7,4 +7,4 @@ The goal of this project is to improve my theoretical and practical skills. I wa
 
 The project in this state is basically the fronted for the language. It creates LLVM byte code in SSA form. The backend part which includes optimizing is completely done by LLVM. More about LLVM: [LLVM Documentation](http://llvm.org/docs)
 
-This project is either in a stable state nor in active development. In summer when my final exams are over I’m going to contribute more. Promised :)
+This project is neither in a stable state nor in active development. In summer when my final exams are over I’m going to contribute more. Promised :)
