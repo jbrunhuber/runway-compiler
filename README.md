@@ -2,6 +2,9 @@
 A compiler frontend for the runway language.
 
 # Learning is everything
-The main goal of this project is to improve my programming skills and the knowledge of programming languages with a lower level (such as LLVM IR).
 
-This project is either in a stable state nor in an active development.
+The goal of this project is to improve my theoretical and practical skills. I want to know much more about how compilers work and what kind of elements *(like statements or expressions)* exists in programming languages.
+
+The project in this state is basically the fronted for the language. It creates LLVM byte code in SSA form. The backend part which includes optimizing is completely done by LLVM. More about LLVM: llvm.org/docs/
+
+This project is either in a stable state nor in active development. In summer when my final exams are over I’m going to contribute more. Promised :)
