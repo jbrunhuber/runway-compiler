@@ -86,12 +86,13 @@ void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_lin
   llvm::Type *llvm_parameter_type = llvm_parameter_value->getType();
   std::string printf_parameter_format;
 
-  if (llvm_parameter_type->isFloatTy() || llvm_parameter_type->isDoubleTy()) {  //todo impl double
+  if (llvm_parameter_type->isFloatTy() || llvm_parameter_type->isDoubleTy()) {
     printf_parameter_format = const_form_float_arg;
+  } else if (llvm_parameter_type->isIntegerTy(8)) {
+    std::cout << "str" << std::endl;
+    printf_parameter_format = const_form_string_arg;
   } else if (llvm_parameter_type->isIntegerTy()) {
     printf_parameter_format = const_form_int_arg;
-  } else {
-    printf_parameter_format = const_form_string_arg;
   }
 
   if (new_line) {
@@ -216,8 +217,8 @@ llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
 
   llvm::Value *llvm_result_value = nullptr;
 
-  bool
-      floating_point = llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
+
+  bool floating_point = llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
 
   if (expr->additive_operator == Operator::SUM) {
     if (floating_point) {
@@ -247,8 +248,7 @@ llvm::Value *BaseGenerator::emitMultiplicativeExpression(MultiplicativeExpressio
 
   llvm::Value *llvm_result_value = nullptr;
 
-  bool
-      floating_point = llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
+  bool floating_point = llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
 
   if (expr->multiplicative_operator == Operator::MUL) {
     if (floating_point) {
@@ -280,16 +280,17 @@ llvm::Value *BaseGenerator::emitPrimaryExpression(PrimaryExpression *expr) {
   ExpressionType expr_type = expr->type;
 
   if (expr_type == ExpressionType::BOOL) {
+
+    delete expr;
     return createBoolValue(expr->bool_value);
-
   } else if (expr_type == ExpressionType::STRING) {
-    return builder->CreateGlobalStringPtr(expr->string_value);
 
+    delete expr;
+    return builder->CreateGlobalStringPtr(expr->string_value);
   } else if (expr_type == ExpressionType::FLOAT || expr_type == ExpressionType::DOUBLE) {
 
     delete expr;
     return createLlvmFpValue(expr->double_value, expr_type);
-
   } else if (expr_type == ExpressionType::INTEGER) {
 
     delete expr;
