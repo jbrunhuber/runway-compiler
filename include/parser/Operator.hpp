@@ -1,5 +1,5 @@
 //
-// Operator.hpp
+// operator.hpp
 // enumeration for operators included in runway
 //
 // Created by Joshua Brunhuber on 04.08.2015

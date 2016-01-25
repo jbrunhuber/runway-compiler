@@ -1,5 +1,5 @@
 //
-// Parser.cpp
+// parser.hpp
 // Parser for the runway language
 //
 // Created by Joshua Brunhuber on 30.06.2015
@@ -25,9 +25,9 @@
 
 #define ERROR_PRINT(action)                  (std::cerr << "Line " << _current_token.line_count << ": " << action << std::endl)
 
-#include <parser/NodesForward.hpp>
-#include <parser/Nodes.hpp>
-#include <tokenizer/Tokenizer.hpp>
+#include <parser/nodes_forward.hpp>
+#include <parser/nodes.hpp>
+#include <tokenizer/tokenizer.hpp>
 
 class Parser {
  public:

@@ -1,5 +1,5 @@
 //
-// JumpStatementType.hpp
+// jump_stmt_type.hpp
 // enumeration for the types of jumpstatments
 //
 // Created by Joshua Brunhuber on 04.08.2015

@@ -1,5 +1,5 @@
 //
-// TokenType.hpp
+// token_type.hpp
 // enumeration for token types available in runway
 //
 // Created by Joshua Brunhuber on 28.06.2015

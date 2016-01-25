@@ -1,5 +1,5 @@
 //
-// Keywords.hpp
+// keywords.hpp
 // defines keywords in runway
 //
 // Created by Joshua Brunhuber on 28.06.2015

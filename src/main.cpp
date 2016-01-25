@@ -6,12 +6,12 @@
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
+#include <parser/parser.hpp>
+#include <tokenizer/tokenizer.hpp>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
-#include <tokenizer/Tokenizer.hpp>
-#include <parser/Parser.hpp>
 
 std::string getSourceCode(std::string path);
 

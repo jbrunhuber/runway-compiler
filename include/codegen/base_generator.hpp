@@ -24,10 +24,10 @@
 #include <stack>
 
 #include <logger.h>
-#include <parser/Nodes.hpp>
-#include <parser/Parser.hpp>
 #include <tools/codegen_datatypes.hpp>
 #include <codegen/scope_block.hpp>
+#include <parser/nodes.hpp>
+#include <parser/parser.hpp>
 
 enum class ExpressionType;
 class ScopeBlock;

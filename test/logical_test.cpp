@@ -7,7 +7,7 @@
 //
 
 #include <gtest/gtest.h>
-#include <parser/Nodes.hpp>
+#include <parser/nodes.hpp>
 
 /**
  * OR test
@@ -40,8 +40,8 @@ TEST(CODEGEN, LOGICAL_OR) {
   rhs_bool->type = ExpressionType::BOOL;
   rhs_bool->bool_value = false;
 
-  logical_or_expr->lhs = lhs_bool;
-  logical_or_expr->rhs = rhs_bool;
+  logical_or_expr->lhs_expr = lhs_bool;
+  logical_or_expr->rhs_expr = rhs_bool;
 
   AssignmentExpression *assignment_expr = new AssignmentExpression;
   assignment_expr->expression_to_assign = logical_or_expr;
@@ -92,8 +92,8 @@ TEST(CODEGEN, LOGICAL_AND) {
   rhs_bool->type = ExpressionType::BOOL;
   rhs_bool->bool_value = false;
 
-  logical_and_expr->lhs = lhs_bool;
-  logical_and_expr->rhs = rhs_bool;
+  logical_and_expr->lhs_expr = lhs_bool;
+  logical_and_expr->rhs_expr = rhs_bool;
 
   AssignmentExpression *assignment_expr = new AssignmentExpression;
   assignment_expr->expression_to_assign = logical_and_expr;

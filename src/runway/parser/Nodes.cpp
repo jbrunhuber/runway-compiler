@@ -1,12 +1,12 @@
 //
-// Nodes.cpp
+// nodes.cpp
 // Implementation of the nodes
 //
 // Created by Joshua Brunhuber on 10.09.2015
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
-#include "parser/Nodes.hpp"
+#include <parser/nodes.hpp>
 
 llvm::Value *AdditiveExpression::emit(BaseGenerator *generator) {
 

@@ -196,24 +196,24 @@ llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) 
 
 llvm::Value *BaseGenerator::emitLogicalOrExpression(LogicalOrExpression *expr) {
 
-  llvm::Value *lhs_value = expr->lhs->emit(this);
-  llvm::Value *rhs_value = expr->rhs->emit(this);
+  llvm::Value *lhs_value = expr->lhs_expr->emit(this);
+  llvm::Value *rhs_value = expr->rhs_expr->emit(this);
 
   return builder->CreateOr(lhs_value, rhs_value, "or");
 }
 
 llvm::Value *BaseGenerator::emitLogicalAndExpression(LogicalAndExpression *expr) {
 
-  llvm::Value *lhs_value = expr->lhs->emit(this);
-  llvm::Value *rhs_value = expr->rhs->emit(this);
+  llvm::Value *lhs_value = expr->lhs_expr->emit(this);
+  llvm::Value *rhs_value = expr->rhs_expr->emit(this);
 
   return builder->CreateAnd(lhs_value, rhs_value, "and");
 }
 
 llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
 
-  llvm::Value *llvm_lhs_value = expr->lhs->emit(this);
-  llvm::Value *llvm_rhs_value = expr->rhs->emit(this);
+  llvm::Value *llvm_lhs_value = expr->lhs_expr->emit(this);
+  llvm::Value *llvm_rhs_value = expr->rhs_expr->emit(this);
 
   llvm::Value *llvm_result_value = nullptr;
 
@@ -242,8 +242,8 @@ llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
 
 llvm::Value *BaseGenerator::emitMultiplicativeExpression(MultiplicativeExpression *expr) {
 
-  llvm::Value *llvm_lhs_value = expr->lhs->emit(this);
-  llvm::Value *llvm_rhs_value = expr->rhs->emit(this);
+  llvm::Value *llvm_lhs_value = expr->lhs_expr->emit(this);
+  llvm::Value *llvm_rhs_value = expr->rhs_expr->emit(this);
 
   llvm::Value *llvm_result_value = nullptr;
 
@@ -300,8 +300,8 @@ llvm::Value *BaseGenerator::emitPrimaryExpression(PrimaryExpression *expr) {
 
 llvm::Value *BaseGenerator::emitEqualityExpression(EqualityExpression *expr) {
 
-  Expression *lhs_expr = expr->lhs;
-  Expression *rhs_expr = expr->rhs;
+  Expression *lhs_expr = expr->lhs_expr;
+  Expression *rhs_expr = expr->rhs_expr;
 
   llvm::Value *lhs_value = lhs_expr->emit(this);
   llvm::Value *rhs_value = rhs_expr->emit(this);

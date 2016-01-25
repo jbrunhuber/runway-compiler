@@ -1,5 +1,5 @@
 //
-// NodesForward.hpp
+// nodes_forward.hpp
 // Forward declaration for the nodes
 //
 // Created by Joshua Brunhuber on 02.07.2015

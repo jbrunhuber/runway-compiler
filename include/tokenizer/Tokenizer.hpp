@@ -1,5 +1,5 @@
 //
-// Tokenizer.hpp
+// tokenizer.hpp
 // Tokenizes tokens
 //
 // Created by Joshua Brunhuber on 28.06.2015
@@ -9,12 +9,12 @@
 #ifndef RUNWAY_TOKENIZER_TOKENIZER_HPP
 #define RUNWAY_TOKENIZER_TOKENIZER_HPP
 
+#include <tokenizer/keywords.hpp>
+#include <tokenizer/token.hpp>
 #include <string>
 #include <cctype> //isspace
 #include <sstream>
 
-#include "Token.hpp"
-#include "Keywords.hpp"
 
 class Tokenizer {
 

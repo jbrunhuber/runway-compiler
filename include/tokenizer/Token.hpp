@@ -1,5 +1,5 @@
 //
-// Token.hpp
+// token.hpp
 // simple token for the runway language
 //
 // Created by Joshua Brunhuber on 28.06.2015
@@ -9,9 +9,9 @@
 #ifndef RUNWAY_TOKENIZER_TOKEN_HPP
 #define RUNWAY_TOKENIZER_TOKEN_HPP
 
+#include <tokenizer/token_type.hpp>
 #include <string>
 #include <iostream>
-#include "TokenType.hpp"
 
 class Token {
  public:

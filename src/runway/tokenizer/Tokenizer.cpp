@@ -1,14 +1,14 @@
 //
-// Tokenizer.cpp
+// tokenizer.cpp
 // Implementation of the tokenizer
 //
 // Created by Joshua Brunhuber on 28.06.2015
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
+#include <tokenizer/tokenizer.hpp>
 #include <iostream>
 
-#include "tokenizer/Tokenizer.hpp"
 
 /**
  * Initializes member attributes

@@ -1,5 +1,5 @@
 //
-// codegen_datatypes.cpp
+// codegen_datatypes.hpp
 // helper functions for datatypes (codegen)
 //
 // Created by Joshua Brunhuber on 20.11.2015
@@ -9,7 +9,7 @@
 #ifndef RUNWAY_TOOLS_DATATYPES_HPP
 #define RUNWAY_TOOLS_DATATYPES_HPP
 
-#include "parser/Nodes.hpp"
+#include <parser/nodes.hpp>
 
 enum class ExpressionType;
 

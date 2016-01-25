@@ -1,5 +1,5 @@
 //
-// Nodes.hpp
+// nodes.hpp
 // the nodes
 //
 // Created by Joshua Brunhuber on 29.06.2015
@@ -13,10 +13,10 @@
 #include <vector>
 #include <string>
 #include <llvm/IR/Value.h>
+#include <parser/jump_stmt_type.hpp>
+#include <parser/nodes_forward.hpp>
 
-#include "NodesForward.hpp"
-#include "JumpStatementType.hpp"
-#include "Operator.hpp"
+#include <parser/operator.hpp>
 
 class BaseGenerator;
 
@@ -64,8 +64,8 @@ class ExpressionStatement: public Statement {
  */
 class Expression {
  public:
-  Expression *lhs;
-  Expression *rhs;
+  Expression *lhs_expr;
+  Expression *rhs_expr;
   virtual llvm::Value *emit(BaseGenerator *) = 0;
   ExpressionType type;
   Expression();

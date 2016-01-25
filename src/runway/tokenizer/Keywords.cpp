@@ -1,12 +1,12 @@
 //
-// Keywords.cpp
+// keywords.cpp
 // Implementation of the keywords
 //
 // Created by Joshua Brunhuber on 28.06.2015
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
-#include "tokenizer/Keywords.hpp"
+#include <tokenizer/keywords.hpp>
 
 /**
  *

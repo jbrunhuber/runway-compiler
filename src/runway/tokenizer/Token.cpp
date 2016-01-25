@@ -1,12 +1,12 @@
 //
-// Token.cpp
+// token.cpp
 // Implementation of a token
 //
 // Created by Joshua Brunhuber on 14.08.2015
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
-#include "tokenizer/Token.hpp"
+#include <tokenizer/token.hpp>
 
 void Token::printTokenInformation() {
 

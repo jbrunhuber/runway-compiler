@@ -1,5 +1,5 @@
 //
-// rw_symtable_entry.hpp
+// symtable_entry.hpp
 //
 // Created by Joshua Brunhuber on 04.11.2015
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
@@ -10,7 +10,7 @@
 
 #include <llvm/IR/Value.h>
 
-#include <parser/Nodes.hpp>
+#include <parser/nodes.hpp>
 
 enum class ExpressionType;
 
