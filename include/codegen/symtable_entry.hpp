@@ -22,7 +22,7 @@ class SymtableEntry {
  public:
   ExpressionType type;    //the stored type
   llvm::Value *llvm_ptr;  //the llvm pointer to the value
-  ~SymtableEntry();   //destructor
+  ~SymtableEntry();       //destructor
 };
 
 #endif /* defined(RUNWAY_CODEGEN_SYMTABLEENTRY_HPP) */

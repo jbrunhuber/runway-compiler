@@ -9,8 +9,9 @@
 #ifndef RUNWAY_CODEGEN_SCOPEBLOCK_HPP
 #define RUNWAY_CODEGEN_SCOPEBLOCK_HPP
 
-#include <codegen/symtable_entry.hpp>
 #include <map>
+
+#include <codegen/symtable_entry.hpp>
 
 class SymtableEntry;
 

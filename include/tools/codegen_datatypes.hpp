@@ -21,5 +21,4 @@ llvm::Value *createLlvmFpValue(double, ExpressionType);
 
 llvm::Value *createBoolValue(bool);
 
-
 #endif  /* defined(RUNWAY_TOOLS_DATATYPES_HPP) */

@@ -9,6 +9,11 @@
 #ifndef RUNWAY_CODEGEN_GENERATOR_HPP
 #define RUNWAY_CODEGEN_GENERATOR_HPP
 
+#include <iostream>
+#include <algorithm>
+#include <memory>
+#include <stack>
+
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
@@ -17,11 +22,6 @@
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/Bitcode/ReaderWriter.h>
 #include <llvm/Support/raw_ostream.h>
-
-#include <iostream>
-#include <algorithm>
-#include <memory>
-#include <stack>
 
 #include <logger.h>
 #include <tools/codegen_datatypes.hpp>

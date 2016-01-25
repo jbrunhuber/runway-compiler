@@ -6,7 +6,7 @@
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
-#include "tools/codegen_datatypes.hpp"
+#include <tools/codegen_datatypes.hpp>
 
 /**
  * checks if a llvm value is a bool type

@@ -19,8 +19,8 @@
 extern std::vector<std::string> KEYWORDS;
 
 /**
- * Checks if a keywords is contained in the list
+ * Checks if a string is a keyword
  */
-bool containKeyword(std::string keyword);
+bool containsKeyword(std::string keyword);
 
 #endif /* defined(RUNWAY_TOKENIZER_KEYWORDS_HPP) */

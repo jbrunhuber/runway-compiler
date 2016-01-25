@@ -9,9 +9,10 @@
 #ifndef RUNWAY_TOKENIZER_TOKEN_HPP
 #define RUNWAY_TOKENIZER_TOKEN_HPP
 
-#include <tokenizer/token_type.hpp>
 #include <string>
 #include <iostream>
+
+#include <tokenizer/token_type.hpp>
 
 class Token {
  public:
@@ -21,8 +22,6 @@ class Token {
   bool bool_content;
   TokenType token_type;
   uint32_t line_count;
-
-  void printTokenInformation();
 };
 
 #endif /* defined(RUNWAY_TOKENIZER_TOKEN_HPP) */

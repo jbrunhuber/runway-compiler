@@ -6,9 +6,9 @@
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
-#include <tokenizer/tokenizer.hpp>
 #include <iostream>
 
+#include <tokenizer/tokenizer.hpp>
 
 /**
  * Initializes member attributes
@@ -80,7 +80,7 @@ void Tokenizer::next(Token &token) {
     }
 
     //keyword
-    if (containKeyword(read)) {
+    if (containsKeyword(read)) {
       token.token_type = TokenType::KEYWORD;
       token.textual_content = read;
       return;

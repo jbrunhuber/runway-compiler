@@ -17,9 +17,9 @@ std::vector<std::string> KEYWORDS = { "import", "return", "final", "class",
     "protected", "void", "int8", "int16", "int32", "int64", "char", "bool" };
 
 /**
- * Checks if a keywords is contained in the list
+ * Checks if a string is keyword
  */
-bool containKeyword(std::string keyword) {
+bool containsKeyword(std::string keyword) {
 
   if (std::find(KEYWORDS.begin(), KEYWORDS.end(), keyword)
       != KEYWORDS.end()) {

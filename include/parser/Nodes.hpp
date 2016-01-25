@@ -9,14 +9,14 @@
 #ifndef RUNWAY_PARSER_NODES_HPP
 #define RUNWAY_PARSER_NODES_HPP
 
-#include <codegen/base_generator.hpp>
 #include <vector>
 #include <string>
 #include <llvm/IR/Value.h>
+
 #include <parser/jump_stmt_type.hpp>
 #include <parser/nodes_forward.hpp>
-
 #include <parser/operator.hpp>
+#include <codegen/base_generator.hpp>
 
 class BaseGenerator;
 

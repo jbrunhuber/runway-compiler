@@ -9,12 +9,12 @@
 #ifndef RUNWAY_TOKENIZER_TOKENIZER_HPP
 #define RUNWAY_TOKENIZER_TOKENIZER_HPP
 
-#include <tokenizer/keywords.hpp>
-#include <tokenizer/token.hpp>
 #include <string>
 #include <cctype> //isspace
 #include <sstream>
 
+#include <tokenizer/keywords.hpp>
+#include <tokenizer/token.hpp>
 
 class Tokenizer {
 
