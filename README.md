@@ -1,11 +1,10 @@
 # runway-compiler
 A compiler frontend for the runway language.
 
-# Welcome to Runway!
-I want to introduce you to the basic concepts of the runway language. The compiler is in a really (really) early state of development so there may come some changes :)
+# Learning is everything
 
-## Goals
-Runway is going to be a modern and easy to use programming language with oop design. With a C-like syntax I provide a familiar environment with lots of improvements. The language should be easy to use so you don't have to do memory management but benefit from cool things like operator overloading.
+The goal of this project is to improve my theoretical and practical skills. I want to know much more about how compilers work and what kind of elements *(like statements or expressions)* exists in programming languages.
 
-## Everything out of the box
-A build system, dependency management, a unit-testing framework, everything should work out of the box! So no further applications and configurations are needed for using these tools. 
+The project in this state is basically the fronted for the language. It creates LLVM byte code in SSA form. The backend part which includes optimizing is completely done by LLVM. More about LLVM: [LLVM Documentation](http://llvm.org/docs)
+
+This project is neither in a stable state nor in active development. In summer when my final exams are over I’m going to contribute more. Promised :)
