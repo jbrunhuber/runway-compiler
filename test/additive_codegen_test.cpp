@@ -29,8 +29,8 @@ TEST(CODEGEN, ADDITIVE_INT) {
   number2->type = int_type;
   number2->int_value = test_operand_2;
 
-  node->lhs_multiplicative_expression = number1;
-  node->rhs_additive_expression = number2;
+  node->lhs = number1;
+  node->rhs = number2;
   node->additive_operator = Operator::SUM;
 
   BaseGenerator *generator = new BaseGenerator;
@@ -69,8 +69,8 @@ TEST(CODEGEN, ADDITIVE_FLOAT) {
   number2->type = expr_type;
   number2->double_value = test_operand_2;
 
-  node->lhs_multiplicative_expression = number1;
-  node->rhs_additive_expression = number2;
+  node->lhs = number1;
+  node->rhs = number2;
   node->additive_operator = Operator::SUM;
 
   VariableDeclarationStatement *decl = new VariableDeclarationStatement;

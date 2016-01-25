@@ -64,6 +64,8 @@ class ExpressionStatement: public Statement {
  */
 class Expression {
  public:
+  Expression *lhs;
+  Expression *rhs;
   virtual llvm::Value *emit(BaseGenerator *) = 0;
   ExpressionType type;
   Expression();
@@ -83,8 +85,6 @@ class ReturnStatement: public Statement {
 class AdditiveExpression: public Expression {
  public:
   Operator additive_operator;
-  Expression *lhs_multiplicative_expression;
-  Expression *rhs_additive_expression;
   llvm::Value *emit(BaseGenerator *generator);
 };
 
@@ -93,8 +93,6 @@ class AdditiveExpression: public Expression {
  */
 class MultiplicativeExpression: public Expression {
  public:
-  Expression *lhs_unary_expression;
-  Expression *rhs_additive_expression;
   Operator multiplicative_operator;
   llvm::Value *emit(BaseGenerator *generator);
 
@@ -149,8 +147,6 @@ class ConditionalExpression: public Expression {
  */
 class LogicalOrExpression: public ConditionalExpression {
  public:
-  Expression *lhs_logical_and_expr;
-  Expression *rhs_logical_or_expr;
   llvm::Value *emit(BaseGenerator *generator);
 };
 
@@ -215,8 +211,6 @@ class UnaryExpression: public Expression {
  */
 class LogicalAndExpression: public ConditionalExpression {
  public:
-  Expression *lhs_equality_expr;
-  Expression *rhs_logical_or_expr;
   llvm::Value *emit(BaseGenerator *generator);
 };
 
@@ -226,8 +220,6 @@ class LogicalAndExpression: public ConditionalExpression {
 class EqualityExpression: public ConditionalExpression {
  public:
   Operator equality_operator;
-  Expression *lhs_relational_expr;
-  Expression *rhs_equality_expr;
   llvm::Value *emit(BaseGenerator *generator);
 };
 
@@ -237,8 +229,6 @@ class EqualityExpression: public ConditionalExpression {
 class RelationalExpression: public ConditionalExpression {
  public:
   Operator relational_operator;
-  Expression *lhs_additive_expression;
-  Expression *rhs_relational_expr;
   llvm::Value *emit(BaseGenerator *generator);
 };
 

@@ -334,7 +334,7 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
   Expression *lhs_identifier_expr = new AssignmentExpression;
 
   //identifier
-  parseLogicalOrExpression(&lhs_identifier_expr);
+  factor(&lhs_identifier_expr);
 
   Operator assignment_operator = Operator::NONE;
   if (IS_PUNCTUATOR("=")) {
@@ -365,6 +365,20 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
   return true;
 }
 
+void Parser::factor(Expression **expr) {
+
+  if(IS_PUNCTUATOR("(")) {
+    DEBUG_PRINTLN("factor");
+    nextToken(); // step '('
+    parseExpression(expr);
+    if(IS_PUNCTUATOR(")")) {
+      nextToken(); // step ')'
+    }
+  } else {
+    parseLogicalOrExpression(expr);
+  }
+}
+
 /**
  * LogicalOR
  */
@@ -377,13 +391,13 @@ bool Parser::parseLogicalOrExpression(Expression **expr) {
   if (IS_PUNCTUATOR("||")) {
 
     LogicalOrExpression *logical_or_expr = new LogicalOrExpression;
-    logical_or_expr->lhs_logical_and_expr = (LogicalAndExpression *) lhs_expr;
+    logical_or_expr->lhs = lhs_expr;
 
     nextToken();  //eat '||' operator
 
     LogicalOrExpression *rhs_logical_or_expression = 0;
-    parseLogicalOrExpression((Expression **) &rhs_logical_or_expression);
-    logical_or_expr->rhs_logical_or_expr = rhs_logical_or_expression;
+    factor((Expression **) &rhs_logical_or_expression);
+    logical_or_expr->rhs = rhs_logical_or_expression;
     *expr = logical_or_expr;  //logical or expression
   } else {
     *expr = lhs_expr;
@@ -403,13 +417,13 @@ bool Parser::parseLogicalAndExpression(Expression **expr) {
   if (IS_PUNCTUATOR("&&")) {
 
     LogicalAndExpression *logical_and_expr = new LogicalAndExpression;
-    logical_and_expr->lhs_equality_expr = (EqualityExpression *) lhs_equality_expression;
+    logical_and_expr->lhs = lhs_equality_expression;
 
     nextToken();  //eat '&&'
 
     LogicalOrExpression *rhs_logical_or_expr = 0;
-    parseLogicalOrExpression((Expression **) &rhs_logical_or_expr);
-    logical_and_expr->rhs_logical_or_expr = rhs_logical_or_expr;
+    factor((Expression **) &rhs_logical_or_expr);
+    logical_and_expr->rhs = rhs_logical_or_expr;
 
     *expr = logical_and_expr;
   } else {
@@ -436,14 +450,14 @@ bool Parser::parseEqualityExpression(Expression **expr) {
   }
   if (has_rhs) {
     //lhs
-    equality_expr->lhs_relational_expr = *expr;
+    equality_expr->lhs = *expr;
 
     nextToken();  //eat compare operator
 
     //rhs
     Expression *rhs_equality_expr = nullptr;
     parseEqualityExpression(&rhs_equality_expr);
-    equality_expr->rhs_equality_expr = rhs_equality_expr;
+    equality_expr->rhs = rhs_equality_expr;
 
     *expr = equality_expr;
   }
@@ -514,11 +528,11 @@ bool Parser::parseRelationalExpression(Expression **expr) {
   }
 
   if (has_rhs) {
-    relational_expr->lhs_additive_expression = lhs_additive_expr;
+    relational_expr->lhs = lhs_additive_expr;
     nextToken();  //eat operator
     Expression *rhs_relational_expr = 0;
     parseRelationalExpression(&rhs_relational_expr);
-    relational_expr->rhs_relational_expr = rhs_relational_expr;
+    relational_expr->rhs = rhs_relational_expr;
     *expr = relational_expr;
   } else {
     *expr = lhs_additive_expr;
@@ -627,14 +641,14 @@ bool Parser::parseAdditiveExpression(Expression **expr) {
 
   if (has_rhs) {
     //lhs
-    additive_expr->lhs_multiplicative_expression = *expr;
+    additive_expr->lhs = *expr;
 
     nextToken();  //step operator
 
     //rhs
     Expression *rhs_additive_expression;
-    parseAdditiveExpression(&rhs_additive_expression);
-    additive_expr->rhs_additive_expression = rhs_additive_expression;
+    factor(&rhs_additive_expression);
+    additive_expr->rhs = rhs_additive_expression;
 
     *expr = additive_expr;
   }
@@ -660,14 +674,14 @@ bool Parser::parseMultiplicativeExpression(Expression **expr) {
 
   if (has_rhs) {
     //lhs
-    multiplicative_expr->lhs_unary_expression = *expr;
+    multiplicative_expr->lhs = *expr;
 
     nextToken();  //step operator
 
     //rhs
     Expression *rhs_additive_expression;
-    parseAdditiveExpression(&rhs_additive_expression);
-    multiplicative_expr->rhs_additive_expression = rhs_additive_expression;
+    factor(&rhs_additive_expression);
+    multiplicative_expr->rhs = rhs_additive_expression;
 
     *expr = multiplicative_expr;
   }

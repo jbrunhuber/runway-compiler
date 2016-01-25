@@ -27,8 +27,8 @@ TEST(CODEGEN, MULTIPLICATIVE_INT) {
   number2->type = int_type;
   number2->int_value = test_operand_2;
 
-  node->lhs_unary_expression = number1;
-  node->rhs_additive_expression = number2;
+  node->lhs = number1;
+  node->rhs = number2;
   node->multiplicative_operator = Operator::MUL;
 
   BaseGenerator *generator = new BaseGenerator;
@@ -67,8 +67,8 @@ TEST(CODEGEN, MULTIPLICATIVE_FP) {
   number2->type = expr_type;
   number2->double_value = test_operand_2;
 
-  node->lhs_unary_expression = number1;
-  node->rhs_additive_expression = number2;
+  node->lhs = number1;
+  node->rhs = number2;
   node->multiplicative_operator = Operator::MUL;
 
   VariableDeclarationStatement *decl = new VariableDeclarationStatement;

@@ -42,6 +42,7 @@ class Parser {
   bool parseWhileStatement(WhileLoopStatement **);
   bool parseForStatement(ForStatement **);
 
+  void factor(Expression **);
   bool parseAssignmentExpression(Expression **);
   bool parseLogicalOrExpression(Expression **);
   bool parseLogicalAndExpression(Expression **);
