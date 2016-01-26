@@ -6,7 +6,7 @@ The compiler is the frontend of my language. The output is LLVM bytecode which c
 The motivation of this software is to create a modular, simple and clean architecture.
 
 ####LLVM
-LLVM is a modular compiler-backend architecture. If you want to know more about it visit the [LLVM docs](http://llvm.org/docs/)
+LLVM is a modular compiler-backend architecture. If you want to know more about it visit the [LLVM docs](http://llvm.org/docs/).
 
 
 #Language
