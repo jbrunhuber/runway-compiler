@@ -51,51 +51,49 @@ class BaseGenerator {
    */
   virtual ~BaseGenerator();
 
-  llvm::Value *emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *);
+  llvm::Value *EmitFunctionCallPostFixExpression(FunctionCallPostfixExpression *);
 
-  llvm::Value *emitLogicalOrExpression(LogicalOrExpression *);
+  llvm::Value *EmitLogicalOrExpression(LogicalOrExpression *);
 
-  llvm::Value *emitLogicalAndExpression(LogicalAndExpression *);
+  llvm::Value *EmitLogicalAndExpression(LogicalAndExpression *);
 
-  llvm::Value *emitEqualityExpression(EqualityExpression *);
+  llvm::Value *EmitEqualityExpression(EqualityExpression *);
 
-  llvm::Value *emitRelationalExpression(RelationalExpression *);
+  llvm::Value *EmitRelationalExpression(RelationalExpression *);
 
-  llvm::Value *emitAdditiveExpression(AdditiveExpression *);
+  llvm::Value *EmitAdditiveExpression(AdditiveExpression *);
 
-  llvm::Value *emitMultiplicativeExpression(MultiplicativeExpression *);
+  llvm::Value *EmitMultiplicativeExpression(MultiplicativeExpression *);
 
-  llvm::Value *emitUnaryExpression(UnaryExpression *);
+  llvm::Value *EmitUnaryExpression(UnaryExpression *);
 
-  llvm::Value *emitPostFixExpression(PostFixExpression *);
+  llvm::Value *EmitPostFixExpression(PostFixExpression *);
 
-  virtual llvm::Value *emitAssignmentExpression(AssignmentExpression *);
+  virtual llvm::Value *EmitAssignmentExpression(AssignmentExpression *);
 
-  llvm::Value *emitIdentifierPrimaryExpression(Expression *);
+  llvm::Value *EmitIdentifierPrimaryExpression(Expression *);
 
-  llvm::Value *emitPrimaryExpression(PrimaryExpression *);
+  llvm::Value *EmitPrimaryExpression(PrimaryExpression *);
 
-  void emitForStatement(ForStatement *);
+  void EmitForStatement(ForStatement *);
 
   /**
    * Emits a variable declaration statement
    */
-  void emitVariableDeclarationStatement(VariableDeclarationStatement *);
+  void EmitVariableDeclarationStatement(VariableDeclarationStatement *);
 
-  void emitIfStatement(IfStatement *);
+  void EmitIfStatement(IfStatement *);
 
-  void emitReturnStatement(ReturnStatement *);
+  void EmitReturnStatement(ReturnStatement *);
 
-  void emitWhileLoopStatement(WhileLoopStatement *);
+  void EmitWhileLoopStatement(WhileLoopStatement *);
 
-  void emitExpressionStatement(ExpressionStatement *);
-
-  void createPrintFunction(Expression *, bool);
+  void EmitExpressionStatement(ExpressionStatement *);
 
   /**
    * Emits iterative statements until terminating '}' occur
    */
-  void emitBodyStatement(BodyStatement *);
+  void EmitBodyStatement(BodyStatement *);
 
   /**
    * Creates a main function and initializes required elements
@@ -110,12 +108,14 @@ class BaseGenerator {
   /**
    * Sets the insert point for the builder
    */
-  virtual void setInsertPoint(llvm::BasicBlock *);
+  virtual void SetInsertPoint(llvm::BasicBlock *);
 
   /**
    * Returns the emitted IR (llvm) as a string
    */
-  std::string getIR();
+  std::string GetIR();
+
+  void create_print_function(Expression *, bool);
 
   llvm::BasicBlock *insert_point;
 
@@ -124,7 +124,7 @@ class BaseGenerator {
   /**
    * Emits the base assignment expression
    */
-  llvm::Value *doAssignment(AssignmentExpression *assignment_expr);
+  llvm::Value *do_assignment(AssignmentExpression *assignment_expr);
 
   llvm::Module *module;
   llvm::IRBuilder<> *builder;

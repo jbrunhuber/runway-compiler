@@ -14,8 +14,8 @@ Parser::Parser(Tokenizer *tokenizer) {
 
   _tokenizer = tokenizer;
   //initialize
-  nextToken();  //lookahead
-  nextToken();  //and current token
+  next_token();  //lookahead
+  next_token();  //and current token
 }
 
 /**
@@ -23,7 +23,7 @@ Parser::Parser(Tokenizer *tokenizer) {
  *
  * Supported: if, for, while, function-calls, return
  */
-bool Parser::parseStatement(Statement **stmt) {
+bool Parser::ParseStatement(Statement **stmt) {
 
   //end
   if (_current_token.token_type == TokenType::T_EOF) {
@@ -32,31 +32,31 @@ bool Parser::parseStatement(Statement **stmt) {
 
   if (IS_PUNCTUATOR("{")) {
     BodyStatement *body_stmt = nullptr;
-    parseBodyStatement(&body_stmt);
+    ParseBodyStatement(&body_stmt);
     *stmt = body_stmt;
     return true;
 
   } else if (IS_KEYWORD("if")) {
     IfStatement *if_statement = 0;
-    parseIfStatement(&if_statement);
+    ParseIfStatement(&if_statement);
     *stmt = if_statement;
     return true;
 
   } else if (IS_KEYWORD("while")) {
     WhileLoopStatement *while_loop_statement = 0;
-    parseWhileStatement(&while_loop_statement);
+    ParseWhileStatement(&while_loop_statement);
     *stmt = while_loop_statement;
     return true;
 
   } else if (IS_KEYWORD("for")) {
     ForStatement *for_statement = 0;
-    parseForStatement(&for_statement);
+    ParseForStatement(&for_statement);
     *stmt = for_statement;
     return true;
   }
 
-  if (parseExpressionStatement(stmt) && _current_token.textual_content == ";") {
-    nextToken();
+  if (ParseExpressionStatement(stmt) && _current_token.textual_content == ";") {
+    next_token();
     return true;
   }
 
@@ -68,32 +68,32 @@ bool Parser::parseStatement(Statement **stmt) {
 /**
  * Parses Expression-Statements
  */
-bool Parser::parseExpressionStatement(Statement **stmt) {
+bool Parser::ParseExpressionStatement(Statement **stmt) {
 
-  if (isType(_current_token)) {
+  if (is_type(_current_token)) {
     VariableDeclarationStatement *variable_decl_stmt = 0;
-    parseVariableDeclarationStatement(&variable_decl_stmt);
+    ParseVariableDeclarationStatement(&variable_decl_stmt);
     *stmt = variable_decl_stmt;
     return true;
 
   } else if (IS_KEYWORD("return")) {
-    nextToken();  //step 'return'
+    next_token();  //step 'return'
     ReturnStatement *return_statement = new ReturnStatement;
     Expression *return_value = 0;
-    parseExpression(&return_value);
+    ParseExpression(&return_value);
     return_statement->expression_to_return = return_value;
     *stmt = return_statement;
     return true;
 
   } else if (IS_KEYWORD("continue")) {
-    nextToken();  //step 'continue'
+    next_token();  //step 'continue'
     JumpStatement *continue_jump_statement = new JumpStatement;
     continue_jump_statement->jump_statement_type = JumpStatementType::CONTINUE;
     *stmt = continue_jump_statement;
     return true;
 
   } else if (IS_KEYWORD("break")) {
-    nextToken();  //step 'break'
+    next_token();  //step 'break'
     JumpStatement *break_jump_statement = new JumpStatement;
     break_jump_statement->jump_statement_type = JumpStatementType::BREAK;
     *stmt = break_jump_statement;
@@ -104,7 +104,7 @@ bool Parser::parseExpressionStatement(Statement **stmt) {
     ExpressionStatement *expr_stmt = new ExpressionStatement;
     Expression *expr = nullptr;
 
-    parseExpression(&expr);
+    ParseExpression(&expr);
 
     expr_stmt->expression = expr;
     *stmt = expr_stmt;
@@ -115,41 +115,41 @@ bool Parser::parseExpressionStatement(Statement **stmt) {
 /**
  * IfStatement
  */
-bool Parser::parseIfStatement(IfStatement **if_statement) {
+bool Parser::ParseIfStatement(IfStatement **if_statement) {
 
   *if_statement = new IfStatement;
 
-  nextToken();  //eat if keyword
+  next_token();  //eat if keyword
 
   if (IS_PUNCTUATOR("(")) {
-    nextToken();  //eat '('
+    next_token();  //eat '('
   } else {
     return false;
   }
 
   //parse the condition expression
   Expression *condition_expr = nullptr;
-  parseExpression(&condition_expr);
+  ParseExpression(&condition_expr);
   (*if_statement)->condition = condition_expr;
 
-  nextToken();  //eat ')'
+  next_token();  //eat ')'
 
   Statement *statement = nullptr;
   if (IS_PUNCTUATOR("{")) {
     BodyStatement *body_statement = new BodyStatement;
-    parseBodyStatement(&body_statement);
+    ParseBodyStatement(&body_statement);
     statement = body_statement;
   } else {
-    parseStatement(&statement);
+    ParseStatement(&statement);
   }
   (*if_statement)->statement = statement;
 
   if (IS_KEYWORD("else")) {
 
-    nextToken();
+    next_token();
 
     Statement *else_statement = nullptr;
-    parseStatement(&else_statement);
+    ParseStatement(&else_statement);
     (*if_statement)->else_stmt = else_statement;
   } else {
     (*if_statement)->else_stmt = nullptr;
@@ -160,22 +160,22 @@ bool Parser::parseIfStatement(IfStatement **if_statement) {
 /**
  * WhileStatement
  */
-bool Parser::parseWhileStatement(WhileLoopStatement **while_loop_statement) {
+bool Parser::ParseWhileStatement(WhileLoopStatement **while_loop_statement) {
 
   *while_loop_statement = new WhileLoopStatement;
 
-  nextToken();  //eat while keyword
-  nextToken();  //eat ( punctuator
+  next_token();  //eat while keyword
+  next_token();  //eat ( punctuator
   Expression *condition = 0;
 
-  if (parseExpression(&condition)) {
+  if (ParseExpression(&condition)) {
     (*while_loop_statement)->termination = condition;
   }
 
-  nextToken();  //eat ) punctuator
+  next_token();  //eat ) punctuator
 
   Statement *statement = 0;
-  parseStatement(&statement);
+  ParseStatement(&statement);
   (*while_loop_statement)->statement = statement;
   return true;
 }
@@ -183,39 +183,39 @@ bool Parser::parseWhileStatement(WhileLoopStatement **while_loop_statement) {
 /**
  * ForStatement
  */
-bool Parser::parseForStatement(ForStatement **for_statement) {
+bool Parser::ParseForStatement(ForStatement **for_statement) {
 
-  nextToken();  //step for
-  nextToken();  //step '('
+  next_token();  //step for
+  next_token();  //step '('
   *for_statement = new ForStatement;
 
   VariableDeclarationStatement *initialisation = 0;
-  parseVariableDeclarationStatement(&initialisation);
+  ParseVariableDeclarationStatement(&initialisation);
 
   if (IS_PUNCTUATOR(";")) {  //standard for stmt
 
     (*for_statement)->forType = ForType::STANDARD;
-    nextToken();  //step ';'
+    next_token();  //step ';'
 
     Expression *termination = 0;
-    parseExpression(&termination);
+    ParseExpression(&termination);
 
-    nextToken();  //step ';'
+    next_token();  //step ';'
 
     Expression *increment = 0;
-    parseExpression(&increment);
+    ParseExpression(&increment);
 
     (*for_statement)->termination_expr = termination;
     (*for_statement)->increment_expr = increment;
   } else if (IS_PUNCTUATOR(":")) {  //Runway for stmt
-    nextToken();  //step ':'
+    next_token();  //step ':'
     (*for_statement)->forType = ForType::RUNWAY;
     Expression *range_start_expr = 0;
-    parseExpression(&range_start_expr);
+    ParseExpression(&range_start_expr);
     if (IS_PUNCTUATOR("..")) {
-      nextToken();  //step range
+      next_token();  //step range
       Expression *range_end_expr = 0;
-      parseExpression(&range_end_expr);
+      ParseExpression(&range_end_expr);
     } else {
       ERROR_PRINT("Syntax Error: Invalid range token" << _current_token.textual_content
                       << "in for loop. Use '..' to mark a range like '0 .. 1337'");
@@ -226,12 +226,12 @@ bool Parser::parseForStatement(ForStatement **for_statement) {
     return false;
   }
 
-  nextToken();  //step ')'
+  next_token();  //step ')'
 
   (*for_statement)->initialization_stmt = initialisation;
 
   Statement *stmt = 0;
-  parseStatement(&stmt);
+  ParseStatement(&stmt);
   (*for_statement)->statement = stmt;
   return true;
 }
@@ -239,9 +239,9 @@ bool Parser::parseForStatement(ForStatement **for_statement) {
 /**
  * BodyStatement
  */
-bool Parser::parseBodyStatement(BodyStatement **body_statement) {
+bool Parser::ParseBodyStatement(BodyStatement **body_statement) {
 
-  nextToken(); //step '{'
+  next_token(); //step '{'
 
   //create body statement instance
   *body_statement = new BodyStatement;
@@ -251,10 +251,10 @@ bool Parser::parseBodyStatement(BodyStatement **body_statement) {
   Statement *statement = nullptr;
 
   while (!(IS_PUNCTUATOR("}"))) {
-    parseStatement(&statement);
+    ParseStatement(&statement);
     statements.push_back(statement);
   }
-  nextToken();  //step '}'
+  next_token();  //step '}'
 
   //set the statement list
   (*body_statement)->statements = statements;
@@ -264,7 +264,7 @@ bool Parser::parseBodyStatement(BodyStatement **body_statement) {
 /**
  * VariableDeclarationStatement
  */
-bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **variable_declaration_statement) {
+bool Parser::ParseVariableDeclarationStatement(VariableDeclarationStatement **variable_declaration_statement) {
 
   //create variable declaration statement
   *variable_declaration_statement = new VariableDeclarationStatement;
@@ -288,7 +288,7 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
   }
 
   (*variable_declaration_statement)->type = type_expr;
-  nextToken();  //step type
+  next_token();  //step type
 
   //if the current token is a identifier then parse the assignment expression
   if (_current_token.token_type == TokenType::IDENTIFIER) {
@@ -302,11 +302,11 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
     //when it's just a declaration don't parse assignment expression
     if (_lookahead_token.textual_content.compare(";")) {  //it's NOT a semicolon (assignment)
       Expression *assignment_expr = nullptr;
-      parseAssignmentExpression(&assignment_expr);
+      ParseAssignmentExpression(&assignment_expr);
       ((AssignmentExpression *) assignment_expr)->type = type_expr->type;
       (*variable_declaration_statement)->expression_to_assign = (AssignmentExpression *) assignment_expr;
     } else {
-      nextToken();  //step identifier
+      next_token();  //step identifier
     }
     (*variable_declaration_statement)->identifier = identifier_expr;
     return true;
@@ -320,21 +320,21 @@ bool Parser::parseVariableDeclarationStatement(VariableDeclarationStatement **va
  *
  * delegates to the top-node-expression
  */
-bool Parser::parseExpression(Expression **expr) {
+bool Parser::ParseExpression(Expression **expr) {
 
-  parseAssignmentExpression(expr);
+  ParseAssignmentExpression(expr);
   return true;
 }
 
 /**
  * AssignmentExpression
  */
-bool Parser::parseAssignmentExpression(Expression **expr) {
+bool Parser::ParseAssignmentExpression(Expression **expr) {
 
   Expression *lhs_identifier_expr = new AssignmentExpression;
 
   //identifier
-  factor(&lhs_identifier_expr);
+  Factor(&lhs_identifier_expr);
 
   Operator assignment_operator = Operator::NONE;
   if (IS_PUNCTUATOR("=")) {
@@ -353,9 +353,9 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
     IdentifierPrimaryExpression *identifier_expr = (IdentifierPrimaryExpression *) lhs_identifier_expr;
     identifier_expr->type = ExpressionType::NULL_PTR;
     assignment_expr->identifier = identifier_expr;
-    nextToken();
+    next_token();
     Expression *expression_to_assign = 0;
-    parseExpression(&expression_to_assign);
+    ParseExpression(&expression_to_assign);
     assignment_expr->expression_to_assign = expression_to_assign;
 
     *expr = assignment_expr;
@@ -365,27 +365,27 @@ bool Parser::parseAssignmentExpression(Expression **expr) {
   return true;
 }
 
-void Parser::factor(Expression **expr) {
+void Parser::Factor(Expression **expr) {
 
-  if(IS_PUNCTUATOR("(")) {
+  if (IS_PUNCTUATOR("(")) {
     DEBUG_PRINTLN("factor");
-    nextToken(); // step '('
-    parseExpression(expr);
-    if(IS_PUNCTUATOR(")")) {
-      nextToken(); // step ')'
+    next_token(); // step '('
+    ParseExpression(expr);
+    if (IS_PUNCTUATOR(")")) {
+      next_token(); // step ')'
     }
   } else {
-    parseLogicalOrExpression(expr);
+    ParseLogicalOrExpression(expr);
   }
 }
 
 /**
  * LogicalOR
  */
-bool Parser::parseLogicalOrExpression(Expression **expr) {
+bool Parser::ParseLogicalOrExpression(Expression **expr) {
 
   Expression *lhs_expr = nullptr;
-  parseLogicalAndExpression(&lhs_expr);
+  ParseLogicalAndExpression(&lhs_expr);
 
   //if there's a logical OR operator
   if (IS_PUNCTUATOR("||")) {
@@ -393,10 +393,10 @@ bool Parser::parseLogicalOrExpression(Expression **expr) {
     LogicalOrExpression *logical_or_expr = new LogicalOrExpression;
     logical_or_expr->lhs_expr = lhs_expr;
 
-    nextToken();  //eat '||' operator
+    next_token();  //eat '||' operator
 
     LogicalOrExpression *rhs_logical_or_expression = nullptr;
-    factor((Expression **) &rhs_logical_or_expression);
+    Factor((Expression **) &rhs_logical_or_expression);
     logical_or_expr->rhs_expr = rhs_logical_or_expression;
     *expr = logical_or_expr;  //logical or expression
   } else {
@@ -408,10 +408,10 @@ bool Parser::parseLogicalOrExpression(Expression **expr) {
 /**
  * LogicalAND
  */
-bool Parser::parseLogicalAndExpression(Expression **expr) {
+bool Parser::ParseLogicalAndExpression(Expression **expr) {
 
   Expression *lhs_equality_expression = nullptr;
-  parseEqualityExpression(&lhs_equality_expression);
+  ParseEqualityExpression(&lhs_equality_expression);
 
   //if there's a logic AND operator
   if (IS_PUNCTUATOR("&&")) {
@@ -419,10 +419,10 @@ bool Parser::parseLogicalAndExpression(Expression **expr) {
     LogicalAndExpression *logical_and_expr = new LogicalAndExpression;
     logical_and_expr->lhs_expr = lhs_equality_expression;
 
-    nextToken();  //eat '&&'
+    next_token();  //eat '&&'
 
     LogicalOrExpression *rhs_logical_or_expr = nullptr;
-    factor((Expression **) &rhs_logical_or_expr);
+    Factor((Expression **) &rhs_logical_or_expr);
     logical_and_expr->rhs_expr = rhs_logical_or_expr;
 
     *expr = logical_and_expr;
@@ -435,9 +435,9 @@ bool Parser::parseLogicalAndExpression(Expression **expr) {
 /**
  * EqualityExpression
  */
-bool Parser::parseEqualityExpression(Expression **expr) {
+bool Parser::ParseEqualityExpression(Expression **expr) {
 
-  parseRelationalExpression(expr);
+  ParseRelationalExpression(expr);
 
   EqualityExpression *equality_expr = new EqualityExpression;
   bool has_rhs = false;
@@ -452,11 +452,11 @@ bool Parser::parseEqualityExpression(Expression **expr) {
     //lhs
     equality_expr->lhs_expr = *expr;
 
-    nextToken();  //eat compare operator
+    next_token();  //eat compare operator
 
     //rhs
     Expression *rhs_equality_expr = nullptr;
-    parseEqualityExpression(&rhs_equality_expr);
+    ParseEqualityExpression(&rhs_equality_expr);
     equality_expr->rhs_expr = rhs_equality_expr;
 
     *expr = equality_expr;
@@ -467,7 +467,7 @@ bool Parser::parseEqualityExpression(Expression **expr) {
 /**
  * UnaryExpression
  */
-bool Parser::parseUnaryExpression(Expression **expr) {
+bool Parser::ParseUnaryExpression(Expression **expr) {
 
   UnaryExpression *unary_expression = new UnaryExpression;
 
@@ -488,11 +488,11 @@ bool Parser::parseUnaryExpression(Expression **expr) {
   }
 
   if (prefix) {
-    nextToken();  //if we have a prefix, jump over it
+    next_token();  //if we have a prefix, jump over it
   }
 
   PostFixExpression *post_fix_expr = 0;
-  parsePostFixExpression((Expression **) &post_fix_expr);
+  ParsePostFixExpression((Expression **) &post_fix_expr);
 
   if (prefix) {
     unary_expression->postfix_expr = post_fix_expr;
@@ -506,10 +506,10 @@ bool Parser::parseUnaryExpression(Expression **expr) {
 /**
  * RelationalExpression
  */
-bool Parser::parseRelationalExpression(Expression **expr) {
+bool Parser::ParseRelationalExpression(Expression **expr) {
 
   Expression *lhs_additive_expr = 0;
-  parseAdditiveExpression(&lhs_additive_expr);
+  ParseAdditiveExpression(&lhs_additive_expr);
 
   bool has_rhs = false;
   RelationalExpression *relational_expr = new RelationalExpression;
@@ -529,9 +529,9 @@ bool Parser::parseRelationalExpression(Expression **expr) {
 
   if (has_rhs) {
     relational_expr->lhs_expr = lhs_additive_expr;
-    nextToken();  //eat operator
+    next_token();  //eat operator
     Expression *rhs_relational_expr = 0;
-    parseRelationalExpression(&rhs_relational_expr);
+    ParseRelationalExpression(&rhs_relational_expr);
     relational_expr->rhs_expr = rhs_relational_expr;
     *expr = relational_expr;
   } else {
@@ -545,14 +545,14 @@ bool Parser::parseRelationalExpression(Expression **expr) {
  *
  * see https://bitbucket.org/jbrunhuber/runway-compiler/wiki/Postfix%20Expression%20Parsing
  */
-bool Parser::parsePostFixExpression(Expression **expr) {
+bool Parser::ParsePostFixExpression(Expression **expr) {
 
   Expression *last_tmp_expr = 0;  //expression of the last iteration
   PostFixExpression *current_postfix_expr = 0;  //current postfix-expression in the iteration
 
   // parse the primary
   PrimaryExpression *primary_expr = 0;
-  parsePrimaryExpression((Expression **) &primary_expr);
+  ParsePrimaryExpression((Expression **) &primary_expr);
   last_tmp_expr = primary_expr;
 
   bool exit = false;
@@ -561,50 +561,50 @@ bool Parser::parsePostFixExpression(Expression **expr) {
     current_postfix_expr = 0;
     if (IS_PUNCTUATOR(".")) {
       //field access
-      nextToken();  //step '.'
+      next_token();  //step '.'
       FieldAccessPostFixExpression *field_access_expr = new FieldAccessPostFixExpression;
       field_access_expr->identifier = _current_token.textual_content;
-      nextToken();  //step identifier
+      next_token();  //step identifier
       current_postfix_expr = field_access_expr;
     } else if (IS_PUNCTUATOR("[")) {
       //array
       ArrayPostFixExpression *array_postfix_expr = new ArrayPostFixExpression;
-      nextToken();  //step '['
+      next_token();  //step '['
       Expression *array_index_expr = 0;
-      parseExpression(&array_index_expr);
+      ParseExpression(&array_index_expr);
       array_postfix_expr->index = array_index_expr;
-      nextToken();  //step ']'
+      next_token();  //step ']'
       current_postfix_expr = array_postfix_expr;
     } else if (IS_PUNCTUATOR("(")) {
       FunctionCallPostfixExpression *func_call_expr = new FunctionCallPostfixExpression;
-      nextToken();  //step '('
+      next_token();  //step '('
       if (!IS_PUNCTUATOR(")")) {  //when parameter are available parse them
         std::vector<Expression *> params;
         Expression *expression = 0;
-        parseExpression(&expression);
+        ParseExpression(&expression);
         params.push_back(expression);
         while (IS_PUNCTUATOR(",")) {
-          parseExpression(&expression);
+          ParseExpression(&expression);
           if (expression != 0) {
             params.push_back(expression);
           }
         }
         func_call_expr->arguments = params;
       }
-      nextToken();  //step ')'
+      next_token();  //step ')'
 
       //If it's an identifier, the primary expression is actually an identifier-primary-expression
       func_call_expr->identifier = (IdentifierPrimaryExpression *) primary_expr;
       current_postfix_expr = func_call_expr;
     } else if (IS_PUNCTUATOR("++")) {
 
-      nextToken();  // step '++'
+      next_token();  // step '++'
       //increment
       IncrementPostFixExpression *inc_expr = new IncrementPostFixExpression;
       inc_expr->increment_operator = Operator::INCREMENT;
       current_postfix_expr = inc_expr;
     } else if (IS_PUNCTUATOR("--")) {
-      nextToken();  // step '--'
+      next_token();  // step '--'
       //decrement
       IncrementPostFixExpression *dec_expr = new IncrementPostFixExpression;
       current_postfix_expr = dec_expr;
@@ -625,9 +625,9 @@ bool Parser::parsePostFixExpression(Expression **expr) {
 /**
  * AdditiveExpression
  */
-bool Parser::parseAdditiveExpression(Expression **expr) {
+bool Parser::ParseAdditiveExpression(Expression **expr) {
 
-  parseMultiplicativeExpression(expr);
+  ParseMultiplicativeExpression(expr);
 
   bool has_rhs = false;
   AdditiveExpression *additive_expr = new AdditiveExpression;
@@ -643,11 +643,11 @@ bool Parser::parseAdditiveExpression(Expression **expr) {
     //lhs
     additive_expr->lhs_expr = *expr;
 
-    nextToken();  //step operator
+    next_token();  //step operator
 
     //rhs
     Expression *rhs_additive_expression;
-    factor(&rhs_additive_expression);
+    Factor(&rhs_additive_expression);
     additive_expr->rhs_expr = rhs_additive_expression;
 
     *expr = additive_expr;
@@ -658,9 +658,9 @@ bool Parser::parseAdditiveExpression(Expression **expr) {
 /**
  * MultiplicativeExpression
  */
-bool Parser::parseMultiplicativeExpression(Expression **expr) {
+bool Parser::ParseMultiplicativeExpression(Expression **expr) {
 
-  parseUnaryExpression(expr);
+  ParseUnaryExpression(expr);
 
   bool has_rhs = false;
   MultiplicativeExpression *multiplicative_expr = new MultiplicativeExpression;
@@ -676,11 +676,11 @@ bool Parser::parseMultiplicativeExpression(Expression **expr) {
     //lhs
     multiplicative_expr->lhs_expr = *expr;
 
-    nextToken();  //step operator
+    next_token();  //step operator
 
     //rhs
     Expression *rhs_additive_expression;
-    factor(&rhs_additive_expression);
+    Factor(&rhs_additive_expression);
     multiplicative_expr->rhs_expr = rhs_additive_expression;
 
     *expr = multiplicative_expr;
@@ -691,7 +691,7 @@ bool Parser::parseMultiplicativeExpression(Expression **expr) {
 /**
  * PrimaryExpression
  */
-bool Parser::parsePrimaryExpression(Expression **expr) {
+bool Parser::ParsePrimaryExpression(Expression **expr) {
 
   //create new primary expression instance
   PrimaryExpression *primary_expr = new PrimaryExpression;
@@ -701,45 +701,45 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
   if (IS_TOKEN_TYPE(TokenType::IDENTIFIER)) {
     IdentifierPrimaryExpression *identifier_expr = new IdentifierPrimaryExpression;
     identifier_expr->string_value = _current_token.textual_content;
-    nextToken();
+    next_token();
     *expr = identifier_expr;
 
-  } else if (isType(_current_token)) {
+  } else if (is_type(_current_token)) {
     primary_expr->string_value = _current_token.textual_content;
-    nextToken();
+    next_token();
 
   } else if (IS_TOKEN_TYPE(TokenType::BOOL_LITERAL)) {
     primary_expr->type = ExpressionType::BOOL;
     primary_expr->bool_value = _current_token.bool_content;
-    nextToken();
+    next_token();
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_INT)) {
     primary_expr->type = ExpressionType::INTEGER;
     primary_expr->int_value = (int) _current_token.numeric_content;
-    nextToken();
+    next_token();
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_FLOAT)) {
     primary_expr->type = ExpressionType::FLOAT;
     primary_expr->double_value = _current_token.numeric_content;
-    nextToken();
+    next_token();
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_DOUBLE)) {
     primary_expr->type = ExpressionType::DOUBLE;
     primary_expr->double_value = _current_token.numeric_content;
-    nextToken();
+    next_token();
 
   } else if (IS_TOKEN_TYPE(TokenType::TEXTUAL_LITERAL)) {
     primary_expr->type = ExpressionType::STRING;
     primary_expr->string_value = _current_token.textual_content;
-    nextToken();
+    next_token();
 
   } else if (IS_PUNCTUATOR("(")) {
     primary_expr->type = ExpressionType::EXPR;
-    nextToken();  // eat '('
+    next_token();  // eat '('
     LogicalOrExpression *logical_or_expr = 0;
-    parseLogicalOrExpression((Expression **) &logical_or_expr);
+    ParseLogicalOrExpression((Expression **) &logical_or_expr);
     primary_expr->expression = logical_or_expr;
-    nextToken();  // eat ')'
+    next_token();  // eat ')'
   } else {
     ERROR_PRINT("invalid expression type " << _current_token.textual_content);
   }
@@ -749,7 +749,7 @@ bool Parser::parsePrimaryExpression(Expression **expr) {
 /**
  * Checks if a token is a type (primitive or reference)
  */
-bool Parser::isType(Token &token) {
+bool Parser::is_type(Token &token) {
 
   //float
   if (token.textual_content == "float") {
@@ -782,8 +782,8 @@ bool Parser::isType(Token &token) {
 /**
  * sets the next and lookahead token
  */
-void Parser::nextToken() {
+void Parser::next_token() {
 
   _current_token = _lookahead_token;
-  _tokenizer->next(_lookahead_token);
+  _tokenizer->Next(_lookahead_token);
 }

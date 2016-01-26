@@ -8,119 +8,119 @@
 
 #include <parser/nodes.hpp>
 
-llvm::Value *AdditiveExpression::emit(BaseGenerator *generator) {
+llvm::Value *AdditiveExpression::Emit(BaseGenerator *generator) {
 
-  return generator->emitAdditiveExpression(this);
+  return generator->EmitAdditiveExpression(this);
 }
 
-llvm::Value *LogicalOrExpression::emit(BaseGenerator *generator) {
+llvm::Value *LogicalOrExpression::Emit(BaseGenerator *generator) {
 
-  return generator->emitLogicalOrExpression(this);
+  return generator->EmitLogicalOrExpression(this);
 }
 
-llvm::Value *LogicalAndExpression::emit(BaseGenerator *generator) {
+llvm::Value *LogicalAndExpression::Emit(BaseGenerator *generator) {
 
-  return generator->emitLogicalAndExpression(this);
+  return generator->EmitLogicalAndExpression(this);
 }
 
-llvm::Value *EqualityExpression::emit(BaseGenerator *generator) {
+llvm::Value *EqualityExpression::Emit(BaseGenerator *generator) {
 
-  return generator->emitEqualityExpression(this);
+  return generator->EmitEqualityExpression(this);
 }
 
-llvm::Value *UnaryExpression::emit(BaseGenerator *generator) {
+llvm::Value *UnaryExpression::Emit(BaseGenerator *generator) {
 
-  return generator->emitUnaryExpression(this);
+  return generator->EmitUnaryExpression(this);
 }
 
-llvm::Value *MultiplicativeExpression::emit(BaseGenerator *generator) {
+llvm::Value *MultiplicativeExpression::Emit(BaseGenerator *generator) {
 
-  return generator->emitMultiplicativeExpression(this);
+  return generator->EmitMultiplicativeExpression(this);
 }
 
-llvm::Value *IncrementPostFixExpression::emit(BaseGenerator *generator) {
+llvm::Value *IncrementPostFixExpression::Emit(BaseGenerator *generator) {
 
   //TODO impl
   return nullptr;
 }
 
-llvm::Value *FunctionCallPostfixExpression::emit(BaseGenerator *generator) {
+llvm::Value *FunctionCallPostfixExpression::Emit(BaseGenerator *generator) {
 
-  return generator->emitFunctionCallPostFixExpression(this);
+  return generator->EmitFunctionCallPostFixExpression(this);
 }
 
-llvm::Value *ArrayPostFixExpression::emit(BaseGenerator *generator) {
+llvm::Value *ArrayPostFixExpression::Emit(BaseGenerator *generator) {
 
   //TODO impl
   return nullptr;
 }
 
-llvm::Value *FieldAccessPostFixExpression::emit(BaseGenerator *generator) {
+llvm::Value *FieldAccessPostFixExpression::Emit(BaseGenerator *generator) {
 
   //TODO impl
   return nullptr;
 }
 
-llvm::Value *IdentifierPrimaryExpression::emit(BaseGenerator *generator) {
+llvm::Value *IdentifierPrimaryExpression::Emit(BaseGenerator *generator) {
 
-  return generator->emitIdentifierPrimaryExpression(this);
+  return generator->EmitIdentifierPrimaryExpression(this);
 }
 
-llvm::Value *ConditionalExpression::emit(BaseGenerator *generator) {
+llvm::Value *ConditionalExpression::Emit(BaseGenerator *generator) {
 
   //TODO impl
   return nullptr;
 }
-llvm::Value *AssignmentExpression::emit(BaseGenerator *generator) {
+llvm::Value *AssignmentExpression::Emit(BaseGenerator *generator) {
 
-  return generator->emitAssignmentExpression(this);
+  return generator->EmitAssignmentExpression(this);
 }
 
-llvm::Value *RelationalExpression::emit(BaseGenerator *generator) {
+llvm::Value *RelationalExpression::Emit(BaseGenerator *generator) {
 
   //TODO impl
   return nullptr;
 }
 
-llvm::Value *PrimaryExpression::emit(BaseGenerator *generator) {
+llvm::Value *PrimaryExpression::Emit(BaseGenerator *generator) {
 
-  return generator->emitPrimaryExpression(this);
+  return generator->EmitPrimaryExpression(this);
 }
 
-void IfStatement::emit(BaseGenerator *generator) {
+void IfStatement::Emit(BaseGenerator *generator) {
 
-  generator->emitIfStatement(this);
+  generator->EmitIfStatement(this);
 }
 
-void ForStatement::emit(BaseGenerator *generator) {
+void ForStatement::Emit(BaseGenerator *generator) {
   //TODO impl
 }
 
-void JumpStatement::emit(BaseGenerator *generator) {
+void JumpStatement::Emit(BaseGenerator *generator) {
   //TODO impl
 }
 
-void ReturnStatement::emit(BaseGenerator *generator) {
+void ReturnStatement::Emit(BaseGenerator *generator) {
   //TODO impl
 }
 
-void WhileLoopStatement::emit(BaseGenerator *generator) {
+void WhileLoopStatement::Emit(BaseGenerator *generator) {
   //TODO impl
 }
 
-void VariableDeclarationStatement::emit(BaseGenerator *generator) {
+void VariableDeclarationStatement::Emit(BaseGenerator *generator) {
 
-  generator->emitVariableDeclarationStatement(this);
+  generator->EmitVariableDeclarationStatement(this);
 }
 
-void BodyStatement::emit(BaseGenerator *generator) {
+void BodyStatement::Emit(BaseGenerator *generator) {
 
-  generator->emitBodyStatement(this);
+  generator->EmitBodyStatement(this);
 }
 
-void ExpressionStatement::emit(BaseGenerator *generator) {
+void ExpressionStatement::Emit(BaseGenerator *generator) {
 
-  generator->emitExpressionStatement(this);
+  generator->EmitExpressionStatement(this);
 }
 
 AssignmentExpression::AssignmentExpression() : expression_to_assign(nullptr) { }

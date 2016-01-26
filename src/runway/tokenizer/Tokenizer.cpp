@@ -28,11 +28,11 @@ Tokenizer::Tokenizer(std::string &source)
 /**
  * Returns the next token
  */
-void Tokenizer::next(Token &token) {
+void Tokenizer::Next(Token &token) {
 
   token.textual_content = "";
 
-  skipWhitespace();
+  skip();
 
   token.line_count = _line_count;
 
@@ -43,28 +43,28 @@ void Tokenizer::next(Token &token) {
   }
 
   //punctuators
-  if (isPunctuator(_current)) {
-    std::string textual_content = readPunctuator();
+  if (validate_punctuator(_current)) {
+    std::string textual_content = ReadPunctuator();
     token.token_type = TokenType::PUNCTUATOR;
     token.textual_content = textual_content;
     return;
   }
 
   //numeric literal
-  if (tokenizeNumericLiteral(token)) {
+  if (TokenizeNumericLiteral(token)) {
     return;
   }
 
   //string literal
-  if (tokenizeStringLiteral(token)) {
+  if (TokenizeStringLiteral(token)) {
     return;
   }
 
   /**
    * If the first letter of the next token matches an identifier or a valid literal for booleans, keywords and references
    */
-  if (isValidIdentifierFirst(_current)) {
-    std::string read = readIdentifier();
+  if (validate_identifier_cf(_current)) {
+    std::string read = ReadIdentifier();
 
     //std::cout << "found identifier:" << read << std::endl;
 
@@ -80,7 +80,7 @@ void Tokenizer::next(Token &token) {
     }
 
     //keyword
-    if (containsKeyword(read)) {
+    if (contains_keyword(read)) {
       token.token_type = TokenType::KEYWORD;
       token.textual_content = read;
       return;
@@ -119,14 +119,15 @@ void Tokenizer::step() {
 /**
  * Skips whitespace and other unnecessary character
  */
-void Tokenizer::skipWhitespace() {
+void Tokenizer::skip() {
 
   while (isspace(_current)) {
     step();
   }
 
   //File Header (e. g. BOM)
-  if (_current == (char) 0xEF || _current == (char) 0xBB || _current == (char) 0xBF) {  //Ignore ﻿ BOM Header in text-files
+  if (_current == (char) 0xEF || _current == (char) 0xBB
+      || _current == (char) 0xBF) {  //Ignore ﻿ BOM Header in text-files
     step();
   }
 }
@@ -134,7 +135,7 @@ void Tokenizer::skipWhitespace() {
 /**
  * Check if a character is a valid first char of an identifier
  */
-bool Tokenizer::isValidIdentifierFirst(char c) {
+bool Tokenizer::validate_identifier_cf(char c) {
 
   return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '|') || (c == '$') || c == '_');
 }
@@ -142,15 +143,15 @@ bool Tokenizer::isValidIdentifierFirst(char c) {
 /**
  * Checks if a character is a valid identifier char
  */
-bool Tokenizer::isValidIdentifier(char c) {
+bool Tokenizer::validate_identifier_c(char c) {
 
-  return isValidIdentifierFirst(c) || (c >= '0' && c <= '9');
+  return validate_identifier_cf(c) || (c >= '0' && c <= '9');
 }
 
 /**
  * Checks if a character matches a punctuator
  */
-bool Tokenizer::isPunctuator(char c) {
+bool Tokenizer::validate_punctuator(char c) {
 
   if (_punctuator.find(c) != std::string::npos) {
     return true;
@@ -161,7 +162,7 @@ bool Tokenizer::isPunctuator(char c) {
 /**
  * Reads a string literal
  */
-std::string Tokenizer::readTextualLiteral() {
+std::string Tokenizer::ReadTextualLiteral() {
 
   std::stringstream sstream;
   while (_current != '"') {
@@ -175,10 +176,10 @@ std::string Tokenizer::readTextualLiteral() {
 /**
  * Reads a identifier
  */
-std::string Tokenizer::readIdentifier() {
+std::string Tokenizer::ReadIdentifier() {
 
   std::stringstream sstream;
-  while (isValidIdentifier(_current)) {
+  while (validate_identifier_c(_current)) {
     sstream << _current;
     step();
   }
@@ -188,11 +189,11 @@ std::string Tokenizer::readIdentifier() {
 /**
  * Reads punctuator
  */
-std::string Tokenizer::readPunctuator() {
+std::string Tokenizer::ReadPunctuator() {
 
   std::stringstream sstream;
 
-  if (isPunctuator(_current)) {
+  if (validate_punctuator(_current)) {
     sstream << _current;
   }
 
@@ -220,7 +221,7 @@ std::string Tokenizer::readPunctuator() {
 /**
  * Numeric literal
  */
-bool Tokenizer::tokenizeNumericLiteral(Token &token) {
+bool Tokenizer::TokenizeNumericLiteral(Token &token) {
 
   if (isdigit(_current)) {
 
@@ -259,11 +260,11 @@ bool Tokenizer::tokenizeNumericLiteral(Token &token) {
 /**
  * String literal
  */
-bool Tokenizer::tokenizeStringLiteral(Token &token) {
+bool Tokenizer::TokenizeStringLiteral(Token &token) {
 
   if (_current == '"') {
     step();
-    std::string read = readTextualLiteral();
+    std::string read = ReadTextualLiteral();
     token.token_type = TokenType::TEXTUAL_LITERAL;
     token.textual_content = read;
     return true;

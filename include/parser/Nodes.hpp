@@ -46,14 +46,14 @@ enum class ExpressionType {
  */
 class Statement: public Node {
  public:
-  virtual void emit(BaseGenerator *) = 0;
+  virtual void Emit(BaseGenerator *) = 0;
   virtual ~Statement() {
   }
 };
 
 class ExpressionStatement: public Statement {
  public:
-  void emit(BaseGenerator *);
+  void Emit(BaseGenerator *);
   Expression *expression;
   virtual ~ExpressionStatement() {
   }
@@ -66,7 +66,7 @@ class Expression {
  public:
   Expression *lhs_expr;
   Expression *rhs_expr;
-  virtual llvm::Value *emit(BaseGenerator *) = 0;
+  virtual llvm::Value *Emit(BaseGenerator *) = 0;
   ExpressionType type;
   Expression();
   virtual ~Expression() {
@@ -75,7 +75,7 @@ class Expression {
 
 class ReturnStatement: public Statement {
  public:
-  void emit(BaseGenerator *);
+  void Emit(BaseGenerator *);
   Expression *expression_to_return;
 };
 
@@ -85,7 +85,7 @@ class ReturnStatement: public Statement {
 class AdditiveExpression: public Expression {
  public:
   Operator additive_operator;
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
 };
 
 /**
@@ -94,7 +94,7 @@ class AdditiveExpression: public Expression {
 class MultiplicativeExpression: public Expression {
  public:
   Operator multiplicative_operator;
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
 
 };
 
@@ -103,7 +103,7 @@ class MultiplicativeExpression: public Expression {
  */
 class PrimaryExpression: public Expression {
  public:
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
   int int_value;
   double double_value;
   bool bool_value;
@@ -113,7 +113,7 @@ class PrimaryExpression: public Expression {
 
 class IdentifierPrimaryExpression: public PrimaryExpression {
  public:
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
 };
 
 class EmptyExpressionStatement: public ExpressionStatement {
@@ -128,7 +128,7 @@ class AssignmentExpression: public Expression {
   IdentifierPrimaryExpression *identifier;
   Operator assignment_operator;
   Expression *expression_to_assign;
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
 
 };
 
@@ -137,7 +137,7 @@ class AssignmentExpression: public Expression {
  */
 class ConditionalExpression: public Expression {
  public:
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
   Operator compare_operator;
 
 };
@@ -147,7 +147,7 @@ class ConditionalExpression: public Expression {
  */
 class LogicalOrExpression: public ConditionalExpression {
  public:
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
 };
 
 /**
@@ -156,7 +156,7 @@ class LogicalOrExpression: public ConditionalExpression {
 class PostFixExpression: public Expression {
  public:
   PostFixExpression *postFixExpr;
-  virtual llvm::Value *emit(BaseGenerator *generator) = 0;
+  virtual llvm::Value *Emit(BaseGenerator *generator) = 0;
 };
 
 /**
@@ -165,7 +165,7 @@ class PostFixExpression: public Expression {
 class IncrementPostFixExpression: public PostFixExpression {
  public:
   Operator increment_operator;
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
 };
 
 /**
@@ -173,7 +173,7 @@ class IncrementPostFixExpression: public PostFixExpression {
  */
 class ArrayPostFixExpression: public PostFixExpression {
  public:
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
   Expression *index;
 };
 
@@ -182,7 +182,7 @@ class ArrayPostFixExpression: public PostFixExpression {
  */
 class FunctionCallPostfixExpression: public PostFixExpression {
  public:
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
   std::vector<Expression *> arguments;
   IdentifierPrimaryExpression *identifier;
 };
@@ -192,7 +192,7 @@ class FunctionCallPostfixExpression: public PostFixExpression {
  */
 class FieldAccessPostFixExpression: public PostFixExpression {
  public:
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
   std::string identifier;
 };
 
@@ -203,7 +203,7 @@ class UnaryExpression: public Expression {
  public:
   Operator unary_operator;
   PostFixExpression *postfix_expr;
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
 };
 
 /**
@@ -211,7 +211,7 @@ class UnaryExpression: public Expression {
  */
 class LogicalAndExpression: public ConditionalExpression {
  public:
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
 };
 
 /**
@@ -220,7 +220,7 @@ class LogicalAndExpression: public ConditionalExpression {
 class EqualityExpression: public ConditionalExpression {
  public:
   Operator equality_operator;
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
 };
 
 /**
@@ -229,7 +229,7 @@ class EqualityExpression: public ConditionalExpression {
 class RelationalExpression: public ConditionalExpression {
  public:
   Operator relational_operator;
-  llvm::Value *emit(BaseGenerator *generator);
+  llvm::Value *Emit(BaseGenerator *generator);
 };
 
 /**
@@ -237,7 +237,7 @@ class RelationalExpression: public ConditionalExpression {
  */
 class BodyStatement: public Statement {
  public:
-  void emit(BaseGenerator *);
+  void Emit(BaseGenerator *);
   std::vector<Statement *> statements;
 };
 
@@ -246,7 +246,7 @@ class BodyStatement: public Statement {
  */
 class IfStatement: public Statement {
  public:
-  void emit(BaseGenerator *);
+  void Emit(BaseGenerator *);
   Expression *condition;
   Statement *statement;
   Statement *else_stmt;
@@ -258,7 +258,7 @@ class IfStatement: public Statement {
 class VariableDeclarationStatement: public Statement {
  public:
   VariableDeclarationStatement();
-  void emit(BaseGenerator *);
+  void Emit(BaseGenerator *);
   IdentifierPrimaryExpression *identifier;
   PrimaryExpression *type;
   AssignmentExpression *expression_to_assign;
@@ -269,7 +269,7 @@ class VariableDeclarationStatement: public Statement {
  */
 class JumpStatement: public Statement {
  public:
-  void emit(BaseGenerator *);
+  void Emit(BaseGenerator *);
   JumpStatementType jump_statement_type;
 };
 
@@ -287,7 +287,7 @@ class TypeExpression: Expression {
  */
 class LoopStatement: public Statement {
  public:
-  virtual void emit(BaseGenerator *) = 0;
+  virtual void Emit(BaseGenerator *) = 0;
 };
 
 /**
@@ -295,7 +295,7 @@ class LoopStatement: public Statement {
  */
 class WhileLoopStatement: public LoopStatement {
  public:
-  void emit(BaseGenerator *);
+  void Emit(BaseGenerator *);
   Statement *statement;
   Expression *termination;
 };
@@ -310,7 +310,7 @@ enum class ForType {
 
 class ForStatement: public LoopStatement {
  public:
-  void emit(BaseGenerator *);
+  void Emit(BaseGenerator *);
   Statement *statement;
   VariableDeclarationStatement *initialization_stmt;
   Expression *termination_expr;

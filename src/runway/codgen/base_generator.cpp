@@ -22,7 +22,7 @@ BaseGenerator::~BaseGenerator() {
   delete builder;
 }
 
-llvm::Value *BaseGenerator::emitIdentifierPrimaryExpression(Expression *expr) {
+llvm::Value *BaseGenerator::EmitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
 
@@ -38,19 +38,19 @@ llvm::Value *BaseGenerator::emitIdentifierPrimaryExpression(Expression *expr) {
   return symbol->llvm_ptr;
 }
 
-llvm::Value *BaseGenerator::emitFunctionCallPostFixExpression(FunctionCallPostfixExpression *func_call_expr) {
+llvm::Value *BaseGenerator::EmitFunctionCallPostFixExpression(FunctionCallPostfixExpression *func_call_expr) {
 
   std::string identifier = func_call_expr->identifier->string_value;
   if (!identifier.compare("print")) {
-    createPrintFunction(func_call_expr->arguments.at(0), false);
+    create_print_function(func_call_expr->arguments.at(0), false);
   } else if (!identifier.compare("println")) {
-    createPrintFunction(func_call_expr->arguments.at(0), true);
+    create_print_function(func_call_expr->arguments.at(0), true);
   }
   delete func_call_expr;
   return nullptr;
 }
 
-void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_line) {
+void BaseGenerator::create_print_function(Expression *parameter_expr, bool new_line) {
 
   const std::string const_function_name = "printf";
   const std::string const_form_string_arg = "%s";
@@ -58,7 +58,7 @@ void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_lin
   const std::string const_form_float_arg = "%f";
   const std::string const_new_line_string = "\n";
 
-  llvm::Value *llvm_parameter_value = parameter_expr->emit(this);
+  llvm::Value *llvm_parameter_value = parameter_expr->Emit(this);
 
   //when it's a pointer type load the value
   if (llvm_parameter_value->getType()->isPointerTy()) {
@@ -111,7 +111,7 @@ void BaseGenerator::createPrintFunction(Expression *parameter_expr, bool new_lin
   builder->CreateCall(llvm_print_func, llvm_func_arguments);
 }
 
-void BaseGenerator::emitVariableDeclarationStatement(VariableDeclarationStatement *var_decl_stmt) {
+void BaseGenerator::EmitVariableDeclarationStatement(VariableDeclarationStatement *var_decl_stmt) {
 
   std::string identifier = var_decl_stmt->identifier->string_value;
 
@@ -146,17 +146,17 @@ void BaseGenerator::emitVariableDeclarationStatement(VariableDeclarationStatemen
   //if there's a assignment beside the variable declaration, emit the rhs assignment value
   AssignmentExpression *assignment_expr = var_decl_stmt->expression_to_assign;
   if (assignment_expr != nullptr) {
-    assignment_expr->emit(this);
+    assignment_expr->Emit(this);
   }
   delete var_decl_stmt;
 }
 
-llvm::Value *BaseGenerator::emitAssignmentExpression(AssignmentExpression *assignment_expr) {
+llvm::Value *BaseGenerator::EmitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
-  return doAssignment(assignment_expr);
+  return do_assignment(assignment_expr);
 }
 
-llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) {
+llvm::Value *BaseGenerator::do_assignment(AssignmentExpression *assignment_expr) {
 
   std::string identifier = assignment_expr->identifier->string_value;
 
@@ -172,7 +172,7 @@ llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) 
   ExpressionType declared_type = symbol->type;
   ExpressionType assigned_type = assignment_expr->expression_to_assign->type;
 
-  llvm::Value *llvm_emitted_assignment_value = assignment_expr->expression_to_assign->emit(this);
+  llvm::Value *llvm_emitted_assignment_value = assignment_expr->expression_to_assign->Emit(this);
 
   if ((declared_type == ExpressionType::FLOAT || declared_type == ExpressionType::DOUBLE)
       && assigned_type == ExpressionType::INTEGER) {
@@ -194,30 +194,31 @@ llvm::Value *BaseGenerator::doAssignment(AssignmentExpression *assignment_expr) 
   return llvm_emitted_assignment_value;
 }
 
-llvm::Value *BaseGenerator::emitLogicalOrExpression(LogicalOrExpression *expr) {
+llvm::Value *BaseGenerator::EmitLogicalOrExpression(LogicalOrExpression *expr) {
 
-  llvm::Value *lhs_value = expr->lhs_expr->emit(this);
-  llvm::Value *rhs_value = expr->rhs_expr->emit(this);
+  llvm::Value *lhs_value = expr->lhs_expr->Emit(this);
+  llvm::Value *rhs_value = expr->rhs_expr->Emit(this);
 
   return builder->CreateOr(lhs_value, rhs_value, "or");
 }
 
-llvm::Value *BaseGenerator::emitLogicalAndExpression(LogicalAndExpression *expr) {
+llvm::Value *BaseGenerator::EmitLogicalAndExpression(LogicalAndExpression *expr) {
 
-  llvm::Value *lhs_value = expr->lhs_expr->emit(this);
-  llvm::Value *rhs_value = expr->rhs_expr->emit(this);
+  llvm::Value *lhs_value = expr->lhs_expr->Emit(this);
+  llvm::Value *rhs_value = expr->rhs_expr->Emit(this);
 
   return builder->CreateAnd(lhs_value, rhs_value, "and");
 }
 
-llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
+llvm::Value *BaseGenerator::EmitAdditiveExpression(AdditiveExpression *expr) {
 
-  llvm::Value *llvm_lhs_value = expr->lhs_expr->emit(this);
-  llvm::Value *llvm_rhs_value = expr->rhs_expr->emit(this);
+  llvm::Value *llvm_lhs_value = expr->lhs_expr->Emit(this);
+  llvm::Value *llvm_rhs_value = expr->rhs_expr->Emit(this);
 
   llvm::Value *llvm_result_value = nullptr;
 
-  bool floating_point = llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
+  bool
+      floating_point = llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
 
   if (expr->additive_operator == Operator::SUM) {
     if (floating_point) {
@@ -240,14 +241,15 @@ llvm::Value *BaseGenerator::emitAdditiveExpression(AdditiveExpression *expr) {
   return llvm_result_value;
 }
 
-llvm::Value *BaseGenerator::emitMultiplicativeExpression(MultiplicativeExpression *expr) {
+llvm::Value *BaseGenerator::EmitMultiplicativeExpression(MultiplicativeExpression *expr) {
 
-  llvm::Value *llvm_lhs_value = expr->lhs_expr->emit(this);
-  llvm::Value *llvm_rhs_value = expr->rhs_expr->emit(this);
+  llvm::Value *llvm_lhs_value = expr->lhs_expr->Emit(this);
+  llvm::Value *llvm_rhs_value = expr->rhs_expr->Emit(this);
 
   llvm::Value *llvm_result_value = nullptr;
 
-  bool floating_point = llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
+  bool
+      floating_point = llvm_lhs_value->getType()->isFloatingPointTy() || llvm_rhs_value->getType()->isFloatingPointTy();
 
   if (expr->multiplicative_operator == Operator::MUL) {
     if (floating_point) {
@@ -267,13 +269,11 @@ llvm::Value *BaseGenerator::emitMultiplicativeExpression(MultiplicativeExpressio
   }
 
   delete expr;
-  delete llvm_rhs_value;
-  delete llvm_lhs_value;
 
   return llvm_result_value;
 }
 
-llvm::Value *BaseGenerator::emitPrimaryExpression(PrimaryExpression *expr) {
+llvm::Value *BaseGenerator::EmitPrimaryExpression(PrimaryExpression *expr) {
 
   //determine the type of the declared expression
   ExpressionType expr_type = expr->type;
@@ -298,13 +298,13 @@ llvm::Value *BaseGenerator::emitPrimaryExpression(PrimaryExpression *expr) {
   return nullptr;
 }
 
-llvm::Value *BaseGenerator::emitEqualityExpression(EqualityExpression *expr) {
+llvm::Value *BaseGenerator::EmitEqualityExpression(EqualityExpression *expr) {
 
   Expression *lhs_expr = expr->lhs_expr;
   Expression *rhs_expr = expr->rhs_expr;
 
-  llvm::Value *lhs_value = lhs_expr->emit(this);
-  llvm::Value *rhs_value = rhs_expr->emit(this);
+  llvm::Value *lhs_value = lhs_expr->Emit(this);
+  llvm::Value *rhs_value = rhs_expr->Emit(this);
 
   llvm::Value *result_value = nullptr;
 
@@ -333,11 +333,11 @@ llvm::Value *BaseGenerator::emitEqualityExpression(EqualityExpression *expr) {
   return result_value;
 }
 
-llvm::Value *BaseGenerator::emitUnaryExpression(UnaryExpression *expr) {
+llvm::Value *BaseGenerator::EmitUnaryExpression(UnaryExpression *expr) {
 
   PostFixExpression *lhs_expr = expr->postfix_expr;
 
-  std::unique_ptr<llvm::Value> value(lhs_expr->emit(this));
+  std::unique_ptr<llvm::Value> value(lhs_expr->Emit(this));
 
   Operator unary_operator = expr->unary_operator;
   if (unary_operator == Operator::INCREMENT) {
@@ -379,13 +379,13 @@ void BaseGenerator::finalize() {
   builder->CreateRetVoid();
 }
 
-void BaseGenerator::emitExpressionStatement(ExpressionStatement *expr_stmt) {
+void BaseGenerator::EmitExpressionStatement(ExpressionStatement *expr_stmt) {
 
   Expression *expression = expr_stmt->expression;
-  expression->emit(this);
+  expression->Emit(this);
 }
 
-std::string BaseGenerator::getIR() {
+std::string BaseGenerator::GetIR() {
 
   std::string str;
   llvm::raw_string_ostream rso(str);
@@ -393,17 +393,17 @@ std::string BaseGenerator::getIR() {
   return str;
 }
 
-void BaseGenerator::emitForStatement(ForStatement *for_statment) {
+void BaseGenerator::EmitForStatement(ForStatement *for_statment) {
 
   llvm::BasicBlock *for_instructions =
       llvm::BasicBlock::Create(llvm::getGlobalContext(), "forinst", _functions["main"], insert_point);
 
 }
 
-void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
+void BaseGenerator::EmitIfStatement(IfStatement *if_statement) {
 
   // emit the condition and cast it to a floating point value
-  llvm::Value *cond_val = if_statement->condition->emit(this);
+  llvm::Value *cond_val = if_statement->condition->Emit(this);
   cond_val = builder->CreateUIToFP(cond_val, llvm::Type::getDoubleTy(llvm::getGlobalContext()), "bool_convert");
 
   // create a floating point value for the comparison
@@ -426,10 +426,10 @@ void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
    */
 
   PhiGenerator *phi_gen = new PhiGenerator(then_block, builder, module);
-  phi_gen->setInsertPoint(then_block);
+  phi_gen->SetInsertPoint(then_block);
 
   phi_gen->setSymtable(block_stack);
-  if_statement->statement->emit(phi_gen);
+  if_statement->statement->Emit(phi_gen);
   builder->CreateBr(merge_block);
   then_block = builder->GetInsertBlock();
 
@@ -438,8 +438,8 @@ void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
    */
 
   the_function->getBasicBlockList().push_back(else_block);
-  phi_gen->setInsertPoint(else_block);
-  if_statement->else_stmt->emit(phi_gen);
+  phi_gen->SetInsertPoint(else_block);
+  if_statement->else_stmt->Emit(phi_gen);
   builder->CreateBr(merge_block);
   else_block = builder->GetInsertBlock();
 
@@ -463,17 +463,17 @@ void BaseGenerator::emitIfStatement(IfStatement *if_statement) {
   merge_block = builder->GetInsertBlock();
 }
 
-void BaseGenerator::setInsertPoint(llvm::BasicBlock *insert) {
+void BaseGenerator::SetInsertPoint(llvm::BasicBlock *insert) {
 
   insert_point = insert;
   builder->SetInsertPoint(insert);
 }
 
-void BaseGenerator::emitBodyStatement(BodyStatement *body_statement) {
+void BaseGenerator::EmitBodyStatement(BodyStatement *body_statement) {
 
   for (int i = 0; i < body_statement->statements.size(); ++i) {
     Statement *stmt = body_statement->statements.at(i);
-    stmt->emit(this);
+    stmt->Emit(this);
     delete stmt;
   }
 }

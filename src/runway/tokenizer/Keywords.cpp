@@ -11,15 +11,15 @@
 /**
  *
  */
-std::vector<std::string> KEYWORDS = { "import", "return", "final", "class",
-    "enum", "for", "while", "continue", "break", "switch", "if", "else",
-    "switch", "case", "default", "this", "super", "static", "private", "public",
-    "protected", "void", "int8", "int16", "int32", "int64", "char", "bool" };
+std::vector<std::string> KEYWORDS = {"import", "return", "final", "class",
+                                     "enum", "for", "while", "continue", "break", "switch", "if", "else",
+                                     "switch", "case", "default", "this", "super", "static", "private", "public",
+                                     "protected", "void", "int8", "int16", "int32", "int64", "char", "bool"};
 
 /**
  * Checks if a string is keyword
  */
-bool containsKeyword(std::string keyword) {
+bool contains_keyword(std::string keyword) {
 
   if (std::find(KEYWORDS.begin(), KEYWORDS.end(), keyword)
       != KEYWORDS.end()) {

@@ -33,35 +33,34 @@ class Parser {
  public:
   Parser(Tokenizer *tokenizer);
 
-  bool parseStatement(Statement **);
-  bool parseExpressionStatement(Statement **);
-  bool parseIfStatement(IfStatement **);
-  bool parseExpression(Expression **);
-  bool parseBodyStatement(BodyStatement **);
-  bool parseVariableDeclarationStatement(VariableDeclarationStatement **);
-  bool parseWhileStatement(WhileLoopStatement **);
-  bool parseForStatement(ForStatement **);
-
-  void factor(Expression **);
-  bool parseAssignmentExpression(Expression **);
-  bool parseLogicalOrExpression(Expression **);
-  bool parseLogicalAndExpression(Expression **);
-  bool parseEqualityExpression(Expression **);
-  bool parseRelationalExpression(Expression **);
-  bool parseAdditiveExpression(Expression **);
-  bool parseMultiplicativeExpression(Expression **);
-  bool parseUnaryExpression(Expression **);
-  bool parsePostFixExpression(Expression **);
-  bool parsePrimaryExpression(Expression **);
-  bool parseFunctionCallExpression(Expression **);
+  bool ParseStatement(Statement **);
+  bool ParseExpressionStatement(Statement **);
+  bool ParseIfStatement(IfStatement **);
+  bool ParseExpression(Expression **);
+  bool ParseBodyStatement(BodyStatement **);
+  bool ParseVariableDeclarationStatement(VariableDeclarationStatement **);
+  bool ParseWhileStatement(WhileLoopStatement **);
+  bool ParseForStatement(ForStatement **);
+  void Factor(Expression **);
+  bool ParseAssignmentExpression(Expression **);
+  bool ParseLogicalOrExpression(Expression **);
+  bool ParseLogicalAndExpression(Expression **);
+  bool ParseEqualityExpression(Expression **);
+  bool ParseRelationalExpression(Expression **);
+  bool ParseAdditiveExpression(Expression **);
+  bool ParseMultiplicativeExpression(Expression **);
+  bool ParseUnaryExpression(Expression **);
+  bool ParsePostFixExpression(Expression **);
+  bool ParsePrimaryExpression(Expression **);
+  bool ParseFunctionCallExpression(Expression **);
 
  private:
   Token _current_token;
   Token _lookahead_token;
   Tokenizer *_tokenizer;
 
-  bool isType(Token &t);
-  void nextToken();
+  bool is_type(Token &t);
+  void next_token();
 };
 
 #endif /* defined(RUNWAY_PARSER_PARSER_HPP) */

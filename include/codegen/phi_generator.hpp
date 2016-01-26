@@ -18,7 +18,7 @@ class PhiGenerator: public BaseGenerator {
 
   PhiGenerator(llvm::BasicBlock *, llvm::IRBuilder<> *, llvm::Module *);
   std::vector<PhiEntry *> phi_entries_table;
-  llvm::Value *emitAssignmentExpression(AssignmentExpression *) override;
+  llvm::Value *EmitAssignmentExpression(AssignmentExpression *) override;
   PhiEntry *get(std::string);
   void setSymtable(std::stack<ScopeBlock *> *stack);
 };

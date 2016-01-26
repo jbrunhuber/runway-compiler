@@ -40,8 +40,8 @@ int main(int argc, char **argv) {
   base_code_generator->construct();
 
   Statement *super_node = nullptr;
-  while (parser->parseStatement(&super_node)) {
-    super_node->emit(base_code_generator);
+  while (parser->ParseStatement(&super_node)) {
+    super_node->Emit(base_code_generator);
   }
 
   base_code_generator->finalize();
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
   //write the emitted code as llvm assembly
   std::ofstream ir_file;
   ir_file.open(runway_source_path + "out.ll", std::ios::out | std::ios::trunc);
-  ir_file << base_code_generator->getIR();
+  ir_file << base_code_generator->GetIR();
   ir_file.close();
 
   delete base_code_generator;

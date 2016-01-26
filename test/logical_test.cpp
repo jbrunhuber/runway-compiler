@@ -56,9 +56,9 @@ TEST(CODEGEN, LOGICAL_OR) {
 
   generator->construct();
 
-  var_declaration_stmt->emit(generator);
+  var_declaration_stmt->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR());
+  EXPECT_EQ(expected, generator->GetIR());
 }
 
 /**
@@ -108,7 +108,7 @@ TEST(CODEGEN, LOGICAL_AND) {
 
   generator->construct();
 
-  var_declaration_stmt->emit(generator);
+  var_declaration_stmt->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR());
+  EXPECT_EQ(expected, generator->GetIR());
 }

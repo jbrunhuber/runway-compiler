@@ -20,7 +20,7 @@ class Tokenizer {
 
  public:
   Tokenizer(std::string &source);
-  void next(Token& token);
+  void Next(Token& token);
 
  private:
   std::string _source;
@@ -31,20 +31,18 @@ class Tokenizer {
   uint32_t _line_count;
   size_t _length;
 
+  std::string ReadTextualLiteral();
+  std::string ReadIdentifier();
+  std::string ReadPunctuator();
+  double ReadNumeric();
+  bool TokenizeNumericLiteral(Token &token);
+  bool TokenizeStringLiteral(Token &token);
+
   void step();
-  void skipWhitespace();
-  bool isValidIdentifierFirst(char c);
-  bool isValidIdentifier(char c);
-  bool isPunctuator(char c);
-
-  std::string readTextualLiteral();
-  std::string readIdentifier();
-  std::string readPunctuator();
-
-  double readNumeric();
-
-  bool tokenizeNumericLiteral(Token &token);
-  bool tokenizeStringLiteral(Token &token);
+  void skip();
+  bool validate_identifier_cf(char c);
+  bool validate_identifier_c(char c);
+  bool validate_punctuator(char c);
 };
 
 #endif /* defined(RUNWAY_TOKENIZER_TOKENIZER_HPP) */

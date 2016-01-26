@@ -35,7 +35,7 @@ TEST(CODEGEN, MULTIPLICATIVE_INT) {
   generator->construct();
 
   llvm::ConstantInt *llvm_int = (
-      llvm::ConstantInt *) node->emit(generator);
+      llvm::ConstantInt *) node->Emit(generator);
   EXPECT_EQ(llvm_int->getZExtValue(), (test_operand_1 * test_operand_2));
 }
 
@@ -91,7 +91,7 @@ TEST(CODEGEN, MULTIPLICATIVE_FP) {
   BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
-  decl->emit(generator);
+  decl->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR());
+  EXPECT_EQ(expected, generator->GetIR());
 }

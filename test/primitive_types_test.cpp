@@ -40,9 +40,9 @@ TEST(CODEGEN, DECLARATION_DOUBLE) {
   BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
-  variable_declaration_statement->emit(generator);
+  variable_declaration_statement->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR().c_str());
+  EXPECT_EQ(expected, generator->GetIR().c_str());
 }
 
 /**
@@ -88,9 +88,9 @@ TEST(CODEGEN, ASSIGNMENT_DOUBLE) {
   BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
-  variable_declaration_statement->emit(generator);
+  variable_declaration_statement->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR().c_str());
+  EXPECT_EQ(expected, generator->GetIR().c_str());
 }
 
 /**
@@ -124,9 +124,9 @@ TEST(CODEGEN, DECLARATION_FLOAT) {
   BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
-  variable_declaration_statement->emit(generator);
+  variable_declaration_statement->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR().c_str());
+  EXPECT_EQ(expected, generator->GetIR().c_str());
 }
 
 /**
@@ -172,9 +172,9 @@ TEST(CODEGEN, ASSIGNMENT_FLOAT) {
   BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
-  variable_declaration_statement->emit(generator);
+  variable_declaration_statement->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR().c_str());
+  EXPECT_EQ(expected, generator->GetIR().c_str());
 }
 
 /**
@@ -220,9 +220,9 @@ TEST(CODEGEN, ASSIGNMENT_INT_TO_DOUBLE) {
   BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
-  variable_declaration_statement->emit(generator);
+  variable_declaration_statement->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR().c_str());
+  EXPECT_EQ(expected, generator->GetIR().c_str());
 }
 
 /**
@@ -268,9 +268,9 @@ TEST(CODEGEN, ASSIGNMENT_FLOAT_TO_DOUBLE) {
   BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
-  variable_declaration_statement->emit(generator);
+  variable_declaration_statement->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR().c_str());
+  EXPECT_EQ(expected, generator->GetIR().c_str());
 }
 
 
@@ -305,9 +305,9 @@ TEST(CODEGEN, DECLARATION_INTEGER) {
   BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
-  variable_declaration_statement->emit(generator);
+  variable_declaration_statement->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR().c_str());
+  EXPECT_EQ(expected, generator->GetIR().c_str());
 }
 
 /**
@@ -353,7 +353,7 @@ TEST(CODEGEN, ASSIGNMENT_INTEGER) {
   BaseGenerator *generator = new BaseGenerator;
   generator->construct();
 
-  variable_declaration_statement->emit(generator);
+  variable_declaration_statement->Emit(generator);
 
-  EXPECT_EQ(expected, generator->getIR().c_str());
+  EXPECT_EQ(expected, generator->GetIR().c_str());
 }
