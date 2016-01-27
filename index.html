@@ -1,37 +1,79 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Runway Compiler</title>
-    <meta name="description" content="A compiler frontend for the runway language">
-    <meta name="author" content="jbrunhuber">
-    <meta name="keywords" content="compiler llvm cpp">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link href="main.css" type="text/css" rel="stylesheet">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:300' rel='stylesheet' type='text/css'>
+  <title>Runway Compiler</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
 </head>
-
 <body>
-  <a href="https://github.com/jbrunhuber"><img style="position: absolute; z-index: 9999; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
-  <header>
-      <h1>Runway Compiler</h1>
-      <span>A compiler frontend for the runway language</span><span class="cursor">█</span>
-    </header>
-    <main>
-      <p>I want to introduce you to the basic concepts of the runway language. The compiler is in a really <small>(really)</small> early state of development so there may come some changes :)</p>
-      <h2>Goals</h2>
-      <p>No one will ever read this so I can write any shit I want.</p>
-      <h2>Everything out of the box</h2>
-      <p>I sit here and watch suites on netflix. And my damn french press is still not arrived. I have to walk 10000000km to get coffee in my company which is really annoying. </p>
-      <h2>Compiler Backend</h2>
-      <p>For emitting and optimizing I use <a href="http://llvm.org/docs/">LLVM</a></p>
-      <h2>Documentation</h2>
-      <ul>
-        <li><a href="https://github.com/jbrunhuber/runway-compiler/wiki/Install-llvm-on-osx-linux">llvm install guide</a></li>
-        <li><a href="http://jbrunhuber.github.io/parser/compiler/2015/08/05/postfix.html">Parser: PostFixExpressions explained</a></li>
+
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="http://jbrunhuber.github.io/runway-compiler/"><span
+        class="glyphicon glyphicon-road rw-logo" aria-hidden="true"></span> Runway</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="https://github.com/jbrunhuber/runway-compiler">Source Code</a></li>
+        <li><a href="http://jbrunhuber.github.io/about/">About</a></li>
+        <li><a href="http://jbrunhuber.github.io/">Blog</a></li>
       </ul>
-    </main>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="jumbotron">
+    <h1>Runway Compiler</h1>
+    <p>A compiler frontend for the runway language</p>
+    <p><a class="btn btn-primary btn-lg" href="https://github.com/jbrunhuber/runway-compiler" role="button">Source
+      Code</a></p>
+  </div>
+
+  <h1>Goals</h1>
+  <p>The basic goal of this project is to improve my knowledge about the compile process and data structures.</p>
+
+  <h1>Compiler</h1>
+  <p>The compiler is the frontend of my language. The output is LLVM bytecode which can be translated to executable
+    binary files using the LLVM static compiler
+    <small>(llc)</small>
+    . The motivation of this software is to create a modular, simple
+    and clean architecture.
+  </p>
+
+  <h3>LLVM
+    <small>Low Level Virtual Machine</small>
+  </h3>
+  <p>LLVM is a modular compiler-backend architecture. If you want to know more about it take a look at the LLVM <a
+    href="http://llvm.org/docs/">docs</a>.</p>
+
+  <h1>Language</h1>
+  <p>Runway is an imperative programming language with lexical variable scopes, a static type system and structured
+    programming support.</p>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
 </body>
 </html>

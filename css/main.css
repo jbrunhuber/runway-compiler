@@ -1,0 +1,21 @@
+
+.navbar-inverse {
+    background-color: #333333;
+    font-family: "Source Sans Pro", "Helvetica Neue", "Lucida Grande", Helvetica, sans-serif;
+    font-size: 15px;
+    padding-left: 7%;
+}
+
+.navbar-inverse .navbar-brand {
+    color: white;
+    font-size: 20px;
+}
+
+.rw-logo {
+    font-size: 14px;
+    padding-right: 4px;
+}
+
+body {
+    padding-bottom: 75px;
+}
