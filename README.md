@@ -1,10 +1,13 @@
-# runway-compiler
-A compiler frontend for the runway language.
+#Goals
+The basic goal of this project is to improve my knowledge about the compile process and data structures.
 
-# Learning is everything
+#Compiler
+The compiler is the frontend of my language. The output is LLVM bytecode which can be translated to executable binary files using the LLVM static compiler *(llc)*.
+The motivation of this software is to create a modular, simple and clean architecture.
 
-The goal of this project is to improve my theoretical and practical skills. I want to know much more about how compilers work and what kind of elements *(like statements or expressions)* exists in programming languages.
+####LLVM
+LLVM is a modular compiler-backend architecture. If you want to know more about it visit the [LLVM docs](http://llvm.org/docs/).
 
-The project in this state is basically the fronted for the language. It creates LLVM byte code in SSA form. The backend part which includes optimizing is completely done by LLVM. More about LLVM: [LLVM Documentation](http://llvm.org/docs)
 
-This project is neither in a stable state nor in active development. In summer when my final exams are over I’m going to contribute more. Promised :)
+#Language
+Runway is an imperative programming language with lexical variable scopes, a static type system and structured programming support.
