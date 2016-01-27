@@ -77,6 +77,8 @@ class BaseGenerator {
 
   void EmitForStatement(ForStatement *);
 
+  void EmitBlock(Block *);
+
   /**
    * Emits a variable declaration statement
    */

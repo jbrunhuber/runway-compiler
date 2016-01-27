@@ -123,6 +123,11 @@ void ExpressionStatement::Emit(BaseGenerator *generator) {
   generator->EmitExpressionStatement(this);
 }
 
+void Block::Emit(BaseGenerator *generator) {
+
+  generator->EmitBlock(this);
+}
+
 AssignmentExpression::AssignmentExpression() : expression_to_assign(nullptr) { }
 
 VariableDeclarationStatement::VariableDeclarationStatement() : expression_to_assign(nullptr) { }

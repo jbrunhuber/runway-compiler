@@ -22,6 +22,14 @@ BaseGenerator::~BaseGenerator() {
   delete builder;
 }
 
+void BaseGenerator::EmitBlock(Block *block) {
+
+  for (int i = 0; i < block->statements.size(); ++i) {
+    Statement *stmt = block->statements.at(i);
+    stmt->Emit(this);
+  }
+}
+
 llvm::Value *BaseGenerator::EmitIdentifierPrimaryExpression(Expression *expr) {
 
   IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
@@ -148,7 +156,6 @@ void BaseGenerator::EmitVariableDeclarationStatement(VariableDeclarationStatemen
   if (assignment_expr != nullptr) {
     assignment_expr->Emit(this);
   }
-  delete var_decl_stmt;
 }
 
 llvm::Value *BaseGenerator::EmitAssignmentExpression(AssignmentExpression *assignment_expr) {

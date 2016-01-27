@@ -9,6 +9,7 @@
 #ifndef RUNWAY_PARSER_NODESFORWARD_HPP
 #define RUNWAY_PARSER_NODESFORWARD_HPP
 
+class Block;
 class Node;
 class Statement;
 class ExpressionStatement;

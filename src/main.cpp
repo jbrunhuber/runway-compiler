@@ -39,10 +39,9 @@ int main(int argc, char **argv) {
   //parse and emit the code
   base_code_generator->construct();
 
-  Statement *super_node = nullptr;
-  while (parser->ParseStatement(&super_node)) {
-    super_node->Emit(base_code_generator);
-  }
+  Block *init_block = new Block;
+  parser->ParseBlock(init_block);
+  init_block->Emit(base_code_generator);
 
   base_code_generator->finalize();
 
