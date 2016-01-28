@@ -21,9 +21,6 @@ std::vector<std::string> KEYWORDS = {"import", "return", "final", "class",
  */
 bool contains_keyword(std::string keyword) {
 
-  if (std::find(KEYWORDS.begin(), KEYWORDS.end(), keyword)
-      != KEYWORDS.end()) {
-    return true;
-  }
-  return false;
+  return std::find(KEYWORDS.begin(), KEYWORDS.end(), keyword)
+      != KEYWORDS.end();
 }

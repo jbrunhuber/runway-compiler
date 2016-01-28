@@ -18,7 +18,7 @@ Tokenizer::Tokenizer(std::string &source)
       _line_count(1),
       _length(source.length()) {
 
-  _source = source;
+  this->_source = source;
 
   //musst (!) step twice because we'll need to init lookahead token
   step();

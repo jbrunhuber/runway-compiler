@@ -1,15 +1,5 @@
-//
-// parser.cpp
-// parser for the runway language
-//
-// Created by Joshua Brunhuber on 30.06.2015
-// Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
-//
 #include "parser/parser.hpp"
 
-/**
- *
- */
 Parser::Parser(Tokenizer *tokenizer) {
 
   _tokenizer = tokenizer;
@@ -18,9 +8,6 @@ Parser::Parser(Tokenizer *tokenizer) {
   next_token();  //and current token
 }
 
-/**
- *
- */
 bool Parser::ParseBlockStatement(BlockStatement **block) {
 
   if (IS_PUNCTUATOR("{")) next_token();
@@ -86,7 +73,7 @@ bool Parser::ParseStatement(Statement **stmt) {
 bool Parser::ParseExpressionStatement(Statement **stmt) {
 
   if (is_type(_current_token)) {
-    VariableDeclarationStatement *variable_decl_stmt = 0;
+    VariableDeclarationStatement *variable_decl_stmt = nullptr;
     ParseVariableDeclarationStatement(&variable_decl_stmt);
     *stmt = variable_decl_stmt;
     return true;
@@ -151,9 +138,9 @@ bool Parser::ParseIfStatement(IfStatement **if_statement) {
 
   Statement *statement = nullptr;
   if (IS_PUNCTUATOR("{")) {
-    BodyStatement *body_statement = new BodyStatement;
-    ParseBodyStatement(&body_statement);
-    statement = body_statement;
+    BlockStatement *block_statement = new BlockStatement;
+    ParseBlockStatement(&block_statement);
+    statement = block_statement;
   } else {
     ParseStatement(&statement);
   }
@@ -181,7 +168,8 @@ bool Parser::ParseWhileStatement(WhileLoopStatement **while_loop_statement) {
 
   next_token();  //eat while keyword
   next_token();  //eat ( punctuator
-  Expression *condition = 0;
+
+  Expression *condition = nullptr;
 
   if (ParseExpression(&condition)) {
     (*while_loop_statement)->termination = condition;
@@ -189,7 +177,7 @@ bool Parser::ParseWhileStatement(WhileLoopStatement **while_loop_statement) {
 
   next_token();  //eat ) punctuator
 
-  Statement *statement = 0;
+  Statement *statement = nullptr;
   ParseStatement(&statement);
   (*while_loop_statement)->statement = statement;
   return true;
@@ -204,7 +192,7 @@ bool Parser::ParseForStatement(ForStatement **for_statement) {
   next_token();  //step '('
   *for_statement = new ForStatement;
 
-  VariableDeclarationStatement *initialisation = 0;
+  VariableDeclarationStatement *initialisation = nullptr;
   ParseVariableDeclarationStatement(&initialisation);
 
   if (IS_PUNCTUATOR(";")) {  //standard for stmt
@@ -245,34 +233,9 @@ bool Parser::ParseForStatement(ForStatement **for_statement) {
 
   (*for_statement)->initialization_stmt = initialisation;
 
-  Statement *stmt = 0;
+  Statement *stmt = nullptr;
   ParseStatement(&stmt);
   (*for_statement)->statement = stmt;
-  return true;
-}
-
-/**
- * BodyStatement
- */
-bool Parser::ParseBodyStatement(BodyStatement **body_statement) {
-
-  next_token(); //step '{'
-
-  //create body statement instance
-  *body_statement = new BodyStatement;
-
-  //create a list of statements
-  std::vector<Statement *> statements;
-  Statement *statement = nullptr;
-
-  while (!(IS_PUNCTUATOR("}"))) {
-    ParseStatement(&statement);
-    statements.push_back(statement);
-  }
-  next_token();  //step '}'
-
-  //set the statement list
-  (*body_statement)->statements = statements;
   return true;
 }
 

@@ -113,11 +113,6 @@ void VariableDeclarationStatement::Emit(BaseGenerator *generator) {
   generator->EmitVariableDeclarationStatement(this);
 }
 
-void BodyStatement::Emit(BaseGenerator *generator) {
-
-  generator->EmitBodyStatement(this);
-}
-
 void ExpressionStatement::Emit(BaseGenerator *generator) {
 
   generator->EmitExpressionStatement(this);
@@ -132,4 +127,4 @@ AssignmentExpression::AssignmentExpression() : expression_to_assign(nullptr) { }
 
 VariableDeclarationStatement::VariableDeclarationStatement() : expression_to_assign(nullptr) { }
 
-Expression::Expression() : type(ExpressionType::UNDEFINED){ }
+Expression::Expression() : type(ExpressionType::UNDEFINED) { }

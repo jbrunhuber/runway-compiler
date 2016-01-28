@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
   std::string runway_source_code = getSourceCode(runway_source_path + "Runway.rw");
 
   //create instances
-  Tokenizer *tokenizer = new tokenizer(runway_source_code);
+  Tokenizer *tokenizer = new Tokenizer(runway_source_code);
   Parser *parser = new Parser(tokenizer);
   BaseGenerator *base_code_generator = new BaseGenerator;
 
