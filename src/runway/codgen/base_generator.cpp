@@ -35,15 +35,16 @@ void BaseGenerator::EmitBlockStatement(BlockStatement *block) {
 
 llvm::Value *BaseGenerator::EmitIdentifierPrimaryExpression(Expression *expr) {
 
-  IdentifierPrimaryExpression *identifier = (IdentifierPrimaryExpression *) expr;
+  IdentifierPrimaryExpression *identifier_expr = (IdentifierPrimaryExpression *) expr;
+  std::string identifier_name = identifier_expr->string_value;
 
   ScopeBlock *block = block_stack->top();
-  SymtableEntry *symbol = block->get(identifier->string_value);
+  SymtableEntry *symbol = block->get(identifier_name);
 
-  delete identifier;
+  delete identifier_expr;
 
   if (symbol == nullptr) {
-    std::cerr << "use of undeclared identifier " << identifier << std::endl;
+    std::cerr << "use of undeclared identifier " << identifier_name << std::endl;
     return nullptr;
   }
   return symbol->llvm_ptr;

@@ -1,11 +1,11 @@
 //
 // parser.cpp
-// Parser for the runway language
+// parser for the runway language
 //
 // Created by Joshua Brunhuber on 30.06.2015
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
-#include <parser/parser.hpp>
+#include "parser/parser.hpp"
 
 /**
  *
@@ -16,6 +16,21 @@ Parser::Parser(Tokenizer *tokenizer) {
   //initialize
   next_token();  //lookahead
   next_token();  //and current token
+}
+
+/**
+ *
+ */
+bool Parser::ParseBlockStatement(BlockStatement **block) {
+
+  if (IS_PUNCTUATOR("{")) next_token();
+  Statement *statement = nullptr;
+  *block = new BlockStatement;
+  while (ParseStatement(&statement)) {
+    (*block)->statements.push_back(statement);
+  }
+  if (IS_PUNCTUATOR("}")) next_token();
+  return true;
 }
 
 /**
@@ -31,11 +46,8 @@ bool Parser::ParseStatement(Statement **stmt) {
   }
 
   if (IS_PUNCTUATOR("{")) {
-    BodyStatement *body_stmt = nullptr;
-    ParseBodyStatement(&body_stmt);
-    *stmt = body_stmt;
+    ParseBlockStatement((BlockStatement **) stmt);
     return true;
-
   } else if (IS_KEYWORD("if")) {
     IfStatement *if_statement = 0;
     ParseIfStatement(&if_statement);
@@ -53,6 +65,9 @@ bool Parser::ParseStatement(Statement **stmt) {
     ParseForStatement(&for_statement);
     *stmt = for_statement;
     return true;
+  } else if (IS_PUNCTUATOR("}")) {
+    //statements all parsed, jump out
+    return false;
   }
 
   if (ParseExpressionStatement(stmt) && _current_token.textual_content == ";") {
