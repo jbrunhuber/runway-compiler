@@ -24,10 +24,13 @@ BaseGenerator::~BaseGenerator() {
 
 void BaseGenerator::EmitBlockStatement(BlockStatement *block) {
 
+  ScopeBlock *scope = new ScopeBlock;
+  block_stack->push(scope);
   for (int i = 0; i < block->statements.size(); ++i) {
     Statement *stmt = block->statements.at(i);
     stmt->Emit(this);
   }
+  block_stack->pop();
 }
 
 llvm::Value *BaseGenerator::EmitIdentifierPrimaryExpression(Expression *expr) {

@@ -33,6 +33,7 @@ class Parser {
  public:
   Parser(Tokenizer *tokenizer);
 
+  bool ParseBlockStatement(BlockStatement **);
   bool ParseStatement(Statement **);
   bool ParseExpressionStatement(Statement **);
   bool ParseIfStatement(IfStatement **);
