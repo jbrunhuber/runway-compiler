@@ -15,10 +15,10 @@ enum class ExpressionType;
 
 bool isBoolType(llvm::Value *);
 
-llvm::Value *createLlvmIntValue(int64_t, ExpressionType);
+llvm::Value *CreateLlvmIntValue(int64_t, ExpressionType);
 
 llvm::Value *createLlvmFpValue(double, ExpressionType);
 
-llvm::Value *createBoolValue(bool);
+llvm::Value *CreateLlvmBoolValue(bool);
 
 #endif  /* defined(RUNWAY_TOOLS_DATATYPES_HPP) */

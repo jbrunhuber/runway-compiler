@@ -25,7 +25,7 @@ bool isBoolType(llvm::Value *val) {
  * param integer_value: the integer value to create
  * param type: the integer type to specify the size (short, int, long,)
  */
-llvm::Value *createLlvmIntValue(int64_t integer_value, ExpressionType type) {
+llvm::Value *CreateLlvmIntValue(int64_t integer_value, ExpressionType type) {
 
   uint16_t integer_size = 0;
   llvm::Type *llvm_type = nullptr;
@@ -69,7 +69,7 @@ llvm::Value *createLlvmFpValue(double fp_value, ExpressionType type) {
   }
 }
 
-llvm::Value *createBoolValue(bool b) {
+llvm::Value *CreateLlvmBoolValue(bool b) {
 
   uint8_t integer_value = 0;
   if (b) {

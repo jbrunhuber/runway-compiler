@@ -31,6 +31,8 @@ void BaseGenerator::EmitBlockStatement(BlockStatement *block) {
     stmt->Emit(this);
   }
   block_stack->pop();
+
+  delete block;
 }
 
 llvm::Value *BaseGenerator::EmitIdentifierPrimaryExpression(Expression *expr) {
@@ -164,10 +166,11 @@ void BaseGenerator::EmitVariableDeclarationStatement(VariableDeclarationStatemen
 
 llvm::Value *BaseGenerator::EmitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
-  return do_assignment(assignment_expr);
+  //just refer to DoAssignment in the base code_generator because we don't have phi_nodes here
+  return DoAssignment(assignment_expr);
 }
 
-llvm::Value *BaseGenerator::do_assignment(AssignmentExpression *assignment_expr) {
+llvm::Value *BaseGenerator::DoAssignment(AssignmentExpression *assignment_expr) {
 
   std::string identifier = assignment_expr->identifier->string_value;
 
@@ -292,7 +295,7 @@ llvm::Value *BaseGenerator::EmitPrimaryExpression(PrimaryExpression *expr) {
   if (expr_type == ExpressionType::BOOL) {
 
     delete expr;
-    return createBoolValue(expr->bool_value);
+    return CreateLlvmBoolValue(expr->bool_value);
   } else if (expr_type == ExpressionType::STRING) {
 
     delete expr;
@@ -304,7 +307,7 @@ llvm::Value *BaseGenerator::EmitPrimaryExpression(PrimaryExpression *expr) {
   } else if (expr_type == ExpressionType::INTEGER) {
 
     delete expr;
-    return createLlvmIntValue(expr->int_value, expr_type);
+    return CreateLlvmIntValue(expr->int_value, expr_type);
   }
   return nullptr;
 }
@@ -478,13 +481,4 @@ void BaseGenerator::SetInsertPoint(llvm::BasicBlock *insert) {
 
   insert_point = insert;
   builder->SetInsertPoint(insert);
-}
-
-void BaseGenerator::EmitBodyStatement(BodyStatement *body_statement) {
-
-  for (int i = 0; i < body_statement->statements.size(); ++i) {
-    Statement *stmt = body_statement->statements.at(i);
-    stmt->Emit(this);
-    delete stmt;
-  }
 }

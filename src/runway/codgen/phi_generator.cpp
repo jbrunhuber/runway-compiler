@@ -10,7 +10,7 @@ PhiGenerator::PhiGenerator(llvm::BasicBlock *insert_block, llvm::IRBuilder<> *bu
 llvm::Value *PhiGenerator::EmitAssignmentExpression(AssignmentExpression *assignment_expr) {
 
   //emit the assignment instructions for the IR
-  llvm::Value *assignment = do_assignment(assignment_expr);
+  llvm::Value *assignment = DoAssignment(assignment_expr);
 
   //determine symbols name as identifier for the phi table
   std::string identifier = assignment_expr->identifier->string_value;

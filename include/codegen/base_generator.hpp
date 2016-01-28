@@ -126,7 +126,7 @@ class BaseGenerator {
   /**
    * Emits the base assignment expression
    */
-  llvm::Value *do_assignment(AssignmentExpression *assignment_expr);
+  llvm::Value *DoAssignment(AssignmentExpression *assignment_expr);
 
   llvm::Module *module;
   llvm::IRBuilder<> *builder;

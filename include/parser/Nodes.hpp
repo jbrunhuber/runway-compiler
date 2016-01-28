@@ -239,15 +239,6 @@ class RelationalExpression: public ConditionalExpression {
 };
 
 /**
- * Body Statement
- */
-class BodyStatement: public Statement {
- public:
-  void Emit(BaseGenerator *);
-  std::vector<Statement *> statements;
-};
-
-/**
  * If condition
  */
 class IfStatement: public Statement {
