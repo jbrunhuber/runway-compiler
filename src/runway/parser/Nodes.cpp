@@ -123,9 +123,9 @@ void ExpressionStatement::Emit(BaseGenerator *generator) {
   generator->EmitExpressionStatement(this);
 }
 
-void Block::Emit(BaseGenerator *generator) {
+void BlockStatement::Emit(BaseGenerator *generator) {
 
-  generator->EmitBlock(this);
+  generator->EmitBlockStatement(this);
 }
 
 AssignmentExpression::AssignmentExpression() : expression_to_assign(nullptr) { }

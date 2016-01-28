@@ -7,7 +7,7 @@
 //
 
 #include <gtest/gtest.h>
-#include <parser/parser.hpp>
+#include "parser/parser.hpp"
 
 /**
  * Tests the allocation of a double

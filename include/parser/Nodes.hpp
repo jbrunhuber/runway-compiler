@@ -51,6 +51,12 @@ class Statement: public Node {
   }
 };
 
+class BlockStatement: public Statement {
+ public:
+  void Emit(BaseGenerator *);
+  std::vector<Statement *> statements;
+};
+
 class ExpressionStatement: public Statement {
  public:
   void Emit(BaseGenerator *);

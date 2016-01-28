@@ -22,7 +22,7 @@ BaseGenerator::~BaseGenerator() {
   delete builder;
 }
 
-void BaseGenerator::EmitBlock(Block *block) {
+void BaseGenerator::EmitBlockStatement(BlockStatement *block) {
 
   for (int i = 0; i < block->statements.size(); ++i) {
     Statement *stmt = block->statements.at(i);

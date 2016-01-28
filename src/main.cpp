@@ -7,11 +7,7 @@
 //
 
 #include <parser/parser.hpp>
-#include <tokenizer/tokenizer.hpp>
-#include <iostream>
 #include <fstream>
-#include <sstream>
-
 
 std::string getSourceCode(std::string path);
 
@@ -39,8 +35,8 @@ int main(int argc, char **argv) {
   //parse and emit the code
   base_code_generator->construct();
 
-  Block *init_block = new Block;
-  parser->ParseBlock(init_block);
+  BlockStatement *init_block = new BlockStatement;
+  parser->ParseBlockStatement(&init_block);
   init_block->Emit(base_code_generator);
 
   base_code_generator->finalize();
