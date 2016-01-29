@@ -43,34 +43,65 @@
 </nav>
 
 <div class="container">
-
-  <div class="jumbotron">
-    <h1>Runway Compiler</h1>
-    <p>A compiler frontend for the runway language</p>
-    <p><a class="btn btn-primary btn-lg" href="https://github.com/jbrunhuber/runway-compiler" role="button">Source
-      Code</a></p>
+  <div class="row">
+    <div class="col-xs-12 center">
+      <h1>Runway Compiler</h1>
+      <h4>A compiler frontend for the runway language</h4>
+    </div>
   </div>
 
-  <h1>Goals</h1>
-  <p>The basic goal of this project is to improve my knowledge about the compile process and data structures.</p>
+  <div class="row">
+    <div class="horizontal-line"/>
+  </div>
 
-  <h1>Compiler</h1>
-  <p>The compiler is the frontend of my language. The output is LLVM bytecode which can be translated to executable
-    binary files using the LLVM static compiler
-    <small>(llc)</small>
-    . The motivation of this software is to create a modular, simple
-    and clean architecture.
-  </p>
+  <div class="row">
+    <div class="col-md-3 col-md-offset-1 feature">
+      <h3>Goals</h3>
+      <p>The basic goal of this project is to improve my knowledge about the compile process and data structures</p>
+    </div>
 
-  <h3>LLVM
-    <small>Low Level Virtual Machine</small>
-  </h3>
-  <p>LLVM is a modular compiler-backend architecture. If you want to know more about it take a look at the LLVM <a
-    href="http://llvm.org/docs/">docs</a>.</p>
+    <div class="col-md-4 feature">
+      <h3>Compiler</h3>
+      <p>The compiler is the frontend of my language. The output is LLVM bytecode which can be translated to executable
+        binary files using the LLVM static compiler
+      </p>
 
-  <h1>Language</h1>
-  <p>Runway is an imperative programming language with lexical variable scopes, a static type system and structured
-    programming support.</p>
+    </div>
+
+    <div class="col-md-4 feature">
+      <h3>Language</h3>
+      <p>Runway is an imperative programming language with lexical variable scopes, a static type system and structured
+        programming support</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="horizontal-line"/>
+  </div>
+  <div class="row">
+    <h1>About Runway</h1>
+    <div class="media col-md-8 col-md-offset-2">
+      <div class="media-left">
+        <span class="media-object">LLVM</span>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading">Low Level Virtual Machine</h4>
+        <p>LLVM is a modular compiler infrastructure. The bytecode (LLVM-IR) can be translated to the binary you need for your
+          system.</p>
+      </div>
+    </div>
+
+    <div class="media col-md-8 col-md-offset-2">
+      <div class="media-left">
+        <span class="media-object">println()</span>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading">Accustomed behaviour</h4>
+        <p>Runway is an imperative and structured language. There aren't any fancy features which makes life
+          unnecessarily difficult. Everything does what you expect it does.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
