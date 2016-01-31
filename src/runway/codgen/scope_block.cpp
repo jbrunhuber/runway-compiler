@@ -1,4 +1,5 @@
 #include <codegen/scope_block.hpp>
+#include <string>
 
 void ScopeBlock::set(std::string identifier, SymtableEntry *symbol) {
 

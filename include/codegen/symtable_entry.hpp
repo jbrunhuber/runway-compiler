@@ -10,7 +10,7 @@
 
 #include <llvm/IR/Value.h>
 
-#include <parser/nodes.hpp>
+#include <parser/expression_type.hpp>
 
 enum class ExpressionType;
 

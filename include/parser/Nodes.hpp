@@ -26,20 +26,6 @@ class BaseGenerator;
 class Node {
 };
 
-/**
- *
- */
-enum class ExpressionType {
-  STRING,
-  BOOL,
-  EXPR,
-  FLOAT,
-  DOUBLE,
-  INTEGER,
-  NULL_PTR,
-  UNDEFINED,
-  IDENTIFIER,
-};
 
 /**
  * Statement

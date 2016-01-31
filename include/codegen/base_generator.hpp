@@ -24,8 +24,8 @@
 #include <llvm/Support/raw_ostream.h>
 
 #include <logger.h>
+#include "symtable.hpp"
 #include <tools/codegen_datatypes.hpp>
-#include <codegen/scope_block.hpp>
 #include <parser/nodes.hpp>
 #include <parser/parser.hpp>
 
@@ -132,6 +132,7 @@ class BaseGenerator {
   llvm::IRBuilder<> *builder;
   std::map<std::string, llvm::Function *> _functions;
   std::stack<ScopeBlock *> *block_stack;
+  Symtable symtable;
 };
 
 #endif /* defined (RUNWAY_CODEGEN_GENERATOR_HPP) */

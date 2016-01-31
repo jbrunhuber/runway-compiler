@@ -6,7 +6,7 @@
 // Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
-#include <parser/parser.hpp>
+#include "parser.hpp"
 #include <fstream>
 
 std::string getSourceCode(std::string path);
@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 
   //create instances
   Tokenizer *tokenizer = new Tokenizer(runway_source_code);
-  Parser *parser = new Parser(tokenizer);
+  Parser *parser = new parser(tokenizer);
   BaseGenerator *base_code_generator = new BaseGenerator;
 
   //parse and emit the code
