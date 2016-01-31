@@ -68,6 +68,9 @@ class ScopeBlock: public SymtableEntry {
    */
   std::map<std::string, SymtableEntry *> getPhiMap();
 
+  /**
+   * Sets the attributes to identify this object as a 'ScopeBlock'
+   */
   static ScopeBlock *buildEmptyBlock();
 
 };

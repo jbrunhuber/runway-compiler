@@ -12,9 +12,9 @@
 
 #include <llvm/IR/Value.h>
 
-#include <parser/expression_type.hpp>
+#include <parser/element_type.hpp>
 
-enum class ExpressionType;
+enum class ElementType;
 
 /**
  * Manages symbol table entries and stores information to it
@@ -22,7 +22,7 @@ enum class ExpressionType;
 class SymtableEntry {
 
  public:
-  ExpressionType type;    //the stored type
+  ElementType type;    //the stored type
   llvm::Value *llvm_ptr;  //the llvm pointer to the value
   std::string identifier;
   ~SymtableEntry();       //destructor

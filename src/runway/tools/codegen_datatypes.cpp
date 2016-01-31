@@ -25,14 +25,14 @@ bool isBoolType(llvm::Value *val) {
  * param integer_value: the integer value to create
  * param type: the integer type to specify the size (short, int, long,)
  */
-llvm::Value *CreateLlvmIntValue(int64_t integer_value, ExpressionType type) {
+llvm::Value *CreateLlvmIntValue(int64_t integer_value, ElementType type) {
 
   uint16_t integer_size = 0;
   llvm::Type *llvm_type = nullptr;
-  if (type == ExpressionType::INTEGER) {
+  if (type == ElementType::INTEGER) {
     integer_size = 32;
     llvm_type = llvm::Type::getInt32Ty(llvm::getGlobalContext());
-  } else if (type == ExpressionType::BOOL) {
+  } else if (type == ElementType::BOOL) {
     integer_size = 1;
     llvm_type = llvm::Type::getInt1Ty(llvm::getGlobalContext());
   } else {
@@ -50,12 +50,12 @@ llvm::Value *CreateLlvmIntValue(int64_t integer_value, ExpressionType type) {
  *
  * return: created llvm value
  */
-llvm::Value *createLlvmFpValue(double fp_value, ExpressionType type) {
+llvm::Value *createLlvmFpValue(double fp_value, ElementType type) {
 
   bool double_precision;
-  if (type == ExpressionType::FLOAT) {
+  if (type == ElementType::FLOAT) {
     double_precision = false;
-  } else if (type == ExpressionType::DOUBLE) {
+  } else if (type == ElementType::DOUBLE) {
     double_precision = true;
   } else {
     std::cerr << "invalid type" << std::endl;

@@ -127,18 +127,18 @@ void BaseGenerator::EmitVariableDeclarationStatement(VariableDeclarationStatemen
   std::string identifier = var_decl_stmt->identifier->string_value;
 
   llvm::Type *llvm_variable_type = nullptr;
-  ExpressionType expression_type = var_decl_stmt->type->type;
+  ElementType expression_type = var_decl_stmt->type->type;
 
   //set the llvm type
-  if (expression_type == ExpressionType::BOOL) {
+  if (expression_type == ElementType::BOOL) {
     llvm_variable_type = llvm::Type::getInt1Ty(llvm::getGlobalContext());
-  } else if (expression_type == ExpressionType::FLOAT) {
+  } else if (expression_type == ElementType::FLOAT) {
     llvm_variable_type = llvm::Type::getFloatTy(llvm::getGlobalContext());
-  } else if (expression_type == ExpressionType::DOUBLE) {
+  } else if (expression_type == ElementType::DOUBLE) {
     llvm_variable_type = llvm::Type::getDoubleTy(llvm::getGlobalContext());
-  } else if (expression_type == ExpressionType::INTEGER) {
+  } else if (expression_type == ElementType::INTEGER) {
     llvm_variable_type = llvm::Type::getInt32Ty(llvm::getGlobalContext());
-  } else if (expression_type == ExpressionType::STRING) {
+  } else if (expression_type == ElementType::STRING) {
     llvm_variable_type = llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
   }
 
@@ -178,23 +178,23 @@ llvm::Value *BaseGenerator::DoAssignment(AssignmentExpression *assignment_expr) 
     return nullptr;
   }
 
-  ExpressionType declared_type = symbol->type;
-  ExpressionType assigned_type = assignment_expr->expression_to_assign->type;
+  ElementType declared_type = symbol->type;
+  ElementType assigned_type = assignment_expr->expression_to_assign->type;
 
   llvm::Value *llvm_emitted_assignment_value = assignment_expr->expression_to_assign->Emit(this);
 
-  if ((declared_type == ExpressionType::FLOAT || declared_type == ExpressionType::DOUBLE)
-      && assigned_type == ExpressionType::INTEGER) {
+  if ((declared_type == ElementType::FLOAT || declared_type == ElementType::DOUBLE)
+      && assigned_type == ElementType::INTEGER) {
     //cast from int to float/double
     llvm::ConstantInt *integer_value = (llvm::ConstantInt *) llvm_emitted_assignment_value;
     llvm_emitted_assignment_value = createLlvmFpValue(integer_value->getSExtValue(), declared_type);
-  } else if (declared_type == ExpressionType::FLOAT && assigned_type == ExpressionType::DOUBLE) {
+  } else if (declared_type == ElementType::FLOAT && assigned_type == ElementType::DOUBLE) {
     WARN_PRINTLN("precision loss: conversion from double to float is currently not supported");
     return nullptr;
-  } else if (declared_type == ExpressionType::DOUBLE && assigned_type == ExpressionType::FLOAT) {
+  } else if (declared_type == ElementType::DOUBLE && assigned_type == ElementType::FLOAT) {
     llvm::ConstantFP *fp_value = (llvm::ConstantFP *) llvm_emitted_assignment_value;
     double value = fp_value->getValueAPF().convertToFloat();
-    llvm_emitted_assignment_value = createLlvmFpValue(value, ExpressionType::DOUBLE);
+    llvm_emitted_assignment_value = createLlvmFpValue(value, ElementType::DOUBLE);
   }
 
   new llvm::StoreInst(llvm_emitted_assignment_value, symbol->llvm_ptr, false, insert_point);
@@ -285,21 +285,21 @@ llvm::Value *BaseGenerator::EmitMultiplicativeExpression(MultiplicativeExpressio
 llvm::Value *BaseGenerator::EmitPrimaryExpression(PrimaryExpression *expr) {
 
   //determine the type of the declared expression
-  ExpressionType expr_type = expr->type;
+  ElementType expr_type = expr->type;
 
-  if (expr_type == ExpressionType::BOOL) {
+  if (expr_type == ElementType::BOOL) {
 
     delete expr;
     return CreateLlvmBoolValue(expr->bool_value);
-  } else if (expr_type == ExpressionType::STRING) {
+  } else if (expr_type == ElementType::STRING) {
 
     delete expr;
     return builder->CreateGlobalStringPtr(expr->string_value);
-  } else if (expr_type == ExpressionType::FLOAT || expr_type == ExpressionType::DOUBLE) {
+  } else if (expr_type == ElementType::FLOAT || expr_type == ElementType::DOUBLE) {
 
     delete expr;
     return createLlvmFpValue(expr->double_value, expr_type);
-  } else if (expr_type == ExpressionType::INTEGER) {
+  } else if (expr_type == ElementType::INTEGER) {
 
     delete expr;
     return CreateLlvmIntValue(expr->int_value, expr_type);
@@ -412,7 +412,7 @@ void BaseGenerator::EmitIfStatement(IfStatement *if_statement) {
   cond_val = builder->CreateUIToFP(cond_val, llvm::Type::getDoubleTy(llvm::getGlobalContext()), "bool_convert");
 
   // create a floating point value for the comparison
-  llvm::Value *zero_val = createLlvmFpValue(0.0, ExpressionType::DOUBLE);
+  llvm::Value *zero_val = createLlvmFpValue(0.0, ElementType::DOUBLE);
 
   // convert condition to a boolean by comparing equal to 0.0
   cond_val = builder->CreateFCmpONE(cond_val, zero_val, "condition");

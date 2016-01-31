@@ -22,7 +22,7 @@ ScopeBlock *ScopeBlock::buildEmptyBlock() {
 
   ScopeBlock *entry = new ScopeBlock;
   entry->identifier = "block";
-  entry->type = ExpressionType::BLOCK;
+  entry->type = ElementType::BLOCK;
   return entry;
 }
 

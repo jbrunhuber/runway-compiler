@@ -15,7 +15,7 @@ TEST(CODEGEN, MULTIPLICATIVE_INT) {
   int test_operand_1 = 4;
   int test_operand_2 = 6;
 
-  ExpressionType int_type = ExpressionType::INTEGER;
+  ElementType int_type = ElementType::INTEGER;
 
   MultiplicativeExpression *node = new MultiplicativeExpression;
 
@@ -55,7 +55,7 @@ TEST(CODEGEN, MULTIPLICATIVE_FP) {
   double test_operand_1 = 4.7;
   double test_operand_2 = 6.4;
 
-  ExpressionType expr_type = ExpressionType::DOUBLE;
+  ElementType expr_type = ElementType::DOUBLE;
 
   MultiplicativeExpression *node = new MultiplicativeExpression;
 

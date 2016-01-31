@@ -9,15 +9,20 @@
 #ifndef RUNWAY_TOOLS_DATATYPES_HPP
 #define RUNWAY_TOOLS_DATATYPES_HPP
 
-#include <parser/nodes.hpp>
+#include <iostream>
 
-enum class ExpressionType;
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Value.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Constants.h>
+
+#include <parser/element_type.hpp>
 
 bool isBoolType(llvm::Value *);
 
-llvm::Value *CreateLlvmIntValue(int64_t, ExpressionType);
+llvm::Value *CreateLlvmIntValue(int64_t, ElementType);
 
-llvm::Value *createLlvmFpValue(double, ExpressionType);
+llvm::Value *createLlvmFpValue(double, ElementType);
 
 llvm::Value *CreateLlvmBoolValue(bool);
 

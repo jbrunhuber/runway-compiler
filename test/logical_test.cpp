@@ -24,20 +24,20 @@ TEST(CODEGEN, LOGICAL_OR) {
 
   VariableDeclarationStatement *var_declaration_stmt = new VariableDeclarationStatement;
   PrimaryExpression *type_expr = new PrimaryExpression;
-  type_expr->type = ExpressionType::BOOL;
+  type_expr->type = ElementType::BOOL;
 
   IdentifierPrimaryExpression *identifier = new IdentifierPrimaryExpression;
-  identifier->type = ExpressionType::IDENTIFIER;
+  identifier->type = ElementType::IDENTIFIER;
   identifier->string_value = "test";
 
   LogicalOrExpression *logical_or_expr = new LogicalOrExpression;
 
   PrimaryExpression *lhs_bool = new PrimaryExpression;
-  lhs_bool->type = ExpressionType::BOOL;
+  lhs_bool->type = ElementType::BOOL;
   lhs_bool->bool_value = true;
 
   PrimaryExpression *rhs_bool = new PrimaryExpression;
-  rhs_bool->type = ExpressionType::BOOL;
+  rhs_bool->type = ElementType::BOOL;
   rhs_bool->bool_value = false;
 
   logical_or_expr->lhs_expr = lhs_bool;
@@ -76,20 +76,20 @@ TEST(CODEGEN, LOGICAL_AND) {
 
   VariableDeclarationStatement *var_declaration_stmt = new VariableDeclarationStatement;
   PrimaryExpression *type_expr = new PrimaryExpression;
-  type_expr->type = ExpressionType::BOOL;
+  type_expr->type = ElementType::BOOL;
 
   IdentifierPrimaryExpression *identifier = new IdentifierPrimaryExpression;
-  identifier->type = ExpressionType::IDENTIFIER;
+  identifier->type = ElementType::IDENTIFIER;
   identifier->string_value = "test";
 
   LogicalAndExpression *logical_and_expr = new LogicalAndExpression;
 
   PrimaryExpression *lhs_bool = new PrimaryExpression;
-  lhs_bool->type = ExpressionType::BOOL;
+  lhs_bool->type = ElementType::BOOL;
   lhs_bool->bool_value = true;
 
   PrimaryExpression *rhs_bool = new PrimaryExpression;
-  rhs_bool->type = ExpressionType::BOOL;
+  rhs_bool->type = ElementType::BOOL;
   rhs_bool->bool_value = false;
 
   logical_and_expr->lhs_expr = lhs_bool;

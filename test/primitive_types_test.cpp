@@ -25,11 +25,11 @@ TEST(CODEGEN, DECLARATION_DOUBLE) {
 
   //type
   PrimaryExpression *type_primary_expression = new PrimaryExpression;
-  type_primary_expression->type = ExpressionType::DOUBLE;
+  type_primary_expression->type = ElementType::DOUBLE;
 
   //identifier
   IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
-  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->type = ElementType::IDENTIFIER;
   identifier_primary_expression->string_value = "d";
 
   //build variableDeclarationStatement
@@ -62,21 +62,21 @@ TEST(CODEGEN, ASSIGNMENT_DOUBLE) {
 
   //type
   PrimaryExpression *type_primary_expression = new PrimaryExpression;
-  type_primary_expression->type = ExpressionType::DOUBLE;
+  type_primary_expression->type = ElementType::DOUBLE;
 
   //identifier
   IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
-  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->type = ElementType::IDENTIFIER;
   identifier_primary_expression->string_value = "d";
 
   //double assignment value
   PrimaryExpression *assignment_value = new PrimaryExpression;
-  assignment_value->type = ExpressionType::DOUBLE;
+  assignment_value->type = ElementType::DOUBLE;
   assignment_value->double_value = 13.3;
 
   //expression node
   AssignmentExpression *assignment_expr = new AssignmentExpression;
-  assignment_expr->type = ExpressionType::DOUBLE;
+  assignment_expr->type = ElementType::DOUBLE;
   assignment_expr->identifier = identifier_primary_expression;
   assignment_expr->expression_to_assign = assignment_value;
 
@@ -109,11 +109,11 @@ TEST(CODEGEN, DECLARATION_FLOAT) {
 
   //type
   PrimaryExpression *type_primary_expression = new PrimaryExpression;
-  type_primary_expression->type = ExpressionType::FLOAT;
+  type_primary_expression->type = ElementType::FLOAT;
 
   //identifier
   IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
-  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->type = ElementType::IDENTIFIER;
   identifier_primary_expression->string_value = "f";
 
   //build variableDeclarationStatement
@@ -146,21 +146,21 @@ TEST(CODEGEN, ASSIGNMENT_FLOAT) {
 
   //type
   PrimaryExpression *type_primary_expression = new PrimaryExpression;
-  type_primary_expression->type = ExpressionType::FLOAT;
+  type_primary_expression->type = ElementType::FLOAT;
 
   //identifier
   IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
-  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->type = ElementType::IDENTIFIER;
   identifier_primary_expression->string_value = "f";
 
   //double assignment value
   PrimaryExpression *assignment_value = new PrimaryExpression;
-  assignment_value->type = ExpressionType::FLOAT;
+  assignment_value->type = ElementType::FLOAT;
   assignment_value->double_value = 13.3;
 
   //expression node
   AssignmentExpression *assignment_expr = new AssignmentExpression;
-  assignment_expr->type = ExpressionType::FLOAT;
+  assignment_expr->type = ElementType::FLOAT;
   assignment_expr->identifier = identifier_primary_expression;
   assignment_expr->expression_to_assign = assignment_value;
 
@@ -194,21 +194,21 @@ TEST(CODEGEN, ASSIGNMENT_INT_TO_DOUBLE) {
 
   //type
   PrimaryExpression *type_primary_expression = new PrimaryExpression;
-  type_primary_expression->type = ExpressionType::DOUBLE;
+  type_primary_expression->type = ElementType::DOUBLE;
 
   //identifier
   IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
-  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->type = ElementType::IDENTIFIER;
   identifier_primary_expression->string_value = "d";
 
   //double assignment value
   PrimaryExpression *assignment_value = new PrimaryExpression;
-  assignment_value->type = ExpressionType::INTEGER;
+  assignment_value->type = ElementType::INTEGER;
   assignment_value->int_value = 13;
 
   //expression node
   AssignmentExpression *assignment_expr = new AssignmentExpression;
-  assignment_expr->type = ExpressionType::DOUBLE;
+  assignment_expr->type = ElementType::DOUBLE;
   assignment_expr->identifier = identifier_primary_expression;
   assignment_expr->expression_to_assign = assignment_value;
 
@@ -242,21 +242,21 @@ TEST(CODEGEN, ASSIGNMENT_FLOAT_TO_DOUBLE) {
 
   //type
   PrimaryExpression *type_primary_expression = new PrimaryExpression;
-  type_primary_expression->type = ExpressionType::DOUBLE;
+  type_primary_expression->type = ElementType::DOUBLE;
 
   //identifier
   IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
-  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->type = ElementType::IDENTIFIER;
   identifier_primary_expression->string_value = "d";
 
   //double assignment value
   PrimaryExpression *assignment_value = new PrimaryExpression;
-  assignment_value->type = ExpressionType::FLOAT;
+  assignment_value->type = ElementType::FLOAT;
   assignment_value->double_value = 13.3;
 
   //expression node
   AssignmentExpression *assignment_expr = new AssignmentExpression;
-  assignment_expr->type = ExpressionType::FLOAT;
+  assignment_expr->type = ElementType::FLOAT;
   assignment_expr->identifier = identifier_primary_expression;
   assignment_expr->expression_to_assign = assignment_value;
 
@@ -290,11 +290,11 @@ TEST(CODEGEN, DECLARATION_INTEGER) {
 
   //type
   PrimaryExpression *type_primary_expression = new PrimaryExpression;
-  type_primary_expression->type = ExpressionType::INTEGER;
+  type_primary_expression->type = ElementType::INTEGER;
 
   //identifier
   IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
-  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->type = ElementType::IDENTIFIER;
   identifier_primary_expression->string_value = "test";
 
   //build variableDeclarationStatement
@@ -327,21 +327,21 @@ TEST(CODEGEN, ASSIGNMENT_INTEGER) {
 
   //type
   PrimaryExpression *type_primary_expression = new PrimaryExpression;
-  type_primary_expression->type = ExpressionType::INTEGER;
+  type_primary_expression->type = ElementType::INTEGER;
 
   //identifier
   IdentifierPrimaryExpression *identifier_primary_expression = new IdentifierPrimaryExpression;
-  identifier_primary_expression->type = ExpressionType::IDENTIFIER;
+  identifier_primary_expression->type = ElementType::IDENTIFIER;
   identifier_primary_expression->string_value = "i";
 
   //double assignment value
   PrimaryExpression *assignment_value = new PrimaryExpression;
-  assignment_value->type = ExpressionType::INTEGER;
+  assignment_value->type = ElementType::INTEGER;
   assignment_value->int_value = 13;
 
   //expression node
   AssignmentExpression *assignment_expr = new AssignmentExpression;
-  assignment_expr->type = ExpressionType::INTEGER;
+  assignment_expr->type = ElementType::INTEGER;
   assignment_expr->identifier = identifier_primary_expression;
   assignment_expr->expression_to_assign = assignment_value;
 

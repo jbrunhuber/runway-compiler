@@ -17,7 +17,7 @@ TEST(CODEGEN, ADDITIVE_INT) {
   int test_operand_1 = 4;
   int test_operand_2 = 6;
 
-  ExpressionType int_type = ExpressionType::INTEGER;
+  ElementType int_type = ElementType::INTEGER;
 
   AdditiveExpression *node = new AdditiveExpression;
 
@@ -57,7 +57,7 @@ TEST(CODEGEN, ADDITIVE_FLOAT) {
   double test_operand_1 = 4.7;
   double test_operand_2 = 6.4;
 
-  ExpressionType expr_type = ExpressionType::DOUBLE;
+  ElementType expr_type = ElementType::DOUBLE;
 
   AdditiveExpression *node = new AdditiveExpression;
 

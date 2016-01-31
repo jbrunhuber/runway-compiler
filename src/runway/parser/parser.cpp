@@ -254,15 +254,15 @@ bool Parser::ParseVariableDeclarationStatement(VariableDeclarationStatement **va
   std::string type_identifier = _current_token.textual_content;
 
   if (!type_identifier.compare("int")) {
-    type_expr->type = ExpressionType::INTEGER;
+    type_expr->type = ElementType::INTEGER;
   } else if (!type_identifier.compare("float")) {
-    type_expr->type = ExpressionType::FLOAT;
+    type_expr->type = ElementType::FLOAT;
   } else if (!type_identifier.compare("double")) {
-    type_expr->type = ExpressionType::DOUBLE;
+    type_expr->type = ElementType::DOUBLE;
   } else if (!type_identifier.compare("string")) {
-    type_expr->type = ExpressionType::STRING;
+    type_expr->type = ElementType::STRING;
   } else if (!type_identifier.compare("bool")) {
-    type_expr->type = ExpressionType::BOOL;
+    type_expr->type = ElementType::BOOL;
   }
 
   (*variable_declaration_statement)->type = type_expr;
@@ -274,7 +274,7 @@ bool Parser::ParseVariableDeclarationStatement(VariableDeclarationStatement **va
     //identifier
     std::string value_identifier = _current_token.textual_content;
     IdentifierPrimaryExpression *identifier_expr = new IdentifierPrimaryExpression;
-    identifier_expr->type = ExpressionType::IDENTIFIER;
+    identifier_expr->type = ElementType::IDENTIFIER;
     identifier_expr->string_value = value_identifier;
 
     //when it's just a declaration don't parse assignment expression
@@ -329,7 +329,7 @@ bool Parser::ParseAssignmentExpression(Expression **expr) {
     assignment_expr->assignment_operator = assignment_operator;
 
     IdentifierPrimaryExpression *identifier_expr = (IdentifierPrimaryExpression *) lhs_identifier_expr;
-    identifier_expr->type = ExpressionType::NULL_PTR;
+    identifier_expr->type = ElementType::NULL_PTR;
     assignment_expr->identifier = identifier_expr;
     next_token();
     Expression *expression_to_assign = 0;
@@ -687,32 +687,32 @@ bool Parser::ParsePrimaryExpression(Expression **expr) {
     next_token();
 
   } else if (IS_TOKEN_TYPE(TokenType::BOOL_LITERAL)) {
-    primary_expr->type = ExpressionType::BOOL;
+    primary_expr->type = ElementType::BOOL;
     primary_expr->bool_value = _current_token.bool_content;
     next_token();
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_INT)) {
-    primary_expr->type = ExpressionType::INTEGER;
+    primary_expr->type = ElementType::INTEGER;
     primary_expr->int_value = (int) _current_token.numeric_content;
     next_token();
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_FLOAT)) {
-    primary_expr->type = ExpressionType::FLOAT;
+    primary_expr->type = ElementType::FLOAT;
     primary_expr->double_value = _current_token.numeric_content;
     next_token();
 
   } else if (IS_TOKEN_TYPE(TokenType::NUMERIC_LITERAL_DOUBLE)) {
-    primary_expr->type = ExpressionType::DOUBLE;
+    primary_expr->type = ElementType::DOUBLE;
     primary_expr->double_value = _current_token.numeric_content;
     next_token();
 
   } else if (IS_TOKEN_TYPE(TokenType::TEXTUAL_LITERAL)) {
-    primary_expr->type = ExpressionType::STRING;
+    primary_expr->type = ElementType::STRING;
     primary_expr->string_value = _current_token.textual_content;
     next_token();
 
   } else if (IS_PUNCTUATOR("(")) {
-    primary_expr->type = ExpressionType::EXPR;
+    primary_expr->type = ElementType::EXPR;
     next_token();  // eat '('
     LogicalOrExpression *logical_or_expr = 0;
     ParseLogicalOrExpression((Expression **) &logical_or_expr);

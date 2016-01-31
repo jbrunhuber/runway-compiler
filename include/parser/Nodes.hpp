@@ -59,7 +59,7 @@ class Expression {
   Expression *lhs_expr;
   Expression *rhs_expr;
   virtual llvm::Value *Emit(BaseGenerator *) = 0;
-  ExpressionType type;
+  ElementType type;
   Expression();
   virtual ~Expression() {
   }
