@@ -50,5 +50,5 @@ PhiEntry *PhiGenerator::get(std::string identifier) {
 
 void PhiGenerator::setSymtable(std::stack<ScopeBlock *> *stack) {
 
-  block_stack = stack;
+//  block_stack = stack; TODO
 }

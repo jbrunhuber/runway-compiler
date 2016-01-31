@@ -5,11 +5,23 @@
 #ifndef RUNWAY_SYMTABLE_HPP
 #define RUNWAY_SYMTABLE_HPP
 
+#include <deque>
+#include <string>
+
 #include "scope_block.hpp"
+#include "symtable_entry.hpp"
+
+class SymtableEntry;
 
 class Symtable {
  public:
-  std::vector<ScopeBlock *> blocks;
+  void Push(ScopeBlock *);
+  void Pop();
+  SymtableEntry *Get(std::string identifier);
+  ScopeBlock *GetCurrentScope();
+
+ private:
+  std::deque<ScopeBlock *> blocks;
 };
 
 #endif //RUNWAY_SYMTABLE_HPP

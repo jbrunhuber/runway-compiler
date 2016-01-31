@@ -1,6 +1,6 @@
-#include "parser.hpp"
+#include <parser/parser.hpp>
 
-Parser::parser(Tokenizer *tokenizer) {
+Parser::Parser(Tokenizer *tokenizer) {
 
   _tokenizer = tokenizer;
   //initialize

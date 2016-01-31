@@ -5,7 +5,6 @@ BaseGenerator::BaseGenerator() : insert_point(nullptr) {
 
   this->module = new llvm::Module("runway", llvm::getGlobalContext());
   this->builder = new llvm::IRBuilder<>(module->getContext());
-  this->block_stack = new std::stack<ScopeBlock *>;
 }
 
 BaseGenerator::BaseGenerator(llvm::Module *llvm_module, llvm::IRBuilder<> *llvm_builder, llvm::BasicBlock *insert) {
@@ -13,7 +12,6 @@ BaseGenerator::BaseGenerator(llvm::Module *llvm_module, llvm::IRBuilder<> *llvm_
   this->module = llvm_module;
   this->builder = llvm_builder;
   this->insert_point = insert;
-  this->block_stack = new std::stack<ScopeBlock *>;
 }
 
 BaseGenerator::~BaseGenerator() {
@@ -25,12 +23,12 @@ BaseGenerator::~BaseGenerator() {
 void BaseGenerator::EmitBlockStatement(BlockStatement *block) {
 
   ScopeBlock *scope = new ScopeBlock;
-  block_stack->push(scope);
+  symtable.Push(scope);
   for (int i = 0; i < block->statements.size(); ++i) {
     Statement *stmt = block->statements.at(i);
     stmt->Emit(this);
   }
-  block_stack->pop();
+  symtable.Pop();
 
   delete block;
 }
@@ -40,8 +38,7 @@ llvm::Value *BaseGenerator::EmitIdentifierPrimaryExpression(Expression *expr) {
   IdentifierPrimaryExpression *identifier_expr = (IdentifierPrimaryExpression *) expr;
   std::string identifier_name = identifier_expr->string_value;
 
-  ScopeBlock *block = block_stack->top();
-  SymtableEntry *symbol = block->get(identifier_name);
+  SymtableEntry *symbol = symtable.Get(identifier_name);
 
   delete identifier_expr;
 
@@ -154,8 +151,7 @@ void BaseGenerator::EmitVariableDeclarationStatement(VariableDeclarationStatemen
   variable_declaration_entry->llvm_ptr = llvm_alloca_inst;
   variable_declaration_entry->type = expression_type;
 
-  ScopeBlock *block = block_stack->top();
-  block->set(identifier, variable_declaration_entry);
+  symtable.GetCurrentScope()->set(identifier, variable_declaration_entry);
 
   //if there's a assignment beside the variable declaration, emit the rhs assignment value
   AssignmentExpression *assignment_expr = var_decl_stmt->expression_to_assign;
@@ -175,8 +171,7 @@ llvm::Value *BaseGenerator::DoAssignment(AssignmentExpression *assignment_expr) 
   std::string identifier = assignment_expr->identifier->string_value;
 
   //check if the type in assignment expression matches the allocated type
-  ScopeBlock *block = block_stack->top();
-  SymtableEntry *symbol = block->get(identifier);
+  SymtableEntry *symbol = symtable.Get(identifier);
   //when there's no value in symbol table print error
   if (symbol == nullptr) {
     ERR_PRINTLN("Use of undeclared identifier " << identifier);
@@ -382,10 +377,6 @@ void BaseGenerator::construct() {
 
   insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
   builder->SetInsertPoint(insert_point);
-
-  // create a scope block for member symbols and functions
-  ScopeBlock *global_scope = new ScopeBlock;
-  block_stack->push(global_scope);
 }
 
 void BaseGenerator::finalize() {
@@ -442,7 +433,7 @@ void BaseGenerator::EmitIfStatement(IfStatement *if_statement) {
   PhiGenerator *phi_gen = new PhiGenerator(then_block, builder, module);
   phi_gen->SetInsertPoint(then_block);
 
-  phi_gen->setSymtable(block_stack);
+//  phi_gen->setSymtable(block_stack); TODO check
   if_statement->statement->Emit(phi_gen);
   builder->CreateBr(merge_block);
   then_block = builder->GetInsertBlock();
