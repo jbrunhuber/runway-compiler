@@ -8,6 +8,8 @@
 #ifndef RUNWAY_CODEGEN_SYMTABLEENTRY_HPP
 #define RUNWAY_CODEGEN_SYMTABLEENTRY_HPP
 
+#include <string>
+
 #include <llvm/IR/Value.h>
 
 #include <parser/expression_type.hpp>
@@ -22,6 +24,7 @@ class SymtableEntry {
  public:
   ExpressionType type;    //the stored type
   llvm::Value *llvm_ptr;  //the llvm pointer to the value
+  std::string identifier;
   ~SymtableEntry();       //destructor
 };
 

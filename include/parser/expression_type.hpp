@@ -18,6 +18,7 @@ enum class ExpressionType {
   NULL_PTR,
   UNDEFINED,
   IDENTIFIER,
+  BLOCK
 };
 
 #endif //RUNWAY_EXPRESSION_TYPE_HPP_HPP

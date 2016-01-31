@@ -22,7 +22,7 @@ BaseGenerator::~BaseGenerator() {
 
 void BaseGenerator::EmitBlockStatement(BlockStatement *block) {
 
-  ScopeBlock *scope = new ScopeBlock;
+  ScopeBlock *scope = ScopeBlock::buildEmptyBlock();
   symtable.Push(scope);
   for (int i = 0; i < block->statements.size(); ++i) {
     Statement *stmt = block->statements.at(i);

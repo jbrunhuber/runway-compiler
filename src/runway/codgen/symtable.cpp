@@ -16,10 +16,16 @@ void Symtable::Pop() {
 
 SymtableEntry *Symtable::Get(std::string identifier) {
 
-  return nullptr;
+  ScopeBlock *block = nullptr;
+  SymtableEntry *entry = nullptr;
+  for (unsigned i = 0; i < blocks.size(); ++i) {
+    entry = block->get(identifier);
+    if (entry != nullptr) return entry;
+  }
+  return entry;
 }
 
 ScopeBlock *Symtable::GetCurrentScope() {
 
-  return nullptr;
+  return blocks.front();
 }

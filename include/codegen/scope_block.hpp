@@ -10,16 +10,18 @@
 #define RUNWAY_CODEGEN_SCOPEBLOCK_HPP
 
 #include <map>
+#include <vector>
 
-#include <codegen/symtable_entry.hpp>
+#include "symtable_entry.hpp"
 
 class SymtableEntry;
 
-class ScopeBlock {
+class ScopeBlock: public SymtableEntry {
 
  private:
-  std::map<std::string, SymtableEntry *> _symtable;
+  std::vector<SymtableEntry *> symtable;
   std::map<std::string, SymtableEntry *> _phi_values;
+  ScopeBlock();
 
  public:
 
@@ -65,6 +67,9 @@ class ScopeBlock {
    * @return  phi map
    */
   std::map<std::string, SymtableEntry *> getPhiMap();
+
+  static ScopeBlock *buildEmptyBlock();
+
 };
 
 #endif /* defined(RUNWAY_CODEGEN_SCOPEBLOCK_HPP) */
