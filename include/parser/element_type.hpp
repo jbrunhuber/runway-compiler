@@ -22,7 +22,6 @@ enum class ElementType {
   NULL_PTR,
   UNDEFINED,
   IDENTIFIER,
-  BLOCK
 };
 
 #endif /* defined (RUNWAY_BASE_ELEMENTTYPE_HPP) */

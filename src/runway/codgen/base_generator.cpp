@@ -22,7 +22,7 @@ BaseGenerator::~BaseGenerator() {
 
 void BaseGenerator::EmitBlockStatement(BlockStatement *block) {
 
-  ScopeBlock *scope = ScopeBlock::buildEmptyBlock();
+  ScopeBlock *scope = new ScopeBlock;
   symtable.Push(scope);
   for (int i = 0; i < block->statements.size(); ++i) {
     Statement *stmt = block->statements.at(i);
@@ -151,7 +151,7 @@ void BaseGenerator::EmitVariableDeclarationStatement(VariableDeclarationStatemen
   variable_declaration_entry->llvm_ptr = llvm_alloca_inst;
   variable_declaration_entry->type = expression_type;
 
-  symtable.GetCurrentScope()->set(identifier, variable_declaration_entry);
+  symtable.current_scope->set(identifier, variable_declaration_entry);
 
   //if there's a assignment beside the variable declaration, emit the rhs assignment value
   AssignmentExpression *assignment_expr = var_decl_stmt->expression_to_assign;

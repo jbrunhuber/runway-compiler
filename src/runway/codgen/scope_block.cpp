@@ -2,28 +2,16 @@
 
 void ScopeBlock::set(std::string identifier, SymtableEntry *symbol) {
 
-  symbol->identifier = identifier;
-  symtable.push_back(symbol);
+  values[identifier] = symbol;
 }
 
 SymtableEntry *ScopeBlock::get(std::string identifier) {
 
   SymtableEntry *entry = nullptr;
-  for (unsigned i = 0; i < symtable.size(); ++i) {
-    entry = symtable.at(i);
-
-    if (entry == nullptr) continue;
-    if (entry->identifier == identifier) return entry;
+  if (values.find(identifier) != values.end()) {
+    entry = parent->get(identifier); //not found, look in the parent scope if a symbol exists
+  } else if (parent != nullptr) {
+    entry = values[identifier]; //found
   }
   return entry;
 }
-
-ScopeBlock *ScopeBlock::buildEmptyBlock() {
-
-  ScopeBlock *entry = new ScopeBlock;
-  entry->identifier = "block";
-  entry->type = ElementType::BLOCK;
-  return entry;
-}
-
-ScopeBlock::ScopeBlock() { }

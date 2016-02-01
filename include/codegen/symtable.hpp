@@ -18,10 +18,11 @@ class SymtableEntry;
 
 class Symtable {
  public:
+  Symtable() : current_scope(new ScopeBlock) { }
   void Push(ScopeBlock *);
   void Pop();
   SymtableEntry *Get(std::string identifier);
-  ScopeBlock *GetCurrentScope();
+  ScopeBlock *current_scope;
 
  private:
   std::deque<ScopeBlock *> blocks;

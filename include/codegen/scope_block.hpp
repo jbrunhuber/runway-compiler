@@ -16,14 +16,16 @@
 
 class SymtableEntry;
 
-class ScopeBlock: public SymtableEntry {
+class ScopeBlock {
 
  private:
-  std::vector<SymtableEntry *> symtable;
-  std::map<std::string, SymtableEntry *> _phi_values;
-  ScopeBlock();
+  ScopeBlock *parent;
+  std::map<std::string, SymtableEntry *> values;
+  std::map<std::string, SymtableEntry *> phi_values;
 
  public:
+
+  ScopeBlock() : parent(nullptr) { }
 
   llvm::BasicBlock *block;
 
@@ -67,12 +69,6 @@ class ScopeBlock: public SymtableEntry {
    * @return  phi map
    */
   std::map<std::string, SymtableEntry *> getPhiMap();
-
-  /**
-   * Sets the attributes to identify this object as a 'ScopeBlock'
-   */
-  static ScopeBlock *buildEmptyBlock();
-
 };
 
 #endif /* defined(RUNWAY_CODEGEN_SCOPEBLOCK_HPP) */
