@@ -1,9 +1,12 @@
 //
-// Created by Joshua Brunhuber on 31.01.16.
+// symtable_entry.hpp
+//
+// Created by Joshua Brunhuber on 30.01.2016
+// Copyright (c) 2015 Joshua Brunhuber. All rights reserved.
 //
 
-#ifndef RUNWAY_SYMTABLE_HPP
-#define RUNWAY_SYMTABLE_HPP
+#ifndef RUNWAY_CODEGEN_SYMTABLE_HPP
+#define RUNWAY_CODEGEN_SYMTABLE_HPP
 
 #include <deque>
 #include <string>
@@ -24,4 +27,4 @@ class Symtable {
   std::deque<ScopeBlock *> blocks;
 };
 
-#endif //RUNWAY_SYMTABLE_HPP
+#endif /* defined (RUNWAY_CODEGEN_SYMTABLE_HPP) */
