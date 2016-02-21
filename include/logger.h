@@ -17,4 +17,6 @@
 #define DEBUG_PRINTLN(action)         (std::cout << "INFO: " << action << std::endl)
 #define DEBUG_PRINT(action)           (std::cout << "INFO: " << action << " ")
 
+#define INTERNAL_ERROR(reason)           (std::cerr << "An internal error occurred. The reason is: " << reason << std::endl)
+
 #endif /* RUNWAY_LOGGER_H */

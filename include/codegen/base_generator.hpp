@@ -132,6 +132,8 @@ class BaseGenerator {
   llvm::IRBuilder<> *builder;
   std::map<std::string, llvm::Function *> _functions;
   Symtable symtable;
+
+  int scopeid = 0;
 };
 
 #endif /* defined (RUNWAY_CODEGEN_GENERATOR_HPP) */

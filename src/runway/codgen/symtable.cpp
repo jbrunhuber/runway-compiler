@@ -3,9 +3,13 @@
 //
 
 #include <codegen/symtable.hpp>
+#include <logger.h>
+#include <iostream>
 
 void Symtable::Push(ScopeBlock *scope_block) {
 
+  scope_block->parent = current_scope;
+  current_scope = scope_block;
   blocks.push_front(scope_block);
 }
 
@@ -16,10 +20,5 @@ void Symtable::Pop() {
 
 SymtableEntry *Symtable::Get(std::string identifier) {
 
-  SymtableEntry *entry = nullptr;
-  for (unsigned i = 0; i < blocks.size(); ++i) {
-    entry = current_scope->get(identifier);
-    if (entry != nullptr) return entry;
-  }
-  return entry;
+  return current_scope->get(identifier);
 }

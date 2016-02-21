@@ -19,11 +19,13 @@ class SymtableEntry;
 class ScopeBlock {
 
  private:
-  ScopeBlock *parent;
   std::map<std::string, SymtableEntry *> values;
   std::map<std::string, SymtableEntry *> phi_values;
 
  public:
+
+  int id = 0;
+  ScopeBlock *parent;
 
   ScopeBlock() : parent(nullptr) { }
 

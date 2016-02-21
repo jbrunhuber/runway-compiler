@@ -23,8 +23,9 @@ BaseGenerator::~BaseGenerator() {
 void BaseGenerator::EmitBlockStatement(BlockStatement *block) {
 
   ScopeBlock *scope = new ScopeBlock;
+  scope->id = ++scopeid;
   symtable.Push(scope);
-  for (int i = 0; i < block->statements.size(); ++i) {
+  for (unsigned i = 0; i < block->statements.size(); ++i) {
     Statement *stmt = block->statements.at(i);
     stmt->Emit(this);
   }
@@ -70,6 +71,11 @@ void BaseGenerator::create_print_function(Expression *parameter_expr, bool new_l
   const std::string const_new_line_string = "\n";
 
   llvm::Value *llvm_parameter_value = parameter_expr->Emit(this);
+
+  if (llvm_parameter_value == nullptr) {
+    INTERNAL_ERROR("error emitting parameter value");
+    return;
+  }
 
   //when it's a pointer type load the value
   if (llvm_parameter_value->getType()->isPointerTy()) {
@@ -150,6 +156,9 @@ void BaseGenerator::EmitVariableDeclarationStatement(VariableDeclarationStatemen
 
   variable_declaration_entry->llvm_ptr = llvm_alloca_inst;
   variable_declaration_entry->type = expression_type;
+  variable_declaration_entry->identifier = identifier;
+
+  DEBUG_PRINTLN(sizeof(variable_declaration_entry));
 
   symtable.current_scope->set(identifier, variable_declaration_entry);
 
@@ -178,6 +187,7 @@ llvm::Value *BaseGenerator::DoAssignment(AssignmentExpression *assignment_expr) 
     return nullptr;
   }
 
+  DEBUG_PRINTLN(sizeof(symbol));
   ElementType declared_type = symbol->type;
   ElementType assigned_type = assignment_expr->expression_to_assign->type;
 
