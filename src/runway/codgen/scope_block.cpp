@@ -10,7 +10,7 @@ SymtableEntry *ScopeBlock::get(std::string identifier) {
 
   SymtableEntry *entry = nullptr;
   std::map<std::string, SymtableEntry *>::iterator iterator = values.find(identifier);
-  if (iterator != values.end()) {
+  if (iterator == values.end()) {
     if (parent != nullptr) {
       return parent->get(identifier); //not found, look in the parent scope if a symbol exists
     } else {
