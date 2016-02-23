@@ -15,10 +15,14 @@ void Symtable::Push(ScopeBlock *scope_block) {
 
 void Symtable::Pop() {
 
+  ScopeBlock *scope_to_pop = blocks.front();
   blocks.pop_front();
+  delete scope_to_pop;
+
+  current_scope = blocks.front();
 }
 
 SymtableEntry *Symtable::Get(std::string identifier) {
 
-  return current_scope->get(identifier);
+  return current_scope->Get(identifier);
 }

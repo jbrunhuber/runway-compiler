@@ -38,7 +38,7 @@ class ScopeBlock {
    * @param the symbol identifier
    * @param the symboltable entry
    */
-  void set(std::string, SymtableEntry *);
+  void Set(std::string, SymtableEntry *);
 
   /*
    * Returns a symboltable entry
@@ -46,7 +46,7 @@ class ScopeBlock {
    * @param		symbol identifier
    * @return  rw_symtable_entry
    */
-  SymtableEntry *get(std::string);
+  SymtableEntry *Get(std::string);
 
   /*
    * Adds a new phi entry to the current scope if it doesn't exists,

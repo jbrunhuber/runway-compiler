@@ -3,14 +3,12 @@
 
 BaseGenerator::BaseGenerator() : insert_point(nullptr) {
 
-  this->symtable = new Symtable;
   this->module = new llvm::Module("runway", llvm::getGlobalContext());
   this->builder = new llvm::IRBuilder<>(module->getContext());
 }
 
 BaseGenerator::BaseGenerator(llvm::Module *llvm_module, llvm::IRBuilder<> *llvm_builder, llvm::BasicBlock *insert) {
 
-  this->symtable = new Symtable;
   this->module = llvm_module;
   this->builder = llvm_builder;
   this->insert_point = insert;
@@ -26,12 +24,12 @@ void BaseGenerator::EmitBlockStatement(BlockStatement *block) {
 
   ScopeBlock *scope = new ScopeBlock;
   scope->id = ++scopeid;
-  symtable->Push(scope);
+  symtable.Push(scope);
   for (unsigned i = 0; i < block->statements.size(); ++i) {
     Statement *stmt = block->statements.at(i);
     stmt->Emit(this);
   }
-  symtable->Pop();
+  symtable.Pop();
 
   delete block;
 }
@@ -41,7 +39,7 @@ llvm::Value *BaseGenerator::EmitIdentifierPrimaryExpression(Expression *expr) {
   IdentifierPrimaryExpression *identifier_expr = (IdentifierPrimaryExpression *) expr;
   std::string identifier_name = identifier_expr->string_value;
 
-  SymtableEntry *symbol = symtable->Get(identifier_name);
+  SymtableEntry *symbol = symtable.Get(identifier_name);
 
 
   if (symbol == nullptr) {
@@ -159,7 +157,7 @@ void BaseGenerator::EmitVariableDeclarationStatement(VariableDeclarationStatemen
   variable_declaration_entry->type = expression_type;
   variable_declaration_entry->identifier = identifier;
 
-  symtable->current_scope->set(identifier, variable_declaration_entry);
+  symtable.current_scope->Set(identifier, variable_declaration_entry);
 
   //if there's a assignment beside the variable declaration, emit the rhs assignment value
   AssignmentExpression *assignment_expr = var_decl_stmt->expression_to_assign;
@@ -179,7 +177,7 @@ llvm::Value *BaseGenerator::DoAssignment(AssignmentExpression *assignment_expr) 
   std::string identifier = assignment_expr->identifier->string_value;
 
   //check if the type in assignment expression matches the allocated type
-  SymtableEntry *symbol = symtable->Get(identifier);
+  SymtableEntry *symbol = symtable.Get(identifier);
   //when there's no value in symbol table print error
   if (symbol == nullptr) {
     ERR_PRINTLN("Use of undeclared identifier " << identifier);

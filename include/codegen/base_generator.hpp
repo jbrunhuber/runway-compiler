@@ -131,7 +131,7 @@ class BaseGenerator {
   llvm::Module *module;
   llvm::IRBuilder<> *builder;
   std::map<std::string, llvm::Function *> _functions;
-  Symtable *symtable;
+  Symtable symtable;
 
   int scopeid = 0;
 };
