@@ -22,7 +22,7 @@ SymtableEntry *ScopeBlock::Get(std::string identifier) {
   } else {
     bool root_scope = (parent == nullptr);
     if (root_scope) {
-      ERR_PRINTLN("Use uf undeclared identifier " << identifier);
+      ERR_PRINTLN("Use of undeclared identifier " << identifier);
     } else {
       symtable_entry = parent->Get(identifier);
     }
