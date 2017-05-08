@@ -18,6 +18,8 @@
 
 #include <parser/element_type.hpp>
 
+static llvm::LLVMContext RW_DEFAULT_CONTEXT;
+
 bool isBoolType(llvm::Value *);
 
 llvm::Value *CreateLlvmIntValue(int64_t, ElementType);

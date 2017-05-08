@@ -16,7 +16,7 @@ bool isBoolType(llvm::Value *val) {
   if (val == nullptr) {
     return false;
   }
-  return (val->getType() == llvm::Type::getInt1Ty(llvm::getGlobalContext()));
+  return (val->getType() == llvm::Type::getInt1Ty(RW_DEFAULT_CONTEXT));
 }
 
 /**
@@ -31,10 +31,10 @@ llvm::Value *CreateLlvmIntValue(int64_t integer_value, ElementType type) {
   llvm::Type *llvm_type = nullptr;
   if (type == ElementType::INTEGER) {
     integer_size = 32;
-    llvm_type = llvm::Type::getInt32Ty(llvm::getGlobalContext());
+    llvm_type = llvm::Type::getInt32Ty(RW_DEFAULT_CONTEXT);
   } else if (type == ElementType::BOOL) {
     integer_size = 1;
-    llvm_type = llvm::Type::getInt1Ty(llvm::getGlobalContext());
+    llvm_type = llvm::Type::getInt1Ty(RW_DEFAULT_CONTEXT);
   } else {
     std::cerr << "invalid type" << std::endl;
     return nullptr;
@@ -63,9 +63,9 @@ llvm::Value *createLlvmFpValue(double fp_value, ElementType type) {
   }
 
   if (double_precision) {
-    return llvm::ConstantFP::get(llvm::Type::getDoubleTy(llvm::getGlobalContext()), fp_value);
+    return llvm::ConstantFP::get(llvm::Type::getDoubleTy(RW_DEFAULT_CONTEXT), fp_value);
   } else {
-    return llvm::ConstantFP::get(llvm::Type::getFloatTy(llvm::getGlobalContext()), fp_value);
+    return llvm::ConstantFP::get(llvm::Type::getFloatTy(RW_DEFAULT_CONTEXT), fp_value);
   }
 }
 
@@ -75,6 +75,6 @@ llvm::Value *CreateLlvmBoolValue(bool b) {
   if (b) {
     integer_value = 1;
   }
-  return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt1Ty(llvm::getGlobalContext()),
+  return llvm::ConstantInt::getIntegerValue(llvm::Type::getInt1Ty(RW_DEFAULT_CONTEXT),
                                             llvm::APInt(1, integer_value));
 }

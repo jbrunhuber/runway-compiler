@@ -3,7 +3,7 @@
 
 BaseGenerator::BaseGenerator() : insert_point(nullptr) {
 
-  this->module = new llvm::Module("runway", llvm::getGlobalContext());
+  this->module = new llvm::Module("runway", RW_DEFAULT_CONTEXT);
   this->builder = new llvm::IRBuilder<>(module->getContext());
 }
 
@@ -87,9 +87,9 @@ void BaseGenerator::create_print_function(Expression *parameter_expr, bool new_l
   llvm::Function *llvm_print_func = _functions[const_function_name];
   if (llvm_print_func == nullptr) {
     std::vector<llvm::Type *> printf_arg_types;
-    printf_arg_types.push_back(llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
+    printf_arg_types.push_back(llvm::Type::getInt8PtrTy(RW_DEFAULT_CONTEXT));
     llvm::FunctionType *llvm_printf_type =
-        llvm::FunctionType::get(llvm::Type::getInt32Ty(llvm::getGlobalContext()), printf_arg_types, true);
+        llvm::FunctionType::get(llvm::Type::getInt32Ty(RW_DEFAULT_CONTEXT), printf_arg_types, true);
     llvm_print_func =
         llvm::Function::Create(llvm_printf_type, llvm::Function::ExternalLinkage, const_function_name, module);
     llvm_print_func->setCallingConv(llvm::CallingConv::C);
@@ -136,19 +136,21 @@ void BaseGenerator::EmitVariableDeclarationStatement(VariableDeclarationStatemen
 
   //set the llvm type
   if (expression_type == ElementType::BOOL) {
-    llvm_variable_type = llvm::Type::getInt1Ty(llvm::getGlobalContext());
+    llvm_variable_type = llvm::Type::getInt1Ty(RW_DEFAULT_CONTEXT);
   } else if (expression_type == ElementType::FLOAT) {
-    llvm_variable_type = llvm::Type::getFloatTy(llvm::getGlobalContext());
+    llvm_variable_type = llvm::Type::getFloatTy(RW_DEFAULT_CONTEXT);
   } else if (expression_type == ElementType::DOUBLE) {
-    llvm_variable_type = llvm::Type::getDoubleTy(llvm::getGlobalContext());
+    llvm_variable_type = llvm::Type::getDoubleTy(RW_DEFAULT_CONTEXT);
   } else if (expression_type == ElementType::INTEGER) {
-    llvm_variable_type = llvm::Type::getInt32Ty(llvm::getGlobalContext());
+    llvm_variable_type = llvm::Type::getInt32Ty(RW_DEFAULT_CONTEXT);
   } else if (expression_type == ElementType::STRING) {
-    llvm_variable_type = llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
+    llvm_variable_type = llvm::Type::getInt8PtrTy(RW_DEFAULT_CONTEXT);
   }
 
+  llvm::Twine iden = identifier;
+
   //allocate stack space
-  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(llvm_variable_type, identifier, insert_point);
+  llvm::AllocaInst *llvm_alloca_inst = new llvm::AllocaInst(llvm_variable_type, 0, iden, insert_point);
 
   //save the pointer of the value in the symbol table
   SymtableEntry *variable_declaration_entry = new SymtableEntry;
@@ -381,7 +383,7 @@ void BaseGenerator::construct() {
 
   _functions["main"] = main_function;
 
-  insert_point = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", main_function);
+  insert_point = llvm::BasicBlock::Create(RW_DEFAULT_CONTEXT, "entrypoint", main_function);
   builder->SetInsertPoint(insert_point);
 }
 
@@ -407,7 +409,7 @@ std::string BaseGenerator::GetIR() {
 void BaseGenerator::EmitForStatement(ForStatement *for_statment) {
 
   llvm::BasicBlock *for_instructions =
-      llvm::BasicBlock::Create(llvm::getGlobalContext(), "forinst", _functions["main"], insert_point);
+      llvm::BasicBlock::Create(RW_DEFAULT_CONTEXT, "forinst", _functions["main"], insert_point);
 
 }
 
@@ -415,7 +417,7 @@ void BaseGenerator::EmitIfStatement(IfStatement *if_statement) {
 
   // emit the condition and cast it to a floating point value
   llvm::Value *cond_val = if_statement->condition->Emit(this);
-  cond_val = builder->CreateUIToFP(cond_val, llvm::Type::getDoubleTy(llvm::getGlobalContext()), "bool_convert");
+  cond_val = builder->CreateUIToFP(cond_val, llvm::Type::getDoubleTy(RW_DEFAULT_CONTEXT), "bool_convert");
 
   // create a floating point value for the comparison
   llvm::Value *zero_val = createLlvmFpValue(0.0, ElementType::DOUBLE);
@@ -426,9 +428,9 @@ void BaseGenerator::EmitIfStatement(IfStatement *if_statement) {
   // create the blocks for the condition branches
   llvm::Function *the_function = builder->GetInsertBlock()->getParent();
 
-  llvm::BasicBlock *then_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "then_block", the_function);
-  llvm::BasicBlock *else_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "else_block");
-  llvm::BasicBlock *merge_block = llvm::BasicBlock::Create(llvm::getGlobalContext(), "merge_block");
+  llvm::BasicBlock *then_block = llvm::BasicBlock::Create(RW_DEFAULT_CONTEXT, "then_block", the_function);
+  llvm::BasicBlock *else_block = llvm::BasicBlock::Create(RW_DEFAULT_CONTEXT, "else_block");
+  llvm::BasicBlock *merge_block = llvm::BasicBlock::Create(RW_DEFAULT_CONTEXT, "merge_block");
 
   builder->CreateCondBr(cond_val, then_block, else_block);
 
